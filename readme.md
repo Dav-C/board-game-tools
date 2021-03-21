@@ -9,11 +9,11 @@ Install:
 
 -create a superuser
 
--login to the admin and associate the super user with a tool_session
+-login to the admin and associate the super user with a user profile
 
 -go to http://127.0.0.1:8000/login and login with the super user
 
--create a new session wiht the + button
+-create a new session with the + button
 
 -add a tool to your session using the drop down menu (only the HP trackers are available right now)
 
