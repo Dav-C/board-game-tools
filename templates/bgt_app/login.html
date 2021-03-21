@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block page_content %}
+
+<div id="LoginPageWrapper">
+
+    <div class="login-header">
+        <span class="login-header-text">Board Game Tools</span>
+    </div>
+
+    <div class="login-body">
+        <div id="LoginFormWrapper">
+            <form method="post" action="{% url 'login' %}" id="LoginForm">
+                {% csrf_token %}
+                <input type="input" class="login-form-input" name="username" id="inputEmail" placeholder="Username" required >
+                <input type="password" class="login-form-input" name="password" id="inputPass" placeholder="Password" required>
+                <button type="submit" class="login-form-btn"style="opacity: 1 !important;">Login</button>
+                <input type="hidden" name="next" value="{{ next }}">
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <div class="login-footer">
+    </div>
+
+</div>
+
+
+
+{% endblock page_content %}

@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block body_class %}tool_session_detail{% endblock body_class %}
+
+{% block page_content %}
+{#Tool selection menu and buttons to open various forms to add tools#}
+<div id="ToolSelectionMenu">
+    <div id="AddNewToolsMenu">
+        <div class="tools-menu-header">Add New Tools
+        </div>
+{#        This covers the buttons in the tool selection menu when a form is open#}
+        <div id="ToolSelectionMenuCover"></div>
+        <div class="add-tools-btn-row">
+            <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">ADD HP TRACKER</button>
+            <button id="AddResourceProductionTrackerOpenFormBtn" class="add-tool-button">Add Production Tracker</button>
+            <button id="AddDiceRollerOpenFormBtn" class="add-tool-button">Add Dice Roller</button>
+        </div>
+        <div class="add-tools-btn-row">
+            <button id="AddScoringCalculatorOpenFormBtn" class="add-tool-button">Add Scoring Calculator</button>
+            <button id="AddTimerOpenFormBtn" class="add-tool-button">Add Game Timer</button>
+        </div>
+
+{# Forms for adding tools to the tool session#}
+        <div id="AddHpTrackerFormWrapper" class="add-hp-tracker-form-wrapper">
+            <div class="form-title-box">
+                <span class="form-title-text">Add HP Tracker</span>
+            </div>
+                <br />
+            <form method="POST" id="AddHpTrackerForm"
+                  action="{% url 'add_hp_tracker' %}"
+                  class="add-hp-tracker-form">
+                {% csrf_token %}
+                <br />
+                {{ hp_tracker_form.title|add_class:'text-input-large' }}
+                <br />
+                {{ hp_tracker_form.hp_value|add_class:'text-input-large' }}
+                <br />
+                <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn">Add</button>
+                <button id="AddHpTrackerFormCancelBtn" class="red-btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="SelectActiveToolMenu">
+        <div class="tools-menu-header">Select Active Tool
+        </div>
+        <div class="select-active-tool-btn-row">
+            <button id="OpenHpTrackersBtn"
+                    class="select-active-tool-button {% if hp_trackers %}button-visible{% endif %}">HP Trackers</button>
+            <button id="OpenDiceRollersBtn" class="select-active-tool-button">Dice Rollers</button>
+            <button id="OpenProductionTrackersBtn" class="select-active-tool-button">Production Trackers</button>
+        </div>
+        <div class="select-active-tool-btn-row">
+            <button id="OpenScoringCalculatorBtn" class="select-active-tool-button">Scoring Calculator</button>
+            <button id="OpenGameTimersBtn" class="select-active-tool-button">GameTimers</button>
+        </div>
+    </div>
+    <div class="tool-selection-menu-footer">
+        <div id="CloseToolSelectionMenuBtn" class="arrow-up"></div>
+    </div>
+</div>
+
+<div id="ToolSessionPageWrapper">
+    <div class="tool-session-page-header">
+        <div id=OpenToolSelectionMenuBtn class="arrow-down"></div>
+    </div>
+    <div class="tool-session-page-body">
+        <div id="HpTrackersViewWrapper" class="tool-body">
+            {% for hp_tracker in hp_trackers %}
+                <div class="hp-tracker-box">
+                    <div id="{{hp_tracker.id}}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
+                    <br />
+                    <form method="POST" action="{% url 'hp_change_value' hp_tracker.id %}" id="{{ hp_tracker.id }}-HpValueForm" data-id="{{ hp_tracker.id }}" class="hp-value-change-form">
+                        {% csrf_token %}
+                        <div class="hp-control-box">
+                            <button type="button" data-id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease">-</button>
+                            <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
+                            <div id="{{ hp_tracker.id }}-HpValueInput">{{ hp_change_value_form.hp_value }}</div>
+                            <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
+                            <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-value hp-change-value"></div>
+                            <button type="button" data-id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase">+</button>
+                        </div>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock page_content %}

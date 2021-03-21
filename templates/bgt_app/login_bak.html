@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block page_content %}
+<!-- header -->
+<div id="login_page_wrapper">
+    <div class="login_page_header">
+    Board Game Tools
+    </div>
+    <div class="login_grid_item_1">
+        {% for message in messages %}
+            {% if message.tags == "warning"  %}
+                    <div>{{ message }}</div>
+            {% else %}
+                    <div>{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+<!-- end header -->
+    {% if next %}
+        {% if user.is_authenticated %}
+            <div>Insufficient access privileges</div>
+        {% else %}
+            <div>Please login to continue</div>
+        {% endif %}
+    {% endif %}
+    <div id="login_form_wrapper">
+        <div id="login_form">
+            <form method="post" action="{% url 'login' %}" id="loginForm">
+                {% csrf_token %}
+                <p>{{ form.username|add_class:'text_input_field' }}</p>
+                <br />
+                <p>{{ form.password|add_class:'text_input_field' }}</p>
+                <br />
+                <a href="">
+                    <button>Login</button>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </a>
+            </form>
+        </div>
+    </div>
+        <div class = login_grid_item_3>
+            {% if form.errors %}
+                <p>Your username and password didn't match. Please try again.</p>
+            {% endif %}
+        </div>
+    <div class="login_page_footer">
+        Footer
+    </div>
+</div>
+{% endblock page_content %}
