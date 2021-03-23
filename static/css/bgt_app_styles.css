@@ -285,8 +285,7 @@ ul {
 
 #ToolSessionPageWrapper {
     display: grid;
-    width: 100vw;
-    grid-template-rows: 5vh 95vh;
+    grid-template-rows: 5vh 90vh;
 }
 
 .tool-session-page-header {
@@ -311,12 +310,16 @@ ul {
 }
 
 .tools-menu-header {
+    margin: .5rem;
+    justify-self: center;
     background-color: darkblue;
-    width: 100%;
+    border-radius: 1rem;
+    width: 95%;
     color: #FFFFFF;
     font-size: 2rem;
     padding: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.16) 0 3px 6px, rgba(0, 0, 0, 0.23) 0 3px 6px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0 3px 6px,
+                rgba(0, 0, 0, 0.23) 0 3px 6px;
 }
 
 #ToolSelectionMenuCover {
@@ -416,6 +419,8 @@ ul {
 
 .tool-body {
     display: none;
+    flex-direction: column;
+    align-items: center;
 }
 
 .hp-tracker-box {
@@ -424,7 +429,7 @@ ul {
     align-items: center;
     margin: 1rem;
     padding: 1rem;
-    width: 90vw;
+    min-width: 33rem;
     min-height: 10rem;
     background-color: #e2e2e2;
     border-radius: .5rem;
@@ -432,16 +437,65 @@ ul {
                 rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
                 rgba(255, 255, 255, 0.08) 0 1px 0 inset;
 }
+
+.hp-tracker-title-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
 .hp-tracker-title {
+    min-height: 3rem;
     font-weight: 700;
     text-align: center;
     background-color: #FFFFFF;
     padding: .5rem;
     font-size: 2rem;
-    width: 100%;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-                rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
-    rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    box-shadow: rgba(50, 50, 93, 0.25) 0 50px 100px -20px,
+                rgba(0, 0, 0, 0.3) 0 30px 60px -30px,
+                rgba(10, 37, 64, 0.35) 0 -2px 6px 0 inset;
+}
+
+.hp-tracker-title input {
+    color: #FFFFFF;
+    background-color: #555555;
+    border-color: #FFFFFF;
+    border-radius: .5rem;
+    outline: 0 none;
+}
+
+.hp-tracker-title-input {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+.confirm-hp-title-change-btn {
+    display: none;
+    border-radius: .75rem;
+    font-size: 3rem;
+    padding: .5rem;
+    height: 6rem;
+    width: 6rem;
+    margin-left: 3.5rem;
+    color: #FFFFFF;
+    background-color: #00c400;
+}
+
+.cancel-hp-title-change-btn {
+    display: none;
+    border-radius: .75rem;
+    font-size: 3rem;
+    padding: .5rem;
+    height: 6rem;
+    width: 6rem;
+    margin-right: 3.5rem;
+    color: #ffffff;
+    background-color: #c00000;
 }
 
 .hp-control-box {
@@ -452,19 +506,19 @@ ul {
 }
 
 .hp-value-change-btn {
+    border-radius: .75rem;
     font-size: 3rem;
     padding: .5rem;
-    height: 5rem;
-    width: 5rem;
-
+    height: 6rem;
+    width: 6rem;
 }
 
 .increase {
-    margin-left: 3rem;
+    margin-left: 3.5rem;
 }
 
 .decrease {
-    margin-right: 3rem;
+    margin-right: 3.5rem;
 }
 
 .hp-value {
@@ -474,8 +528,8 @@ ul {
     font-weight: 700;
     padding: 1.25rem;
     font-size: 3rem;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
-                rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+    box-shadow: rgba(50, 50, 93, 0.25) 0 30px 60px -12px inset,
+                rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
 }
 
 .hp-change-value {
@@ -490,6 +544,17 @@ ul {
     background-color: #000000;
     opacity: 75%;
 }
+
+.hp-tracker-delete-btn {
+    display: none;
+    border-radius: .75rem;
+    font-size: 2rem;
+    background-color: #c00000;
+    color: #FFFFFF;
+    height: 4rem;
+    width: 30rem;
+}
+
 
 /* Prevent Chrome from changing autofill text size to small */
 input:-webkit-autofill::first-line {font-size: 2rem}

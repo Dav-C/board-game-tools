@@ -17,7 +17,7 @@ Install:
 
 -add a tool to your session using the drop down menu (only the HP trackers are available right now)
 
-the app is designed to be responsive and currently looks bested when viewed on a phone. Use the Chrome dev tools and
+the app is designed to be responsive and currently looks best when viewed on a phone. Use the Chrome dev tools and
 change the display to iphone for the best experience.
 
 

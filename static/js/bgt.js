@@ -1,7 +1,7 @@
 //  on page load - check for an active tool menu and set it to visible
 if (localStorage.getItem('activeTool')) {
     let activeTool= localStorage.getItem('activeTool');
-    $(activeTool).css({'display': 'inline'});
+    $(activeTool).css({'display': 'flex'});
 }
 
 
@@ -23,6 +23,9 @@ $('#OpenToolSelectionMenuBtn').click(function() {
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
+    setTimeout(function(){
+    window.location.reload(true);
+    }, 500);
 });
 
 // Open and Close various forms for adding tools via the tool selection menu on tool_session_detail.html
@@ -91,34 +94,6 @@ $("#AddHpTrackerForm").submit(newToolsFormSubmit(
 ));
 
 
-
-
-// {#ajax call for HpValueForm#}
-$('.hp-value-change-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).attr("data-id");
-    // serialize the form data.
-    let serializedData = $(this).serialize();
-    // make POST ajax call
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            $("#" + data_id + "-HpValue").empty().prepend(fields.hp_value);
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-        }
-    });
-});
-
-
-
 // {#control timeout before hp_value increase or decrease is submitted#}
 localStorage.setItem('hp_change_value', '0');
 let timeoutHandler;
@@ -127,7 +102,7 @@ function timeoutControl(element) {
     'use strict';
     clearTimeout(timeoutHandler);
     // select the closest for to the clicked button
-    let selector = $(element).closest('.hp-value-change-form');
+    let selector = $(element).closest('.hp-change-value-form');
 
     // assign the unique django object id to a variable
     let data_id = selector.attr("data-id");
@@ -141,10 +116,15 @@ function timeoutControl(element) {
     // calculate the amount to be entered into the hp value change form
     let hp_add_subtract_value = hp_initial_value + hp_change_value;
 
+    // get the title of the hp tracker to submit with the form so its not set
+    // to an empty string when the form posts.
+    let title_box = $("#" + data_id + "-HpTrackerTitle");
+
     // After a 2 second delay submit the form and reset the change value to 0
     timeoutHandler = setTimeout(function () {
         $('#' + data_id + '-HpValueInput input').val(hp_add_subtract_value);
-        $('#' + data_id + '-HpValueForm').submit();
+        $('#' + data_id + '-HpTrackerTitleInput input').val(title_box.text());
+        $('#' + data_id + '-HpChangeValueForm').submit();
         $('#' + data_id + '-HpValueChange').css({'display': 'none'});
         $('#' + data_id + '-HpValueChangeCover').css({'display': 'none'});
         localStorage.setItem('hp_change_value', '0');
@@ -152,7 +132,7 @@ function timeoutControl(element) {
 }
 // increase the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
-$('.hp-value-change-btn.increase').click(function (e) {
+$('.hp-value-change-btn.increase').click(function () {
     'use strict';
     let selector = $(this).closest('.hp-control-box');
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
@@ -167,7 +147,7 @@ $('.hp-value-change-btn.increase').click(function (e) {
 
 // decrease the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
-$('.hp-value-change-btn.decrease').click(function (e) {
+$('.hp-value-change-btn.decrease').click(function () {
     'use strict';
     let selector = $(this).closest('.hp-control-box');
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
@@ -180,92 +160,97 @@ $('.hp-value-change-btn.decrease').click(function (e) {
 
 });
 
+
+
+// change the title of an hp tracker
+$('.hp-tracker-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let title_box = $("#" + data_id + "-HpTrackerTitle");
+    let title_input = $('#' + data_id + '-HpTrackerTitleInput');
+    let hp_value_increase_btn = $('#' + data_id + '-HpValueIncreaseBtn');
+    let hp_value_decrease_btn = $('#' + data_id + '-HpValueDecreaseBtn');
+    let confirm_hp_title_change_btn = $('#' + data_id + '-ConfirmHpTitleChangeBtn');
+    let cancel_hp_title_change_btn = $('#' + data_id + '-CancelHpTitleChangeBtn');
+    let value_change_buttons = $('.hp-value-change-btn');
+    let hp_value_input = $('#' + data_id + '-HpValueInput input');
+    let hp_value = parseInt($("#" + data_id + "-HpValue").text());
+    let hp_tracker_delete_btn = $('#' + data_id + '-HpTrackerDeleteBtn');
+
+
+
+    function revealHpTitleChangeBtns() {
+        title_box.css({'display': 'none'});
+        title_input.css({'display': 'inline', 'background-color': '#555555'});
+        hp_value_increase_btn.css({'display': 'none'});
+        hp_value_decrease_btn.css({'display': 'none'});
+        confirm_hp_title_change_btn.css({'display': 'inline'});
+        cancel_hp_title_change_btn.css({'display': 'inline'});
+        hp_tracker_delete_btn.css({'display': 'inline'});
+        value_change_buttons.prop('disabled', true);
+    }
+
+    function hideHpTitleChangeBtns() {
+        title_box.css({'display': 'inline'});
+        title_input.css({'display': 'none'});
+        hp_value_increase_btn.css({'display': 'inline'});
+        hp_value_decrease_btn.css({'display': 'inline'});
+        confirm_hp_title_change_btn.css({'display': 'none'});
+        cancel_hp_title_change_btn.css({'display': 'none'});
+        hp_tracker_delete_btn.css({'display': 'none'});
+        value_change_buttons.prop('disabled', false);
+    }
+
+    revealHpTitleChangeBtns();
+    title_input.children('input').val(title_box.text());
+    title_input.children('input').focus();
+    hp_value_input.val(hp_value);
+    // title_box.not(this).prop('disabled', true);
+
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_hp_title_change_btn.click(function() {
+        hideHpTitleChangeBtns();
+        });
+    return [revealHpTitleChangeBtns, hideHpTitleChangeBtns];
+});
+
+// {#ajax call for HpChangeValueForm#}
+$('.hp-change-value-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new hp_value
+            $("#" + data_id + "-HpValue").empty().prepend(fields.hp_value);
+            // reset the title box and display the value
+            $("#" + data_id + "-HpTrackerTitle").css({'display': 'inline'});
+            $("#" + data_id + "-HpTrackerTitle").empty().prepend(fields.title);
+            $('#' + data_id + '-HpTrackerTitleInput').css({'display': 'none'});
+            $('#' + data_id + '-HpValueIncreaseBtn').css({'display': 'inline'});
+            $('#' + data_id + '-HpValueDecreaseBtn').css({'display': 'inline'});
+            $('#' + data_id + '-ConfirmHpTitleChangeBtn').css({'display': 'none'});
+            $('#' + data_id + '-CancelHpTitleChangeBtn').css({'display': 'none'});
+            $('#' + data_id + '-HpTrackerDeleteBtn').css({'display': 'none'});
+            $('.hp-value-change-btn').prop('disabled', false);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
 console.log('this application has been brought to you by David Cates.');
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// DATA DUMP
-// {#ajax call for HpValueForm#}
-//                     function changeHpValue(form) {
-//                         'use strict';
-//                         $(form).submit(function (e) {
-//                             // preventing from page reload and default actions
-//                             e.preventDefault();
-//                             // serialize the form data.
-//                             let serializedData = $(form).serialize();
-//                             // make POST ajax call
-//                             $.ajax({
-//                                 type: 'POST',
-//                                 url: '{% url 'hp_change_value' hp_tracker.id %}',
-//                                 data: serializedData,
-//                                 success: function (response) {
-//                                     let form_instance = JSON.parse(response['form_instance']);
-//                                     let fields = form_instance[0]['fields'];
-//                                     $('#{{hp_tracker.id}}-HpValue').empty().prepend(fields.hp_value);
-//                                     console.log('ajaxSuccess');
-//                                 },
-//                                 error: function (response) {
-//                                     console.log(response["responseJSON"]["rror"]);
-//                                 }
-//                             });
-//                         });
-//                     }
-//
-//                     {#control timeout before hp_value increase or decrease is submitted#}
-//                     let hp_add_subtract_value = $('#{{hp_tracker.id}}-HpValue').text(),
-//                         hp_change_value = 0,
-//                         timeoutHandler;
-//                     function timeoutControl() {
-//                         clearTimeout(timeoutHandler);
-//                         timeoutHandler = setTimeout(function () {
-//                             $('#{{ hp_tracker.id }}-HpValueInput input').val(hp_change_value);
-//                             $('#{{ hp_tracker.id }}-HpValueForm').submit();
-//                             $('#{{hp_tracker.id}}-HpChangeValue').css({'display': 'none'});
-//                             $('#{{hp_tracker.id}}-HpChangeValueCover').css({'display': 'none'});
-//                             hp_change_value = 0;
-//                             $('#{{hp_tracker.id}}-HpChangeValue').empty().prepend(hp_change_value);
-//                         }, 2000);
-//                     }
-//                     {#increase the hp value#}
-//                     $('#{{ hp_tracker.id }}-HpValueIncreaseBtn').click(function (e) {
-//                         'use strict';
-//                         hp_add_subtract_value++;
-//                         hp_change_value++;
-//                         $('#{{hp_tracker.id}}-HpChangeValue').css({'display': 'inline'});
-//                         $('#{{hp_tracker.id}}-HpChangeValueCover').css({'display': 'inline'});
-//                         $('#{{hp_tracker.id}}-HpChangeValue').empty().prepend(hp_change_value);
-//                         timeoutControl();
-//                     });
-//
-//                     {#decrease the hp value#}
-//                     $('#{{ hp_tracker.id }}-HpValueDecreaseBtn').click(function (e) {
-//                         'use strict';
-//                         hp_add_subtract_value--;
-//                         hp_change_value--;
-//                         $('#{{hp_tracker.id}}-HpChangeValue').css({'display': 'inline'});
-//                         $('#{{hp_tracker.id}}-HpChangeValueCover').css({'display': 'inline'});
-//                         $('#{{hp_tracker.id}}-HpChangeValue').empty().prepend(hp_change_value);
-//                         timeoutControl();
-//                     });
-//
-//                     {#submit HpValueForm#}
-//                     $('#{{ hp_tracker.id }}-HpValueForm').on('submit', changeHpValue('#{{ hp_tracker.id }}-HpValueForm'));
 
 

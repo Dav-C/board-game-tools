@@ -45,18 +45,26 @@ class HpTrackerForm(forms.ModelForm):
     )
 
 
-class HpChangeValueForm(forms.ModelForm):
+class HpTrackerChangeValueForm(forms.ModelForm):
     class Meta:
         model = HpTracker
-        fields = ['hp_value']
+        fields = ['hp_value', 'title']
+
+    title = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'maxlength': '40',
+            },
+        ),
+    )
 
     hp_value = forms.IntegerField(
         required=False,
         widget=forms.NumberInput(
             attrs={
-                'placeholder': 'Change Me',
-                'maxlength': '40',
                 'type': 'hidden'
             },
         ),
     )
+

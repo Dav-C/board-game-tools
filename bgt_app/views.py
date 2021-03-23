@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.conf import settings
 from django.views.generic import (
     View,
     ListView,
@@ -11,10 +11,13 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
 )
+from django.utils.http import is_safe_url
 from django.shortcuts import (
+    render,
     redirect,
     reverse,
-    get_object_or_404
+    get_object_or_404,
+    HttpResponseRedirect
 )
 from django.contrib import messages
 from django.core import serializers
@@ -25,7 +28,7 @@ from django.views.generic.edit import FormMixin
 from .forms import (
     ToolSessionForm,
     HpTrackerForm,
-    HpChangeValueForm
+    HpTrackerChangeValueForm,
 )
 
 from .models import (
@@ -91,11 +94,9 @@ class ToolSessionDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         hp_trackers = self.object.hp_tracker.all()
-        serialized_hp_tracker_data = serializers.serialize('json', hp_trackers)
         context['hp_tracker_form'] = HpTrackerForm
-        context['hp_change_value_form'] = HpChangeValueForm
+        context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
-        context['serialized_hp_tracker_data'] = serialized_hp_tracker_data
         return context
 
     def get(self, request, *args, **kwargs):
@@ -107,6 +108,7 @@ class ToolSessionDetail(DetailView):
 def save_form_and_serialize_data(form, request):
     """This function is used inside other views for saving new models via
     ajax requests"""
+
     if form.is_valid():
         form_instance = \
             form.save(commit=False)
@@ -130,6 +132,7 @@ def save_form_and_serialize_data(form, request):
 class AddHpTracker(View):
     """Add an HpTracker to the database and associate it
     with the active tool session that the current user has open, post is ajax"""
+
     def post(self, request, *args, **kwargs):
         hp_tracker_form = \
             HpTrackerForm(self.request.POST)
@@ -141,11 +144,14 @@ class AddHpTracker(View):
         return new_hp_tracker_response
 
 
-class HpChangeValue(View):
-    """Increase an HP tracker's HP value"""
+class HpTrackerUpdate(View):
+    """Change an HpTracker hp_value and/or title"""
+
     def post(self, request, uuid):
         hp_tracker = HpTracker.objects.get(id=uuid)
-        form = HpChangeValueForm(request.POST or None, instance=hp_tracker)
+        form = HpTrackerChangeValueForm(
+            request.POST or None, instance=hp_tracker
+        )
         if form.is_valid():
             form_instance = \
                 form.save()
@@ -155,3 +161,21 @@ class HpChangeValue(View):
                 {'form_instance': serialized_form_instance}, status=200)
         else:
             return JsonResponse({'error': form.errors}, status=400)
+
+
+class HpTrackerDelete(View):
+    """Delete an HpTracker"""
+
+    def post(self, request, uuid):
+        hp_tracker = HpTracker.objects.get(id=uuid)
+        hp_tracker.delete()
+        redirect_url = request.GET.get('next')
+        url_is_safe = is_safe_url(
+            url=redirect_url,
+            allowed_hosts=settings.ALLOWED_HOSTS,
+            require_https=request.is_secure(),
+        )
+        if url_is_safe and redirect_url:
+            return redirect(redirect_url)
+        else:
+            return redirect('user_home')

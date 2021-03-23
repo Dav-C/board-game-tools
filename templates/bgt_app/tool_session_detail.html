@@ -70,20 +70,30 @@
         <div id="HpTrackersViewWrapper" class="tool-body">
             {% for hp_tracker in hp_trackers %}
                 <div class="hp-tracker-box">
-                    <div id="{{hp_tracker.id}}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
-                    <br />
-                    <form method="POST" action="{% url 'hp_change_value' hp_tracker.id %}" id="{{ hp_tracker.id }}-HpValueForm" data-id="{{ hp_tracker.id }}" class="hp-value-change-form">
+                    <form method="POST" action="{% url 'hp_tracker_update' hp_tracker.id %}" id="{{ hp_tracker.id }}-HpChangeValueForm" data-id="{{ hp_tracker.id }}" class="hp-change-value-form">
                         {% csrf_token %}
+                        <div class="hp-tracker-title-box">
+                            <div id="{{ hp_tracker.id }}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
+                            <div id="{{ hp_tracker.id }}-HpTrackerTitleInput" class="hp-tracker-title hidden">
+                                {{ hp_change_value_form.title|add_class:"hp-tracker-title-input"}}
+                            </div>
+                        </div>
                         <div class="hp-control-box">
-                            <button type="button" data-id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease">-</button>
+                            <button type="button" id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn" class="cancel-hp-title-change-btn">&#10008;</button>
+                            <button type="button" id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease">-</button>
                             <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
                             <div id="{{ hp_tracker.id }}-HpValueInput">{{ hp_change_value_form.hp_value }}</div>
                             <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
                             <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-value hp-change-value"></div>
-                            <button type="button" data-id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase">+</button>
+                            <button type="button" id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase">+</button>
+                            <button type="submit" id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn" class="confirm-hp-title-change-btn confirm-check">&#10004;</button>
                         </div>
                     </form>
                 </div>
+                <form action="{% url 'hp_tracker_delete' hp_tracker.id %}?next={{ request.get_full_path }}" method="POST">
+                {% csrf_token %}
+                    <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="hp-tracker-delete-btn">Press Here to Delete</button>
+                </form>
             {% endfor %}
         </div>
     </div>

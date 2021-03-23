@@ -59,6 +59,6 @@ class HpTracker(models.Model):
                                      )
 
     def __str__(self):
-        return f"{self.title}, HP: {self.hp_value}"
+        return f"Title: {self.title} HP: {self.hp_value}"
 
 

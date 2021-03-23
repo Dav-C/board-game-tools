@@ -6,7 +6,8 @@ from .views import (
     UserHome,
     ToolSessionDetail,
     AddHpTracker,
-    HpChangeValue,
+    HpTrackerUpdate,
+    HpTrackerDelete,
 )
 
 urlpatterns = [
@@ -17,6 +18,8 @@ urlpatterns = [
          ToolSessionDetail.as_view(), name='tool_session_detail'),
     path('add-hp-tracker/',
          AddHpTracker.as_view(), name='add_hp_tracker'),
-    path('hp-change-value/<uuid>',
-         HpChangeValue.as_view(), name='hp_change_value')
+    path('hp-tracker-update/<uuid>',
+         HpTrackerUpdate.as_view(), name='hp_tracker_update'),
+    path('hp-tracker-delete/<uuid>',
+         HpTrackerDelete.as_view(), name='hp_tracker_delete'),
 ]
