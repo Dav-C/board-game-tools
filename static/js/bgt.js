@@ -19,13 +19,15 @@ $('#CreateToolSessionFormCancelBtn').click(function() {
 $('#OpenToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '0', 'visibility': 'visible'});
+    $('#ToolSessionPageHeader').css({'display': 'none'});
 });
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
     setTimeout(function(){
+    $('#ToolSessionPageHeader').css({'display': 'flex'});
     window.location.reload(true);
-    }, 500);
+    }, 275);
 });
 
 // Open and Close various forms for adding tools via the tool selection menu on tool_session_detail.html
@@ -50,7 +52,7 @@ function setActiveTool(activeToolWrapperClass) {
     // Wait for the menu to close then reload the page
     setTimeout(function(){
         window.location.reload(true);
-        }, 500);
+        }, 275);
 }
 
 // Set the Hp Trackers to the active tool
