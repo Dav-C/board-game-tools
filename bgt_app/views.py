@@ -27,11 +27,14 @@ from django.views.generic.edit import FormMixin
 
 from .forms import (
     ToolSessionForm,
-    HpTrackerForm,
+    HpTrackerAddForm,
     HpTrackerChangeValueForm,
+    DieGroupForm,
 )
 
 from .models import (
+    DieGroup,
+    DieStandard,
     HpTracker,
     ToolSession,
     UserProfile
@@ -81,7 +84,7 @@ class UserHome(LoginRequiredMixin, FormMixin, ListView):
         return context
 
 
-class ToolSessionDetail(DetailView):
+class ToolSessionDetail(LoginRequiredMixin, DetailView):
     template_name = 'bgt_app/tool_session_detail.html'
 
     def get_queryset(self, **kwargs):
@@ -94,9 +97,13 @@ class ToolSessionDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         hp_trackers = self.object.hp_tracker.all()
-        context['hp_tracker_form'] = HpTrackerForm
+        die_groups = self.object.die_group.all()
+
+        context['add_hp_tracker_form'] = HpTrackerAddForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
+        context['die_group_form'] = DieGroupForm
+        context['die_groups'] = die_groups
         return context
 
     def get(self, request, *args, **kwargs):
@@ -107,11 +114,11 @@ class ToolSessionDetail(DetailView):
 
 def save_form_and_serialize_data(form, request):
     """This function is used inside other views for saving new models via
-    ajax requests"""
+    ajax requests.  The active tool session is associated with the new object."""
 
     if form.is_valid():
         form_instance = \
-            form.save(commit=False)
+            form.save()
         # add foreign key for the tool session the hp tracker should
         # be linked to and save
         form_instance.tool_session = \
@@ -127,15 +134,13 @@ def save_form_and_serialize_data(form, request):
         return JsonResponse({'error': form.errors}, status=400)
 
 
-# REMINDER TO SELF - ADD USER VALIDATION TO ALL POST REQUEST METHODS
-
-class AddHpTracker(View):
+class AddHpTracker(LoginRequiredMixin, View):
     """Add an HpTracker to the database and associate it
     with the active tool session that the current user has open, post is ajax"""
 
     def post(self, request, *args, **kwargs):
         hp_tracker_form = \
-            HpTrackerForm(self.request.POST)
+            HpTrackerAddForm(self.request.POST)
 
         new_hp_tracker_response = save_form_and_serialize_data(
             form=hp_tracker_form,
@@ -144,7 +149,7 @@ class AddHpTracker(View):
         return new_hp_tracker_response
 
 
-class HpTrackerUpdate(View):
+class HpTrackerUpdate(LoginRequiredMixin, View):
     """Change an HpTracker hp_value and/or title"""
 
     def post(self, request, uuid):
@@ -164,18 +169,39 @@ class HpTrackerUpdate(View):
 
 
 class HpTrackerDelete(View):
-    """Delete an HpTracker"""
+    """Delete an HpTracker Object"""
 
     def post(self, request, uuid):
         hp_tracker = HpTracker.objects.get(id=uuid)
-        hp_tracker.delete()
-        redirect_url = request.GET.get('next')
-        url_is_safe = is_safe_url(
-            url=redirect_url,
-            allowed_hosts=settings.ALLOWED_HOSTS,
-            require_https=request.is_secure(),
-        )
-        if url_is_safe and redirect_url:
-            return redirect(redirect_url)
+        if hp_tracker.tool_session.session_owner.user.id == request.user.id:
+            hp_tracker.delete()
+            redirect_url = request.GET.get('next')
+            url_is_safe = is_safe_url(
+                url=redirect_url,
+                allowed_hosts=settings.ALLOWED_HOSTS,
+                require_https=request.is_secure(),
+            )
+            if url_is_safe and redirect_url:
+                return redirect(redirect_url)
+            else:
+                return redirect('user_home')
         else:
+            messages.error(request, "You can only delete your own HP Trackers")
             return redirect('user_home')
+
+
+class AddDieGroup(View):
+    """Add an HpTracker to the database and associate it with the active tool
+    session that the current user has open, post is ajax
+    Die Groups hold sets of dice so they can more easily be separated for
+    gameplay purposes and processed (rolled) as a group."""
+
+    def post(self, request, *args, **kwargs):
+        die_group_form = \
+            DieGroupForm(self.request.POST)
+
+        new_die_group_response = save_form_and_serialize_data(
+            form=die_group_form,
+            request=self.request
+        )
+        return new_die_group_response

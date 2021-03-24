@@ -62,3 +62,42 @@ class HpTracker(models.Model):
         return f"Title: {self.title} HP: {self.hp_value}"
 
 
+class DieGroup(models.Model):
+    class Meta:
+        verbose_name = "Dice Group"
+        verbose_name_plural = "Die Groups"
+    title = models.CharField(max_length=40)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tool_session = models.ForeignKey(ToolSession,
+                                     related_name='die_group',
+                                     on_delete=models.CASCADE,
+                                     null=True
+                                     )
+
+    def __str__(self):
+        return f"{self.title}"
+
+
+class DieStandard(models.Model):
+    class Meta:
+        verbose_name = "Die"
+        verbose_name_plural = "Dice"
+
+    num_sides = models.SmallIntegerField(
+        validators=[MinValueValidator(limit_value=2),
+                    MaxValueValidator(limit_value=100)],
+        default=6
+    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    die_group = models.ForeignKey(DieGroup,
+                                  related_name='die_standard',
+                                  on_delete=models.CASCADE,
+                                  null=True
+                                  )
+    def __str__(self):
+        return f"{D}{self.num_sides}"
+
+
+
+
+

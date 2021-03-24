@@ -4,7 +4,6 @@ if (localStorage.getItem('activeTool')) {
     $(activeTool).css({'display': 'flex'});
 }
 
-
 // Open and Close the add session modal box on user_home.html
 $('#OpenCreateToolSessionModalBtn').click(function() {
     'use strict';
@@ -30,35 +29,70 @@ $('#CloseToolSelectionMenuBtn').click(function() {
     }, 275);
 });
 
-// Open and Close various forms for adding tools via the tool selection menu on tool_session_detail.html
+// reveal the dark cover over the menu when add tool forms are opened
+function openMenuCover() {
+    $('#ToolSelectionMenuCover').css({
+    'display': 'inline',
+    'position': 'absolute',
+    'opacity': '70%'
+    });
+}
+// close the dark cover over the menu when add tool forms are closed
+function closeMenuCover() {
+    $('#ToolSelectionMenuCover').css({
+    'display': 'none',
+    'position': 'absolute',
+    'opacity': '0'
+    });
+}
+// Open and Close various forms for adding tools via the tool selection menu on
+// tool_session_detail.html
 $('#AddHpTrackerOpenFormBtn').click(function() {
     'use strict';
     $('#AddHpTrackerForm').trigger('reset');
     $('#AddHpTrackerFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
-    $('#ToolSelectionMenuCover').css({'display': 'inline', 'position': 'absolute', 'opacity': '70%'});
+    openMenuCover();
 });
 $('#AddHpTrackerFormCancelBtn').click(function() {
     'use strict';
     $('#AddHpTrackerFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
-    $('#ToolSelectionMenuCover').css({'display': 'none', 'position': 'absolute', 'opacity': '0'});
+    closeMenuCover();
+});
+$('#AddDieGroupOpenFormBtn').click(function() {
+    'use strict';
+    $('#AddDieGroupForm').trigger('reset');
+    $('#AddDieGroupFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
+    openMenuCover();
+});
+$('#AddDieGroupFormCancelBtn').click(function() {
+    'use strict';
+    $('#AddDieGroupFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
+    closeMenuCover();
 });
 
-// Set active tool windows to visible and reloads the page so newly added tools are loaded from the database
+// Set active tool windows to visible and reloads the page so newly added tools
+// are loaded from the database
 function setActiveTool(activeToolWrapperClass) {
     'use strict';
     // Hide the menu and set local storage to carry through the reload
+    $('.tool-body').css({'display': 'none'});
     $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
     localStorage.setItem('activeTool', activeToolWrapperClass);
     // Wait for the menu to close then reload the page
     setTimeout(function(){
         window.location.reload(true);
-        }, 275);
+        }, 500);
 }
 
 // Set the Hp Trackers to the active tool
 $("#OpenHpTrackersBtn").click(function () {
     'use strict';
     setActiveTool('#HpTrackersViewWrapper.tool-body');
+});
+// Set the Die Groups to the active tool
+$("#OpenDieGroupsBtn").click(function () {
+    'use strict';
+    setActiveTool('#DieGroupsViewWrapper.tool-body');
 });
 
 // controls ajax requests when submitting forms that create new tools
@@ -76,7 +110,11 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
             data: serializedData,
             success: function () {
                 // remove the dark menu cover and hide the form
-                $('#ToolSelectionMenuCover').css({'display': 'none', 'position': 'absolute', 'opacity': '0'});
+                $('#ToolSelectionMenuCover').css({
+                    'display': 'none',
+                    'position': 'absolute',
+                    'opacity': '0'
+                });
                 $(form_wrapper).css({'visibility': 'hidden', 'opacity': '0'});
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
@@ -94,7 +132,14 @@ $("#AddHpTrackerForm").submit(newToolsFormSubmit(
     '#AddHpTrackerFormWrapper',
     '#OpenHpTrackersBtn'
 ));
+$("#AddDieGroupForm").submit(newToolsFormSubmit(
+    '#AddDieGroupForm',
+    '#AddDieGroupFormWrapper',
+    '#OpenDieGroupsBtn'
+));
 
+
+// HP TRACKER CONTROL
 
 // {#control timeout before hp_value increase or decrease is submitted#}
 localStorage.setItem('hp_change_value', '0');
@@ -132,20 +177,6 @@ function timeoutControl(element) {
         localStorage.setItem('hp_change_value', '0');
     }, 2000);
 }
-// increase the hp value with each button click - value is not submitted until
-// after a 2 second delay via timeoutControl()
-$('.hp-value-change-btn.increase').click(function () {
-    'use strict';
-    let selector = $(this).closest('.hp-control-box');
-    let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
-    hp_change_value++;
-    localStorage.setItem('hp_change_value', hp_change_value.toString());
-    $(selector.find('.hp-change-value')).css({'display': 'inline'});
-    $(selector.find('.hp-change-value-cover')).css({'display': 'inline'});
-    $(selector.find('.hp-change-value')).empty().prepend(hp_change_value);
-    timeoutControl(this);
-
-});
 
 // decrease the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
@@ -162,6 +193,21 @@ $('.hp-value-change-btn.decrease').click(function () {
 
 });
 
+// increase the hp value with each button click - value is not submitted until
+// after a 2 second delay via timeoutControl()
+$('.hp-value-change-btn.increase').click(function () {
+    'use strict';
+    let selector = $(this).closest('.hp-control-box');
+    let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
+    hp_change_value++;
+    localStorage.setItem('hp_change_value', hp_change_value.toString());
+    $(selector.find('.hp-change-value')).css({'display': 'inline'});
+    $(selector.find('.hp-change-value-cover')).css({'display': 'inline'});
+    $(selector.find('.hp-change-value')).empty().prepend(hp_change_value);
+    timeoutControl(this);
+
+});
+
 
 
 // change the title of an hp tracker
@@ -169,13 +215,13 @@ $('.hp-tracker-title').click(function() {
     'use strict';
     let selector = $(this).closest('form');
     let data_id = selector.attr("data-id");
-    let title_box = $("#" + data_id + "-HpTrackerTitle");
-    let title_input = $('#' + data_id + '-HpTrackerTitleInput');
+    let hp_tracker_title_box = $("#" + data_id + "-HpTrackerTitle");
+    let hp_tracker_title_input = $('#' + data_id + '-HpTrackerTitleInput');
     let hp_value_increase_btn = $('#' + data_id + '-HpValueIncreaseBtn');
     let hp_value_decrease_btn = $('#' + data_id + '-HpValueDecreaseBtn');
     let confirm_hp_title_change_btn = $('#' + data_id + '-ConfirmHpTitleChangeBtn');
     let cancel_hp_title_change_btn = $('#' + data_id + '-CancelHpTitleChangeBtn');
-    let value_change_buttons = $('.hp-value-change-btn');
+    let hp_tracker_value_change_buttons = $('.hp-value-change-btn');
     let hp_value_input = $('#' + data_id + '-HpValueInput input');
     let hp_value = parseInt($("#" + data_id + "-HpValue").text());
     let hp_tracker_delete_btn = $('#' + data_id + '-HpTrackerDeleteBtn');
@@ -183,30 +229,30 @@ $('.hp-tracker-title').click(function() {
 
 
     function revealHpTitleChangeBtns() {
-        title_box.css({'display': 'none'});
-        title_input.css({'display': 'inline', 'background-color': '#555555'});
+        hp_tracker_title_box.css({'display': 'none'});
+        hp_tracker_title_input.css({'display': 'inline', 'background-color': '#555555'});
         hp_value_increase_btn.css({'display': 'none'});
         hp_value_decrease_btn.css({'display': 'none'});
         confirm_hp_title_change_btn.css({'display': 'inline'});
         cancel_hp_title_change_btn.css({'display': 'inline'});
         hp_tracker_delete_btn.css({'display': 'inline'});
-        value_change_buttons.prop('disabled', true);
+        hp_tracker_value_change_buttons.prop('disabled', true);
     }
 
     function hideHpTitleChangeBtns() {
-        title_box.css({'display': 'inline'});
-        title_input.css({'display': 'none'});
+        hp_tracker_title_box.css({'display': 'inline'});
+        hp_tracker_title_input.css({'display': 'none'});
         hp_value_increase_btn.css({'display': 'inline'});
         hp_value_decrease_btn.css({'display': 'inline'});
         confirm_hp_title_change_btn.css({'display': 'none'});
         cancel_hp_title_change_btn.css({'display': 'none'});
         hp_tracker_delete_btn.css({'display': 'none'});
-        value_change_buttons.prop('disabled', false);
+        hp_tracker_value_change_buttons.prop('disabled', false);
     }
 
     revealHpTitleChangeBtns();
-    title_input.children('input').val(title_box.text());
-    title_input.children('input').focus();
+    hp_tracker_title_input.children('input').val(hp_tracker_title_box.text());
+    hp_tracker_title_input.children('input').focus();
     hp_value_input.val(hp_value);
     // title_box.not(this).prop('disabled', true);
 
@@ -214,7 +260,6 @@ $('.hp-tracker-title').click(function() {
     cancel_hp_title_change_btn.click(function() {
         hideHpTitleChangeBtns();
         });
-    return [revealHpTitleChangeBtns, hideHpTitleChangeBtns];
 });
 
 // {#ajax call for HpChangeValueForm#}

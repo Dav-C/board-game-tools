@@ -5,6 +5,13 @@
 {% block body_class %}user_home{% endblock body_class %}
 
 {% block page_content %}
+{% for message in messages %}
+    {% if message.tag == error %}
+        <div class="message-box error fade_out">{{ message }}</div>
+    {% else %}
+        <div class="message-box info fade_out">{{ message }}</div>
+    {% endif %}
+{% endfor %}
 <div id=UserHomeWrapper>
 <div class="user-home-header">
     <button id="OpenCreateToolSessionModalBtn">+</button>

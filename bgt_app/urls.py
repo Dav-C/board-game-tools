@@ -8,6 +8,7 @@ from .views import (
     AddHpTracker,
     HpTrackerUpdate,
     HpTrackerDelete,
+    AddDieGroup,
 )
 
 urlpatterns = [
@@ -22,4 +23,6 @@ urlpatterns = [
          HpTrackerUpdate.as_view(), name='hp_tracker_update'),
     path('hp-tracker-delete/<uuid>',
          HpTrackerDelete.as_view(), name='hp_tracker_delete'),
+    path('add-die-group/',
+         AddDieGroup.as_view(), name='add_die_group'),
 ]
