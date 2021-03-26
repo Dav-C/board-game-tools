@@ -172,8 +172,15 @@
                             <button class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
                         </a>
                     </div>
+                {% empty %}
+                    <span class="large-text"><i>Add Some Dice!</i></span>
                 {% endfor %}
-                <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">Sum: {{ die_group.group_dice_sum }}</div>
+                <br />
+                {% if die_group.group_dice_sum %}
+                    <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">Sum: {{ die_group.group_dice_sum }}</div>
+                {% else %}
+                    <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box"></div>
+                {% endif %}
                 </div>
 
 {#        <div id="AddDieGroupFormWrapper" class="add-die-group-form-wrapper">#}
@@ -221,6 +228,8 @@
 {#                    <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="hp-tracker-delete-btn">Press Here to Delete</button>#}
 {#                </form>#}
                 </div>
+            {% empty %}
+                <span class="large-text"><i>Add a die group to get rolling!</i></span>
             {% endfor %}
         </div>
     </div>

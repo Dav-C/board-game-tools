@@ -275,7 +275,6 @@ $('.hp-change-value-form').submit(function(e) {
         url: $(this).attr('action'),
         data: serializedData,
         success: function (response) {
-            console.log(response)
             let form_instance = JSON.parse(response['form_instance']);
             let fields = form_instance[0]['fields'];
             // display the new hp_value
@@ -309,21 +308,23 @@ $('.die-group-roll-all-btn').click(function(e) {
         type: 'GET',
         url: $(this).parent().attr('href'),
         success: function (response) {
-            let new_die_values = JSON.parse(response.die_group_dice);
-            let new_die_group_sums = JSON.parse(response.die_group_sums);
-            $.each(new_die_values, function(index){
-                let target_div_id = new_die_values[index].pk.toString() + '-rolledValue';
-                let die_rolled_value = new_die_values[index].fields.rolled_value
+            let die_values = JSON.parse(response.die_group_dice);
+            let die_group_sum = JSON.parse(response.die_group_sum);
+            $.each(die_values, function(index){
+                let target_div_id = die_values[index].pk.toString() + '-rolledValue';
+                let die_rolled_value = die_values[index].fields.rolled_value;
                 $('#' + target_div_id ).text(die_rolled_value);
             });
-            $.each(new_die_group_sums, function(index){
-                let target_div_id = new_die_group_sums[index].pk.toString() + '-dieGroupSum';
-                $('#' + target_div_id ).text('Sum: ' + new_die_group_sums[index].die_group_sum_value);
-            });
+            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
+            let group_dice_sum = 'Sum: ' + die_group_sum[0].group_dice_sum;
+            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
+                $('#' + group_sum_target_div_id).text('0');
+            } else {
+                $('#' + group_sum_target_div_id).text(group_dice_sum);
+            }
             console.log('ajaxSuccess');
         },
         error: function (response) {
-        //     console.log(response["responseJSON"]["error"]);
             console.log(response["responseJSON"]["error"]);
         }
     });
@@ -331,7 +332,6 @@ $('.die-group-roll-all-btn').click(function(e) {
 
 // ajax for rolling a single die
 $('.die-roll-btn').click(function(e) {
-    console.log($(this).parent().attr('href'))
     'use strict';
     e.preventDefault();
     $.ajax({
@@ -339,9 +339,18 @@ $('.die-roll-btn').click(function(e) {
         url: $(this).parent().attr('href'),
         success: function (response) {
             let new_die_value = JSON.parse(response.rolled_die_value);
+            let die_group_sum = JSON.parse(response.die_group_sum);
             let target_div_id = new_die_value[0].pk.toString() + '-rolledValue';
             let die_rolled_value = new_die_value[0].fields.rolled_value;
             $('#' + target_div_id ).text(die_rolled_value);
+
+            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
+            let group_dice_sum = 'Sum: ' + die_group_sum[0].group_dice_sum;
+            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
+                $('#' + group_sum_target_div_id).text('0');
+            } else {
+                $('#' + group_sum_target_div_id).text(group_dice_sum);
+            }
             console.log('ajaxSuccess');
         },
         error: function (response) {

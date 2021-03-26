@@ -1,5 +1,6 @@
 from random import randint
 import json
+import rapidjson
 from django.conf import settings
 from django.views.generic import (
     View,
@@ -127,7 +128,6 @@ def save_form_and_serialize_data(form, request):
     ajax requests.  The active tool session is associated with the new object."""
 
     if form.is_valid():
-        print(request.session['active_tool_session_id'])
         form_instance = form.save()
         # add foreign key for the tool session the new object should
         # be linked to and save
@@ -247,27 +247,21 @@ class RollDieGroup(LoginRequiredMixin, View):
             die.rolled_value = randint(2, int(die.num_sides))
             die.save()
 
+        # this is used to calculate the sum of the die group and is passed in
+        # the response.
         die_groups = DieGroup.objects\
-            .filter(tool_session_id=self.request.session['active_tool_session_id'])\
-            .annotate(group_dice_sum=Sum('standard_dice__rolled_value'))
-
-        # calculate the roll sum for each die group and add it to a dict
-        # Annotations do not carry through the serializer, so this needs to be
-        # calculated here.
-        die_group_sums = {}
-        index_increment = 0
-        for sum_value in die_groups:
-            die_group_sums[index_increment] = \
-                {'pk': str(sum_value.pk),
-                 'die_group_sum_value': int(sum_value.group_dice_sum)}
-            index_increment += 1
+            .filter(
+                tool_session_id=self.request.session['active_tool_session_id'],
+                id=die_group_uuid)\
+            .annotate(group_dice_sum=Sum('standard_dice__rolled_value')).values()
 
         serialized_dice_values = serializers.serialize(
             'json', list(die_group_dice), fields=('rolled_value', 'id'))
-        serialized_die_group_sums = json.dumps(die_group_sums)
+        serialized_die_group_sum =\
+            rapidjson.dumps(list(die_groups),  uuid_mode=rapidjson.UM_CANONICAL)
         return JsonResponse({
             'die_group_dice': serialized_dice_values,
-            'die_group_sums': serialized_die_group_sums,
+            'die_group_sum': serialized_die_group_sum,
                             }, status=200)
 
 
@@ -278,9 +272,18 @@ class RollDie(LoginRequiredMixin, View):
         die.rolled_value = randint(2, int(die.num_sides))
         die.save()
 
+        die_group = DieGroup.objects\
+            .filter(
+                tool_session_id=self.request.session['active_tool_session_id'],
+                id=die.die_group_id)\
+            .annotate(group_dice_sum=Sum('standard_dice__rolled_value')).values()
+
         serialized_die_value = serializers.serialize(
             'json', [die]
         )
+        serialized_die_group_sum =\
+            rapidjson.dumps(list(die_group),  uuid_mode=rapidjson.UM_CANONICAL)
         return JsonResponse({
-            'rolled_die_value': serialized_die_value
+            'rolled_die_value': serialized_die_value,
+            'die_group_sum': serialized_die_group_sum,
                             }, status=200)

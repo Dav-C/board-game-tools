@@ -17,6 +17,7 @@ class ToolSessionForm(forms.ModelForm):
     session_name = forms.CharField(
         widget=forms.TextInput(
             attrs={
+                'autocomplete': 'off',
             },
         ),
     )
@@ -34,6 +35,7 @@ class HpTrackerAddForm(forms.ModelForm):
             attrs={
                 'placeholder': 'HP Tracker Title',
                 'maxlength': '40',
+                'autocomplete': 'off',
             },
         ),
     )
@@ -61,6 +63,7 @@ class HpTrackerChangeValueForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'maxlength': '40',
+                'autocomplete': 'off',
             },
         ),
     )
@@ -86,6 +89,7 @@ class DieGroupForm(forms.ModelForm):
             attrs={
                 'placeholder': 'Name',
                 'maxlength': '40',
+                'autocomplete': 'off',
             },
         ),
     )
