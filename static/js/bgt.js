@@ -262,7 +262,7 @@ $('.hp-tracker-title').click(function() {
         });
 });
 
-// {#ajax call for HpChangeValueForm#}
+// ajax for HpChangeValueForm
 $('.hp-change-value-form').submit(function(e) {
     'use strict';
     e.preventDefault();
@@ -275,6 +275,7 @@ $('.hp-change-value-form').submit(function(e) {
         url: $(this).attr('action'),
         data: serializedData,
         success: function (response) {
+            console.log(response)
             let form_instance = JSON.parse(response['form_instance']);
             let fields = form_instance[0]['fields'];
             // display the new hp_value
@@ -295,6 +296,72 @@ $('.hp-change-value-form').submit(function(e) {
             console.log(response["responseJSON"]["error"]);
         }
     });
+});
+
+// DICE CONTROL
+
+// ajax for rolling an entire dice group
+$('.die-group-roll-all-btn').click(function(e) {
+    'use strict';
+    e.preventDefault();
+    // let group_data_id = $(this).attr("data-id");
+    $.ajax({
+        type: 'GET',
+        url: $(this).parent().attr('href'),
+        success: function (response) {
+            let new_die_values = JSON.parse(response.die_group_dice);
+            let new_die_group_sums = JSON.parse(response.die_group_sums);
+            $.each(new_die_values, function(index){
+                let target_div_id = new_die_values[index].pk.toString() + '-rolledValue';
+                let die_rolled_value = new_die_values[index].fields.rolled_value
+                $('#' + target_div_id ).text(die_rolled_value);
+            });
+            $.each(new_die_group_sums, function(index){
+                let target_div_id = new_die_group_sums[index].pk.toString() + '-dieGroupSum';
+                $('#' + target_div_id ).text('Sum: ' + new_die_group_sums[index].die_group_sum_value);
+            });
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+        //     console.log(response["responseJSON"]["error"]);
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// ajax for rolling a single die
+$('.die-roll-btn').click(function(e) {
+    console.log($(this).parent().attr('href'))
+    'use strict';
+    e.preventDefault();
+    $.ajax({
+        type: 'GET',
+        url: $(this).parent().attr('href'),
+        success: function (response) {
+            let new_die_value = JSON.parse(response.rolled_die_value);
+            let target_div_id = new_die_value[0].pk.toString() + '-rolledValue';
+            let die_rolled_value = new_die_value[0].fields.rolled_value;
+            $('#' + target_div_id ).text(die_rolled_value);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+        //     console.log(response["responseJSON"]["error"]);
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// open the add die form
+$('.die-group-add-die-open-form-btn').click(function() {
+    let data_id = $(this).attr('data-id');
+    let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
+    form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+});
+// close the add die form
+    $('.add-die-form-done-btn').click(function() {
+    let data_id = $(this).attr('data-id');
+    let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
+    form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
 });
 
 console.log('this application has been brought to you by David Cates.');

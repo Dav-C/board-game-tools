@@ -9,6 +9,9 @@ from .views import (
     HpTrackerUpdate,
     HpTrackerDelete,
     AddDieGroup,
+    AddDieStandard,
+    RollDieGroup,
+    RollDie
 )
 
 urlpatterns = [
@@ -25,4 +28,10 @@ urlpatterns = [
          HpTrackerDelete.as_view(), name='hp_tracker_delete'),
     path('add-die-group/',
          AddDieGroup.as_view(), name='add_die_group'),
+    path('add-die-standard/<die_group_uuid>',
+         AddDieStandard.as_view(), name='add_die_standard'),
+    path('roll-die-group/<die_group_uuid>',
+         RollDieGroup.as_view(), name='roll_die_group'),
+    path('roll-single-die/<die_uuid>',
+         RollDie.as_view(), name='roll_die'),
 ]

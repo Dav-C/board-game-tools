@@ -89,3 +89,17 @@ class DieGroupForm(forms.ModelForm):
             },
         ),
     )
+
+
+class DieStandardForm(forms.ModelForm):
+    """Create and modify standard dice"""
+    class Meta:
+        model = DieStandard
+        fields = ['num_sides']
+
+    num_sides = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(
+            attrs={},
+        ),
+    )

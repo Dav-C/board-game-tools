@@ -120,15 +120,81 @@
             {% endfor %}
         </div>
 
-{#Die Groups and Dice#}
+{# Die Groups and Dice #}
         <div id="DieGroupsViewWrapper" class="tool-body">
             {% for die_group in die_groups %}
                 <div class="die-group-box">
                 <div class="die-group-title-box">
-                    <button>Roll All</button>
                     <div class="die-group-title">{{ die_group.title }}</div>
-                    <button>Add Die</button>
                 </div>
+
+                <div class="die-group-control-box">
+                    <a href="{% url 'roll_die_group' die_group.id %}">
+                        <Button class="die-group-roll-all-btn">roll all</Button>
+                    </a>
+                    <button data-id="{{ die_group.id }}" class="die-group-add-die-open-form-btn">add dice</button>
+                </div>
+
+               <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="die-group-add-die-form-wrapper">
+                    <div class="form-title-box add-die-form-title">
+                        <span class="form-title-text">Add a custom die</span>
+                    </div>
+                    <form action="{% url 'add_die_standard' die_group.id %}"
+                          method="POST" id="dieGroupAddDieStandardForm" data-id="{{ die_group.id }}" class="die-group-add-die-standard-form">
+                    {% csrf_token %}
+                        {{ add_die_standard_form.num_sides|add_class:"add-custom-die-input" }}
+                        <button type="submit" class="blue-btn smaller">add die</button>
+                    </form>
+                    <div class="form-title-box add-die-form-title">
+                        <span class="form-title-text">Quick add common dice</span>
+                    </div>
+                   <div class="common-die-quick-add-btn-box">
+                       <button class="common-die-quick-add-btn">Coin</button>
+                       <button class="common-die-quick-add-btn">D4</button>
+                       <button class="common-die-quick-add-btn">D6</button>
+                       <button class="common-die-quick-add-btn">D8</button>
+                       <button class="common-die-quick-add-btn">D10</button>
+                       <button class="common-die-quick-add-btn">D12</button>
+                       <button class="common-die-quick-add-btn">D20</button>
+                   </div>
+                   <br />
+                   <br />
+                   <button class="blue-btn smaller add-die-form-done-btn" data-id="{{ die_group.id }}">done</button>
+                </div>
+
+
+                <div class="die-values-box">
+                {% for die in die_group.standard_dice.all %}
+                    <div class="die-row" data-id="{{ die.id }}">
+                        <div class="die-num-sides">D{{ die.num_sides }}</div>
+                        <div id="{{ die.id }}-rolledValue" class="die-rolled-value">{{ die.rolled_value }}</div>
+                        <a href="{% url 'roll_die' die.id %}">
+                            <button class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
+                        </a>
+                    </div>
+                {% endfor %}
+                <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">Sum: {{ die_group.group_dice_sum }}</div>
+                </div>
+
+{#        <div id="AddDieGroupFormWrapper" class="add-die-group-form-wrapper">#}
+{#            <div class="form-title-box">#}
+{#                <span class="form-title-text">Add Die Group</span>#}
+{#            </div>#}
+{#                <br />#}
+{#            <form method="POST" id="AddDieGroupForm"#}
+{#                  action="{% url 'add_die_group' %}"#}
+{#                  class="add-new-tool-form">#}
+{#                {% csrf_token %}#}
+{#                <br />#}
+{#                {{ die_group_form.title|add_class:'text-input-large' }}#}
+{#                <br />#}
+{#                {{ die_group_form.hp_value|add_class:'text-input-large' }}#}
+{#                <br />#}
+{#                <button id="AddDieGroupFormSubmitBtn" type="submit" class="blue-btn">Add</button>#}
+{#                <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>#}
+{#            </form>#}
+{#        </div>#}
+
 
 {#                    <form method="POST" action="{% url 'hp_tracker_update' hp_tracker.id %}" id="{{ hp_tracker.id }}-HpChangeValueForm" data-id="{{ hp_tracker.id }}" class="hp-change-value-form">#}
 {#                        {% csrf_token %}#}
