@@ -19,6 +19,7 @@ $('#OpenToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '0', 'visibility': 'visible'});
     $('#ToolSessionPageHeader').css({'display': 'none'});
+    $('body, html').addClass('no_scroll')
 });
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
@@ -415,6 +416,7 @@ $('.die-group-add-die-open-form-btn').click(function() {
     let data_id = $(this).attr('data-id');
     let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
     form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+    $('body, html').addClass('no_scroll')
 });
 // close the add die form and reload the die groups
     $('.add-die-form-done-btn').click(function() {

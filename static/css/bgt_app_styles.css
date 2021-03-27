@@ -36,6 +36,10 @@ ul {
     font-weight: 600;
 }
 
+.no_scroll {
+    overflow-y: hidden;
+}
+
 .text-input-large {
     text-align: center;
     font-size: 2rem;
@@ -126,9 +130,9 @@ ul {
 }
 
 .message-box {
-    position: absolute;
+    position: fixed;
     text-align: center;
-    top: 15%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: .75rem;
@@ -168,11 +172,11 @@ ul {
 @keyframes fadeout {
     0%{
         opacity: 1;
-        top: 15%;
+        top: 40%;
     }
     65%{
         opacity: 1;
-        top: 15%;
+        top: 40%;
     }
     75%{
         opacity: 0;
@@ -365,7 +369,7 @@ ul {
     display: grid;
     grid-template-rows: 48% 48% 4%;
     top: -90vh;
-    position: absolute;
+    position: fixed;
     width: 100vw;
     height: 95vh;
     background-color: #0072ff;
