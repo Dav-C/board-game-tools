@@ -233,10 +233,12 @@ class AddDieStandard(LoginRequiredMixin, View):
                     id=die_group_uuid
                 )
             form_instance.save()
-            return reload_current_url(request)
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
         else:
-            messages.error(request, "Insufficient Permission")
-        return redirect('user_home')
+            return JsonResponse({'error': form.errors.as_json()}, status=400)
 
 
 class RollDieGroup(LoginRequiredMixin, View):

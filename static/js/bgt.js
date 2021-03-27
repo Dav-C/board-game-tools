@@ -360,17 +360,68 @@ $('.die-roll-btn').click(function(e) {
     });
 });
 
+// ajax for quickly adding a common die via the #dieGroupAddDieStandardForm
+$('.common-die-quick-add-btn').click(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).parent('div').attr('data-id')
+    let form = $('#' + data_id + '-dieGroupAddDieStandardForm');
+    let selected_die_num_sides = $(this).attr('data-num-sides').toString();
+    $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides)
+    let serialized_data = form.serialize();
+    $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        data: serialized_data,
+        success: function (response) {
+        $('#dieAddedSuccessMessageWrapper').append(
+            '<div class="message-box success fade_out_quick">Die Added!</div>')
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+        //     console.log(response["responseJSON"]["error"]);
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// ajax for adding a custom die via the #dieGroupAddDieStandardForm
+$('.die-group-add-die-standard-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    // let data_id = $(this).parent('div').attr('data-id')
+    // let form = $('#' + data_id + '-dieGroupAddDieStandardForm');
+    // let selected_die_num_sides = $(this).attr('data-num-sides').toString();
+    // $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides)
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+        $('#dieAddedSuccessMessageWrapper').append(
+            '<div class="message-box success fade_out_quick">Die Added!</div>')
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+        //     console.log(response["responseJSON"]["error"]);
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
 // open the add die form
 $('.die-group-add-die-open-form-btn').click(function() {
     let data_id = $(this).attr('data-id');
     let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
     form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
 });
-// close the add die form
+// close the add die form and reload the die groups
     $('.add-die-form-done-btn').click(function() {
     let data_id = $(this).attr('data-id');
     let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
     form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
+    window.location.reload(true);
 });
 
 console.log('this application has been brought to you by David Cates.');

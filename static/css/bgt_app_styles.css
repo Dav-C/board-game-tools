@@ -146,12 +146,22 @@ ul {
 }
 
 .info {
-    background-color: navy;
+    background-color: #000080;
+    color: #FFFFFF;
+}
+
+.success {
+    background-color: #00c400;
     color: #FFFFFF;
 }
 
 .fade_out {
     animation: fadeout 8s;
+    opacity: 0;
+    top: -60%
+}
+.fade_out_quick {
+    animation: fadeout 2s;
     opacity: 0;
     top: -60%
 }
@@ -769,7 +779,7 @@ ul {
     position: fixed;
     top: 7%;
     width: 36rem;
-    min-height: 85%;
+    min-height: 65%;
     flex-direction: column;
     align-items: center;
     border-radius: .25rem;
@@ -826,6 +836,10 @@ ul {
     align-self: flex-end;
 }
 
+#dieAddedSuccessMessageWrapper{
+    z-index: 1;
+    visibility: visible;
+}
 
 /* Prevent Chrome from changing autofill text size to small */
 input:-webkit-autofill::first-line {font-size: 2rem}
