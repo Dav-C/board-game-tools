@@ -35,7 +35,7 @@ from .forms import (
     HpTrackerAddForm,
     HpTrackerChangeValueForm,
     DieGroupForm,
-    DieGroupChangeValueForm,
+    DieGroupUpdateForm,
     DieStandardForm,
 )
 
@@ -81,8 +81,8 @@ class UserHome(LoginRequiredMixin, FormMixin, ListView):
             user_id=self.request.user.id)
         self.queryset = (
             ToolSession.objects
-                .filter(session_owner=logged_in_user_profile)
-                .order_by('-creation_date')
+            .filter(session_owner=logged_in_user_profile)
+            .order_by('-creation_date')
         )
         return self.queryset
 
@@ -120,7 +120,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
         context['die_group_form'] = DieGroupForm
-        context['die_group_change_value_form'] = DieGroupChangeValueForm
+        context['die_group_update_form'] = DieGroupUpdateForm
         context['die_groups'] = die_groups
         context['add_die_standard_form'] = DieStandardForm
         return context
@@ -128,7 +128,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
 
 def save_form_and_serialize_data(form, request):
     """This function is used inside other views for saving new models via
-    ajax requests.  The active tool session is associated with the new object."""
+    ajax requests. The active tool session is associated with the new object."""
 
     if form.is_valid():
         form_instance = form.save()
@@ -167,7 +167,7 @@ def reload_current_url(request):
 def delete_model_object(request, model, uuid):
     """delete a model object and reload the page.  This is used to remove
     tools from their respective pages"""
-    object_to_delete = model.objects.get(id=uuid)
+    object_to_delete = get_object_or_404(model, id=uuid)
     if object_to_delete.tool_session.session_owner.user.id == request.user.id:
         object_to_delete.delete()
         return reload_current_url(request)
@@ -232,6 +232,25 @@ class AddDieGroup(LoginRequiredMixin, View):
         return new_die_group_response
 
 
+class DieGroupUpdate(LoginRequiredMixin, View):
+    """Change a DieGroup title"""
+
+    def post(self, request, uuid):
+        die_group = DieGroup.objects.get(id=uuid)
+        form = DieGroupUpdateForm(
+            request.POST or None, instance=die_group
+        )
+        if form.is_valid():
+            form_instance = \
+                form.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
 class DieGroupDelete(LoginRequiredMixin, View):
     """Delete a DieGroup Object"""
 
@@ -239,6 +258,19 @@ class DieGroupDelete(LoginRequiredMixin, View):
         return delete_model_object(
             request=self.request, model=DieGroup, uuid=uuid
         )
+
+
+class DieStandardDelete(LoginRequiredMixin, View):
+    """Delete a DieStandard Object"""
+
+    def post(self, request, uuid):
+        die_to_delete = get_object_or_404(DieStandard, id=uuid)
+        if die_to_delete.die_group.tool_session.session_owner.user.id == request.user.id:
+            die_to_delete.delete()
+            return reload_current_url(request)
+        else:
+            messages.error(request, "Insufficient Permission")
+        return redirect('user_home')
 
 
 class AddDieStandard(LoginRequiredMixin, View):

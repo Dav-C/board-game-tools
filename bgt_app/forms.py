@@ -95,7 +95,7 @@ class DieGroupForm(forms.ModelForm):
     )
 
 
-class DieGroupChangeValueForm(forms.ModelForm):
+class DieGroupUpdateForm(forms.ModelForm):
     """Create new Die Group objects"""
     class Meta:
         model = DieGroup
@@ -111,6 +111,7 @@ class DieGroupChangeValueForm(forms.ModelForm):
             },
         ),
     )
+
 
 class DieStandardForm(forms.ModelForm):
     """Create and modify standard dice"""

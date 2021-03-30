@@ -195,6 +195,70 @@ ul {
     }
 }
 
+/*elements related to updating/deleting tool info*/
+
+.tool-title-input {
+    border-radius: .75rem;
+    display: flex;
+    align-items: center;
+    align-self: center;
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    width: 97%;
+    height: 90%;
+    outline: none;
+}
+
+.confirm-change-btn {
+    display: none;
+    border-radius: .75rem;
+    font-size: 2rem;
+    padding: 1.25rem;
+    height: 5rem;
+    width: 10rem;
+    margin-left: 3.5rem;
+    color: #FFFFFF;
+    background-color: #00c400;
+}
+
+.cancel-change-btn {
+    display: none;
+    border-radius: .75rem;
+    font-size: 2rem;
+    padding: 1.25rem;
+    height: 5rem;
+    width: 10rem;
+    margin-right: 3.5rem;
+    color: #ffffff;
+    background-color: #c00000;
+}
+
+.delete-btn-large {
+    display: none;
+    margin-top: 1rem;
+    border-radius: .75rem;
+    font-size: 2rem;
+    background-color: #c00000;
+    color: #FFFFFF;
+    height: 4rem;
+    width: 30rem;
+}
+
+.delete-btn-small {
+    display: none;
+    border-radius: .75rem;
+    font-size: 4rem;
+    background-color: #c00000;
+    color: #FFFFFF;
+    width: 7rem;
+}
+
+.hidden {
+    display: none;
+}
+
+
 /*Login Page*/
 
 #LoginPageWrapper{
@@ -236,7 +300,6 @@ ul {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    /*background-color: #0072ff;*/
 }
 
 .login-header-text {
@@ -394,14 +457,11 @@ ul {
     display: flex;
     justify-content: center;
     position: fixed;
-    /*background-color: #0072ff;*/
-    background: rgb(0,114,255);
-    background: linear-gradient(180deg,
-                    rgba(0,114,255,1) 0%,
-                    rgba(0,114,255,1) 70%,
-                    rgba(0,114,255,0) 100%);
+    background-color: #0072ff;
     height: 3rem;
     width: 100vw;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px,
+                rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
 }
 
@@ -610,42 +670,9 @@ ul {
                 rgba(255, 255, 255, 0.08) 0 1px 0 inset;
 }
 
-.hp-tracker-title-input {
-    font-size: 2rem;
-    font-weight: 700;
-    text-align: center;
-}
-
-.hidden {
-    display: none;
-}
-.confirm-hp-title-change-btn {
-    display: none;
-    border-radius: .75rem;
-    font-size: 3rem;
-    padding: .5rem;
-    height: 6rem;
-    width: 6rem;
-    margin-left: 3.5rem;
-    color: #FFFFFF;
-    background-color: #00c400;
-}
-
-.cancel-hp-title-change-btn {
-    display: none;
-    border-radius: .75rem;
-    font-size: 3rem;
-    padding: .5rem;
-    height: 6rem;
-    width: 6rem;
-    margin-right: 3.5rem;
-    color: #ffffff;
-    background-color: #c00000;
-}
-
-.hp-control-box {
+.hp-tracker-control-box {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     flex-direction: row;
     align-items: center;
 }
@@ -664,6 +691,15 @@ ul {
 .decrease {
     margin-right: 3.5rem;
 }
+
+.hp-title-change-confirm-btn {
+    margin-left: 1rem;
+}
+
+.hp-title-change-cancel-btn {
+    margin-right: 1rem;
+}
+
 .hp-value {
     border-radius: .75rem;
     text-align: center;
@@ -688,17 +724,6 @@ ul {
     opacity: 75%;
 }
 
-.hp-tracker-delete-btn {
-    margin-top: 1rem;
-    display: none;
-    border-radius: .75rem;
-    font-size: 2rem;
-    background-color: #c00000;
-    color: #FFFFFF;
-    height: 4rem;
-    width: 30rem;
-}
-
 /*Die Groups*/
 
 .die-group-box {
@@ -708,7 +733,7 @@ ul {
     align-items: center;
     margin: 1rem;
     padding: 1rem 0 1rem 0;
-    min-width: 37rem;
+    min-width: 36.5rem;
     min-height: 10rem;
     border-radius: .5rem;
     box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px,
@@ -723,10 +748,30 @@ ul {
     width: 100%;
 }
 
-.die-group-control-box {
-    margin: 1rem 0 1rem 0;
+.die-group-title {
+    padding: .5rem;
+    border-radius: .5rem;
+    background-color: #ffffff;
+    min-width: 95%;
+    font-size: 2.5rem;
+    font-weight: 200;
+    text-align: center;
+    box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px,
+                rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
+                rgba(255, 255, 255, 0.08) 0 1px 0 inset;
+}
+
+.die-group-update-form {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    width: 95%;
+}
+
+.die-group-control-box {
+    align-items: center;
+    display: flex;
+    margin: .25rem 0 .25rem 0;
+    justify-content: center;
     width: 100%;
     height: 100%;
 }
@@ -737,7 +782,7 @@ ul {
     background-color: #00c6ff;
     border: 1px solid black;
     border-radius: .5rem;
-    margin-right: 3rem;
+    margin-left: 2.5rem;
     font-size: 2rem;
     width: 10rem;
     height: 5rem;
@@ -757,7 +802,7 @@ ul {
     background-color: #00c400;
     border: 1px solid black;
     border-radius: .5rem;
-    margin-left: 3rem;
+    margin-right: 2.5rem;
     font-size: 2rem;
     width: 10rem;
     height: 5rem;
@@ -769,18 +814,6 @@ ul {
     transform: translate(2px, 3px);
 }
 
-.die-group-title {
-    border-radius: .5rem;
-    background-color: #ffffff;
-    min-width: 95%;
-    font-size: 3rem;
-    font-weight: 200;
-    text-align: center;
-    box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px,
-                rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
-                rgba(255, 255, 255, 0.08) 0 1px 0 inset;
-}
-
 .die-values-box {
     display: flex;
     flex-direction: column;
@@ -790,7 +823,7 @@ ul {
 
 .die-row {
     border-radius: 1rem;
-    min-height: 7rem;
+    min-height: 6rem;
     display: flex;
     justify-content: space-between;
     width: 90%;
@@ -832,7 +865,16 @@ ul {
 }
 
 .die-group-sum-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 5.1rem;
+    min-height: 4rem;
     font-size: 3rem;
+    border-radius: 1rem;
+    margin: .5rem;
+    border: solid .2rem;
+    padding: 1rem;
 }
 
 .die-group-add-die-form-wrapper {
@@ -902,6 +944,7 @@ ul {
     visibility: visible;
 }
 
+
 /* Prevent Chrome from changing autofill text size to small */
 input:-webkit-autofill::first-line {font-size: 2rem}
 
@@ -924,3 +967,4 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+

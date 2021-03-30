@@ -19,7 +19,7 @@ $('#OpenToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '0', 'visibility': 'visible'});
     $('#ToolSessionPageHeader').css({'display': 'none'});
-    $('body, html').addClass('no_scroll')
+    $('body, html').addClass('no_scroll');
 });
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
@@ -32,6 +32,7 @@ $('#CloseToolSelectionMenuBtn').click(function() {
 
 // reveal the dark cover over the menu when add tool forms are opened
 function openMenuCover() {
+    'use strict';
     $('#ToolSelectionMenuCover').css({
     'display': 'inline',
     'position': 'absolute',
@@ -40,6 +41,7 @@ function openMenuCover() {
 }
 // close the dark cover over the menu when add tool forms are closed
 function closeMenuCover() {
+    'use strict';
     $('#ToolSelectionMenuCover').css({
     'display': 'none',
     'position': 'absolute',
@@ -183,7 +185,7 @@ function timeoutControl(element) {
 // after a 2 second delay via timeoutControl()
 $('.hp-value-change-btn.decrease').click(function () {
     'use strict';
-    let selector = $(this).closest('.hp-control-box');
+    let selector = $(this).closest('.hp-tracker-control-box');
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
     hp_change_value--;
     localStorage.setItem('hp_change_value', hp_change_value.toString());
@@ -198,7 +200,7 @@ $('.hp-value-change-btn.decrease').click(function () {
 // after a 2 second delay via timeoutControl()
 $('.hp-value-change-btn.increase').click(function () {
     'use strict';
-    let selector = $(this).closest('.hp-control-box');
+    let selector = $(this).closest('.hp-tracker-control-box');
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
     hp_change_value++;
     localStorage.setItem('hp_change_value', hp_change_value.toString());
@@ -318,7 +320,7 @@ $('.die-group-roll-all-btn').click(function(e) {
                 $('#' + target_div_id ).text(die_rolled_value);
             });
             let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
-            let group_dice_sum = 'Sum: ' + die_group_sum[0].group_dice_sum;
+            let group_dice_sum = die_group_sum[0].group_dice_sum;
             if (group_dice_sum === 'null' || group_dice_sum === 'None') {
                 $('#' + group_sum_target_div_id).text('0');
             } else {
@@ -347,7 +349,7 @@ $('.die-roll-btn').click(function(e) {
             $('#' + target_div_id ).text(die_rolled_value);
 
             let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
-            let group_dice_sum = 'Sum: ' + die_group_sum[0].group_dice_sum;
+            let group_dice_sum = die_group_sum[0].group_dice_sum;
             if (group_dice_sum === 'null' || group_dice_sum === 'None') {
                 $('#' + group_sum_target_div_id).text('0');
             } else {
@@ -427,66 +429,91 @@ $('.die-group-add-die-open-form-btn').click(function() {
     window.location.reload(true);
 });
 
-    console.log('this application has been brought to you by David Cates.');
-    // NEW WORKING AREA - STAY CLEAR LOL
-
-
+// delete a standard die
 
 // reveal editing options for a die group - change title/delete
-// $('.die-group-title').click(function() {
-//     'use strict';
-//     let selector = $(this).closest('form');
-//     let data_id = selector.attr("data-id");
-//     let hp_tracker_title_box = $("#" + data_id + "-HpTrackerTitle");
-//     let hp_tracker_title_input = $('#' + data_id + '-HpTrackerTitleInput');
-//     let hp_value_increase_btn = $('#' + data_id + '-HpValueIncreaseBtn');
-//     let hp_value_decrease_btn = $('#' + data_id + '-HpValueDecreaseBtn');
-//     let confirm_hp_title_change_btn = $('#' + data_id + '-ConfirmHpTitleChangeBtn');
-//     let cancel_hp_title_change_btn = $('#' + data_id + '-CancelHpTitleChangeBtn');
-//     let hp_tracker_value_change_buttons = $('.hp-value-change-btn');
-//     let hp_value_input = $('#' + data_id + '-HpValueInput input');
-//     let hp_value = parseInt($("#" + data_id + "-HpValue").text());
-//     let hp_tracker_delete_btn = $('#' + data_id + '-HpTrackerDeleteBtn');
-//
-//
-//
-//     function revealHpTitleChangeBtns() {
-//         hp_tracker_title_box.css({'display': 'none'});
-//         hp_tracker_title_input.css({'display': 'inline', 'background-color': '#555555'});
-//         hp_value_increase_btn.css({'display': 'none'});
-//         hp_value_decrease_btn.css({'display': 'none'});
-//         confirm_hp_title_change_btn.css({'display': 'inline'});
-//         cancel_hp_title_change_btn.css({'display': 'inline'});
-//         hp_tracker_delete_btn.css({'display': 'inline'});
-//         hp_tracker_value_change_buttons.prop('disabled', true);
-//     }
-//
-//     function hideHpTitleChangeBtns() {
-//         hp_tracker_title_box.css({'display': 'inline'});
-//         hp_tracker_title_input.css({'display': 'none'});
-//         hp_value_increase_btn.css({'display': 'inline'});
-//         hp_value_decrease_btn.css({'display': 'inline'});
-//         confirm_hp_title_change_btn.css({'display': 'none'});
-//         cancel_hp_title_change_btn.css({'display': 'none'});
-//         hp_tracker_delete_btn.css({'display': 'none'});
-//         hp_tracker_value_change_buttons.prop('disabled', false);
-//     }
-//
-//     revealHpTitleChangeBtns();
-//     hp_tracker_title_input.children('input').val(hp_tracker_title_box.text());
-//     hp_tracker_title_input.children('input').focus();
-//     hp_value_input.val(hp_value);
-//     // title_box.not(this).prop('disabled', true);
-//
-//     // reveal title, hide input and re-enable buttons if user clicks cancel
-//     cancel_hp_title_change_btn.click(function() {
-//         hideHpTitleChangeBtns();
-//         });
-// });
+$('.die-group-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let die_group_title_box = $("#" + data_id + "-dieGroupTitle");
+    let die_group_title_input = $('#' + data_id + '-dieGroupTitleInput');
+    let confirm_die_group_title_change_btn = $('#' + data_id + '-confirmDieGroupTitleChangeBtn');
+    let cancel_die_group_title_change_btn = $('#' + data_id + '-cancelDieGroupTitleChangeBtn');
+    let die_group_roll_all_btn = $('.die-group-roll-all-btn');
+    let die_group_add_die_open_form_btn = $('.die-group-add-die-open-form-btn');
+    let die_group_delete_btn = $('#' + data_id + '-dieGroupDeleteBtn');
+    let rolled_die_value = $('.die-rolled-value.' + data_id);
+    let die_delete_btn = $('.delete-btn-small.' + data_id);
+
+    function revealDieGroupTitleChangeBtns() {
+        die_group_title_box.css({'display': 'none'});
+        die_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        die_group_roll_all_btn.css({'display': 'none'});
+        die_group_add_die_open_form_btn.css({'display': 'none'});
+        confirm_die_group_title_change_btn.css({'display': 'inline'});
+        cancel_die_group_title_change_btn.css({'display': 'inline'});
+        die_group_delete_btn.css({'display': 'inline'});
+        rolled_die_value.css({'display': 'none'});
+        die_delete_btn.css({'display': 'inline'})
+    }
+
+    function hideDieGroupTitleChangeBtns() {
+        die_group_title_box.css({'display': 'inline'});
+        die_group_title_input.css({'display': 'none'});
+        die_group_roll_all_btn.css({'display': 'inline'});
+        die_group_add_die_open_form_btn.css({'display': 'inline'});
+        confirm_die_group_title_change_btn.css({'display': 'none'});
+        cancel_die_group_title_change_btn.css({'display': 'none'});
+        die_group_delete_btn.css({'display': 'none'});
+        rolled_die_value.css({'display': 'flex'});
+        die_delete_btn.css({'display': 'none'})
+    }
+
+    revealDieGroupTitleChangeBtns();
+    die_group_title_input.children('input').val(die_group_title_box.text());
+
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_die_group_title_change_btn.click(function() {
+        hideDieGroupTitleChangeBtns();
+        });
+});
 
 
+// ajax for changing die group title
+$('.die-group-update-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // reset the title box and display the value
+            $("#" + data_id + "-dieGroupTitle").css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
+            $('#' + data_id + '-dieGroupTitleInput').css({'display': 'none'});
+            $('.die-group-roll-all-btn').css({'display': 'inline'});
+            $('.die-group-add-die-open-form-btn').css({'display': 'inline'});
+            $('#' + data_id + '-confirmDieGroupTitleChangeBtn').css({'display': 'none'});
+            $('#' + data_id + '-cancelDieGroupTitleChangeBtn').css({'display': 'none'});
+            $('#' + data_id + '-dieGroupDeleteBtn').css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
 
-
+console.log('this application has been brought to you by David Cates.');
 
 
 

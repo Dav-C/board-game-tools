@@ -9,7 +9,9 @@ from .views import (
     HpTrackerUpdate,
     HpTrackerDelete,
     AddDieGroup,
+    DieGroupUpdate,
     DieGroupDelete,
+    DieStandardDelete,
     AddDieStandard,
     RollDieGroup,
     RollDie
@@ -37,8 +39,14 @@ urlpatterns = [
     path('add-die-group/',
          AddDieGroup.as_view(), name='add_die_group'),
 
+    path('die-group-update/<uuid>',
+         DieGroupUpdate.as_view(), name='die_group_update'),
+
     path('die-group-delete/<uuid>',
          DieGroupDelete.as_view(), name='die_group_delete'),
+
+    path('die-standard-delete/<uuid>',
+         DieStandardDelete.as_view(), name='die_standard_delete'),
 
     path('add-die-standard/<die_group_uuid>',
          AddDieStandard.as_view(), name='add_die_standard'),

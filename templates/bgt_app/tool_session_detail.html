@@ -89,6 +89,7 @@
 {#Tool views#}
 <div id="ToolSessionPageWrapper">
     <div class="tool-session-page-body">
+
 {#Hp Trackers#}
         <div id="HpTrackersViewWrapper" class="tool-body">
             {% for hp_tracker in hp_trackers %}
@@ -98,23 +99,23 @@
                         <div class="hp-tracker-title-box">
                             <div id="{{ hp_tracker.id }}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
                             <div id="{{ hp_tracker.id }}-HpTrackerTitleInput" class="hp-tracker-title hidden">
-                                {{ hp_change_value_form.title|add_class:"hp-tracker-title-input"}}
+                                {{ hp_change_value_form.title|add_class:"tool-title-input"}}
                             </div>
                         </div>
-                        <div class="hp-control-box">
-                            <button type="button" id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn" class="cancel-hp-title-change-btn">&#10006;</button>
+                        <div class="hp-tracker-control-box">
+                            <button type="button" id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn" class="cancel-change-btn hp-title-change-cancel-btn">cancel</button>
                             <button type="button" id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease">-</button>
                             <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
                             <div id="{{ hp_tracker.id }}-HpValueInput">{{ hp_change_value_form.hp_value }}</div>
                             <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
                             <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-value hp-change-value"></div>
                             <button type="button" id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase">+</button>
-                            <button type="submit" id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn" class="confirm-hp-title-change-btn confirm-check">&#10004;</button>
+                            <button type="submit" id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn" class="confirm-change-btn hp-title-change-confirm-btn">confirm</button>
                         </div>
                     </form>
                 <form action="{% url 'hp_tracker_delete' hp_tracker.id %}?next={{ request.get_full_path }}" method="POST">
                 {% csrf_token %}
-                    <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="hp-tracker-delete-btn">Press Here to Delete</button>
+                    <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="delete-btn-large">press here to delete this tracker</button>
                 </form>
                 </div>
             {% empty %}
@@ -128,17 +129,35 @@
             {% for die_group in die_groups %}
                 <div class="die-group-box">
                 <div class="die-group-title-box">
-                    <div class="die-group-title">{{ die_group.title }}</div>
+
+                    <form method="POST" action="{% url 'die_group_update' die_group.id %}" id="{{ die_group.id }}-dieGroupUpdateForm" data-id="{{ die_group.id }}" class="die-group-update-form">
+                        {% csrf_token %}
+                        <div id="{{ die_group.id }}-dieGroupTitle" class="die-group-title">{{ die_group.title }}</div>
+                        <div id="{{ die_group.id }}-dieGroupTitleInput" class="die-group-title hidden">
+                            {{ die_group_update_form.title|add_class:"tool-title-input"}}
+                        </div>
+                    </form>
                 </div>
 
                 <div class="die-group-control-box">
-                    <a href="{% url 'roll_die_group' die_group.id %}">
-                        <Button class="die-group-roll-all-btn">roll all</Button>
-                    </a>
-                    <button data-id="{{ die_group.id }}" class="die-group-add-die-open-form-btn">add dice</button>
-                </div>
+                    <button type="button" id="{{ die_group.id }}-cancelDieGroupTitleChangeBtn" class="cancel-change-btn">cancel</button>
+                    <a href="{% url 'roll_die_group' die_group.id %}"><Button class="die-group-roll-all-btn">roll all</Button></a>
 
-               <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="die-group-add-die-form-wrapper">
+                    {% if die_group.group_dice_sum %}
+                        <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">{{ die_group.group_dice_sum }}</div>
+                    {% else %}
+                        <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box"></div>
+                    {% endif %}
+
+                    <button data-id="{{ die_group.id }}" class="die-group-add-die-open-form-btn">add dice</button>
+                    <button type="submit" id="{{ die_group.id }}-confirmDieGroupTitleChangeBtn" class="confirm-change-btn" form="{{ die_group.id }}-dieGroupUpdateForm">confirm</button>
+                </div>
+{# delete die grop form #}
+                <form action="{% url 'die_group_delete' die_group.id %}?next={{ request.get_full_path }}" method="POST">
+                    {% csrf_token %}
+                    <button id="{{ die_group.id }}-dieGroupDeleteBtn" class="delete-btn-large">press here to delete this group</button>
+                </form>
+                <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="die-group-add-die-form-wrapper">
                     <div class="form-title-box add-die-form-title">
                         <span class="form-title-text">Add a custom die</span>
                     </div>
@@ -172,29 +191,23 @@
                 {% for die in die_group.standard_dice.all %}
                     <div class="die-row" data-id="{{ die.id }}">
                         <div class="die-num-sides">D{{ die.num_sides }}</div>
-                        <div id="{{ die.id }}-rolledValue" class="die-rolled-value">{{ die.rolled_value }}</div>
+                        <div id="{{ die.id }}-rolledValue" class="die-rolled-value {{ die_group.id }}">{{ die.rolled_value }}</div>
+{#delete die form#}
+                        <form method="POST" action="{% url 'die_standard_delete' die.id %}?next={{ request.get_full_path }}">
+                        {% csrf_token %}
+                            <button class="delete-btn-small {{ die_group.id }}">&#9746;</button>
+                        </form>
                         <a href="{% url 'roll_die' die.id %}">
                             <button class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
                         </a>
                     </div>
                 {% empty %}
-                    <span class="large-text"><i>Add Some Dice!</i></span>
+                    <span class="large-text"><i>add some dice!</i></span>
                 {% endfor %}
-                <br />
-                {% if die_group.group_dice_sum %}
-                    <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">Sum: {{ die_group.group_dice_sum }}</div>
-                {% else %}
-                    <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box"></div>
-                {% endif %}
-                </div>
-                </div>
-                <form action="{% url 'die_group_delete' die_group.id %}?next={{ request.get_full_path }}" method="POST">
-                {% csrf_token %}
-                    <button id="{{ die_group.id }}-DieGroupDeleteBtn" class="die-group-delete-btn">Press Here to Delete</button>
-                </form>
-            {% empty %}
-                <span class="large-text"><i>no die groups yet.</i></span>
-            {% endfor %}
+                {% empty %}
+                    <span class="large-text"><i>no die groups yet.</i></span>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
