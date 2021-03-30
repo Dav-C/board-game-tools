@@ -28,7 +28,14 @@ ul {
 }
 
 .large-text {
+    margin-top: 5rem;
     font-size: 2rem;
+    color: #FFFFFF;
+    background-color: #000080;
+    padding: 1rem;
+    border-radius: 1rem;
+
+
 }
 
 .form-title-text {
@@ -193,6 +200,35 @@ ul {
 #LoginPageWrapper{
     display: grid;
     grid-template-rows: 10vh 80vh 10vh;
+
+	background: linear-gradient(-60deg, #4800ff, #ff6200, #0072ff, #00ff8c);
+	background-size: 400% 400%;
+	-webkit-animation: gradient 15s ease infinite;
+	        animation: gradient 15s ease infinite;
+}
+
+@-webkit-keyframes gradient {
+	0% {
+		background-position: 0 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0 50%;
+	}
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0 50%;
+	}
 }
 
 .login-header{
@@ -200,7 +236,7 @@ ul {
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    background-color: #0072ff;
+    /*background-color: #0072ff;*/
 }
 
 .login-header-text {
@@ -216,11 +252,12 @@ ul {
 }
 
 .login-footer {
-    background-color: #0072ff
+    /*background-color: #0072ff*/
 }
 
 #LoginForm {
     background-color: #FFFFFF;
+    opacity: 80%;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -266,6 +303,8 @@ ul {
 #UserHomeWrapper {
     display: grid;
     grid-template-rows: 10vh 90vh;
+    background: url("../images/triangles-background_small.svg") fixed;
+    /* background by SVGBackgrounds.com */
 }
 
 .user-home-header {
@@ -283,6 +322,7 @@ ul {
 }
 
 .tool-session-link-box {
+    background-color: #FFFFFF;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -318,7 +358,7 @@ ul {
     border: 2px solid #FFFFFF;
     border-radius: .5rem;
     height: 80%;
-    width: 20%;
+    width: 8rem;
     font-size: 5rem;
     margin-right: 1rem;
     outline: none;
@@ -333,7 +373,7 @@ ul {
     align-items: center;
     justify-content: center;
     padding: 4rem 1rem;
-    width: 90%;
+    min-width: 33rem;
     border-radius: .5rem;
     background-color: #e2e2e2;
     box-shadow: rgb(38, 57, 77) 0 20px 30px -10px;
@@ -354,7 +394,12 @@ ul {
     display: flex;
     justify-content: center;
     position: fixed;
-    background-color: #0072ff;
+    /*background-color: #0072ff;*/
+    background: rgb(0,114,255);
+    background: linear-gradient(180deg,
+                    rgba(0,114,255,1) 0%,
+                    rgba(0,114,255,1) 70%,
+                    rgba(0,114,255,0) 100%);
     height: 3rem;
     width: 100vw;
 
@@ -380,6 +425,8 @@ ul {
 }
 
 .tools-menu-header {
+    display: flex;
+    align-items: center;
     margin: .5rem;
     justify-self: center;
     background-color: darkblue;
@@ -390,6 +437,10 @@ ul {
     padding: .5rem;
     box-shadow: rgba(0, 0, 0, 0.16) 0 3px 6px,
                 rgba(0, 0, 0, 0.23) 0 3px 6px;
+}
+
+.tools-menu-header-text {
+    margin-left: 2rem;
 }
 
 #ToolSelectionMenuCover {
@@ -427,11 +478,12 @@ ul {
 }
 
 .add-hp-tracker-form-wrapper {
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, 0);
     display: flex;
     position: fixed;
-    top: 5%;
-    left: 2%;
-    width: 96%;
+    min-width: 35rem;
     min-height: 60%;
     flex-direction: column;
     align-items: center;
@@ -445,12 +497,14 @@ ul {
     visibility: hidden;
 }
 
+
 .add-die-group-form-wrapper {
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, 0);
     display: flex;
     position: fixed;
-    top: 5%;
-    left: 2%;
-    width: 96%;
+    min-width: 35rem;
     min-height: 60%;
     flex-direction: column;
     align-items: center;
@@ -498,23 +552,26 @@ ul {
 
 /*Tool Views*/
 
+#ToolSessionPageWrapper {
+    background: url("../images/triangles-background_small.svg") fixed;
+    /* background by SVGBackgrounds.com */
+}
+
 .tool-session-page-body {
-    display:flex;
-    flex-direction: column;
-    align-items: center;
     width: 100vw;
     min-height: 100vh;
     overflow-x: hidden;
-    background-color: silver;
 }
 
 .tool-body {
     justify-content: center;
+    flex-direction: row;
     margin-top: 3rem;
     display: none;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: start;
     overflow-x: hidden;
+    min-height: 95vh;
 }
 
 /*Hp Trackers*/

@@ -211,7 +211,7 @@ $('.hp-value-change-btn.increase').click(function () {
 
 
 
-// change the title of an hp tracker
+// reveal editing options for an hp tracker - change title/delete
 $('.hp-tracker-title').click(function() {
     'use strict';
     let selector = $(this).closest('form');
@@ -281,8 +281,9 @@ $('.hp-change-value-form').submit(function(e) {
             // display the new hp_value
             $("#" + data_id + "-HpValue").empty().prepend(fields.hp_value);
             // reset the title box and display the value
-            $("#" + data_id + "-HpTrackerTitle").css({'display': 'inline'});
-            $("#" + data_id + "-HpTrackerTitle").empty().prepend(fields.title);
+            $("#" + data_id + "-HpTrackerTitle").css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
             $('#' + data_id + '-HpTrackerTitleInput').css({'display': 'none'});
             $('#' + data_id + '-HpValueIncreaseBtn').css({'display': 'inline'});
             $('#' + data_id + '-HpValueDecreaseBtn').css({'display': 'inline'});
@@ -426,7 +427,81 @@ $('.die-group-add-die-open-form-btn').click(function() {
     window.location.reload(true);
 });
 
-console.log('this application has been brought to you by David Cates.');
+    console.log('this application has been brought to you by David Cates.');
+    // NEW WORKING AREA - STAY CLEAR LOL
+
+
+
+// reveal editing options for a die group - change title/delete
+// $('.die-group-title').click(function() {
+//     'use strict';
+//     let selector = $(this).closest('form');
+//     let data_id = selector.attr("data-id");
+//     let hp_tracker_title_box = $("#" + data_id + "-HpTrackerTitle");
+//     let hp_tracker_title_input = $('#' + data_id + '-HpTrackerTitleInput');
+//     let hp_value_increase_btn = $('#' + data_id + '-HpValueIncreaseBtn');
+//     let hp_value_decrease_btn = $('#' + data_id + '-HpValueDecreaseBtn');
+//     let confirm_hp_title_change_btn = $('#' + data_id + '-ConfirmHpTitleChangeBtn');
+//     let cancel_hp_title_change_btn = $('#' + data_id + '-CancelHpTitleChangeBtn');
+//     let hp_tracker_value_change_buttons = $('.hp-value-change-btn');
+//     let hp_value_input = $('#' + data_id + '-HpValueInput input');
+//     let hp_value = parseInt($("#" + data_id + "-HpValue").text());
+//     let hp_tracker_delete_btn = $('#' + data_id + '-HpTrackerDeleteBtn');
+//
+//
+//
+//     function revealHpTitleChangeBtns() {
+//         hp_tracker_title_box.css({'display': 'none'});
+//         hp_tracker_title_input.css({'display': 'inline', 'background-color': '#555555'});
+//         hp_value_increase_btn.css({'display': 'none'});
+//         hp_value_decrease_btn.css({'display': 'none'});
+//         confirm_hp_title_change_btn.css({'display': 'inline'});
+//         cancel_hp_title_change_btn.css({'display': 'inline'});
+//         hp_tracker_delete_btn.css({'display': 'inline'});
+//         hp_tracker_value_change_buttons.prop('disabled', true);
+//     }
+//
+//     function hideHpTitleChangeBtns() {
+//         hp_tracker_title_box.css({'display': 'inline'});
+//         hp_tracker_title_input.css({'display': 'none'});
+//         hp_value_increase_btn.css({'display': 'inline'});
+//         hp_value_decrease_btn.css({'display': 'inline'});
+//         confirm_hp_title_change_btn.css({'display': 'none'});
+//         cancel_hp_title_change_btn.css({'display': 'none'});
+//         hp_tracker_delete_btn.css({'display': 'none'});
+//         hp_tracker_value_change_buttons.prop('disabled', false);
+//     }
+//
+//     revealHpTitleChangeBtns();
+//     hp_tracker_title_input.children('input').val(hp_tracker_title_box.text());
+//     hp_tracker_title_input.children('input').focus();
+//     hp_value_input.val(hp_value);
+//     // title_box.not(this).prop('disabled', true);
+//
+//     // reveal title, hide input and re-enable buttons if user clicks cancel
+//     cancel_hp_title_change_btn.click(function() {
+//         hideHpTitleChangeBtns();
+//         });
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

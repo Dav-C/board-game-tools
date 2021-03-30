@@ -35,6 +35,7 @@ from .forms import (
     HpTrackerAddForm,
     HpTrackerChangeValueForm,
     DieGroupForm,
+    DieGroupChangeValueForm,
     DieStandardForm,
 )
 
@@ -102,25 +103,27 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # put the active tool session id into a session value to be used for
+        # assigning new objects to the right tool session other views
+        self.request.session['active_tool_session_id'] = str(self.object.id)
+
         hp_trackers = self.object.hp_tracker.all()
         die_groups = DieGroup.objects\
-            .filter(tool_session_id=self.request.session['active_tool_session_id'])\
-            .annotate(group_dice_sum=Sum('standard_dice__rolled_value'))
+            .filter(
+                tool_session_id=self.request.session['active_tool_session_id']
+            ).annotate(
+                group_dice_sum=Sum('standard_dice__rolled_value')
+            )
 
         context['add_hp_tracker_form'] = HpTrackerAddForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
         context['die_group_form'] = DieGroupForm
+        context['die_group_change_value_form'] = DieGroupChangeValueForm
         context['die_groups'] = die_groups
         context['add_die_standard_form'] = DieStandardForm
         return context
-
-    def get(self, request, *args, **kwargs):
-        get_return = super().get(request, *args, **kwargs)
-        # put the active tool session id into a session value to be used for
-        # assigning new objects to the right tool session other views
-        self.request.session['active_tool_session_id'] = str(self.object.id)
-        return get_return
 
 
 def save_form_and_serialize_data(form, request):
@@ -146,6 +149,9 @@ def save_form_and_serialize_data(form, request):
 
 
 def reload_current_url(request):
+    """this is uses as a return on some views to safely reload the page after
+    completing a GET or POST, (after deleting an object for example)"""
+
     redirect_url = request.GET.get('next')
     url_is_safe = is_safe_url(
         url=redirect_url,
@@ -156,6 +162,18 @@ def reload_current_url(request):
         return redirect(redirect_url)
     else:
         return redirect('user_home')
+
+
+def delete_model_object(request, model, uuid):
+    """delete a model object and reload the page.  This is used to remove
+    tools from their respective pages"""
+    object_to_delete = model.objects.get(id=uuid)
+    if object_to_delete.tool_session.session_owner.user.id == request.user.id:
+        object_to_delete.delete()
+        return reload_current_url(request)
+    else:
+        messages.error(request, "Insufficient Permission")
+    return redirect('user_home')
 
 
 class AddHpTracker(LoginRequiredMixin, View):
@@ -194,13 +212,9 @@ class HpTrackerDelete(LoginRequiredMixin, View):
     """Delete an HpTracker Object"""
 
     def post(self, request, uuid):
-        hp_tracker = HpTracker.objects.get(id=uuid)
-        if hp_tracker.tool_session.session_owner.user.id == request.user.id:
-            hp_tracker.delete()
-            return reload_current_url(request)
-        else:
-            messages.error(request, "Insufficient Permission")
-        return redirect('user_home')
+        return delete_model_object(
+            request=self.request, model=HpTracker, uuid=uuid
+        )
 
 
 class AddDieGroup(LoginRequiredMixin, View):
@@ -216,6 +230,15 @@ class AddDieGroup(LoginRequiredMixin, View):
             request=self.request
         )
         return new_die_group_response
+
+
+class DieGroupDelete(LoginRequiredMixin, View):
+    """Delete a DieGroup Object"""
+
+    def post(self, request, uuid):
+        return delete_model_object(
+            request=self.request, model=DieGroup, uuid=uuid
+        )
 
 
 class AddDieStandard(LoginRequiredMixin, View):

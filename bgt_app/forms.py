@@ -95,6 +95,23 @@ class DieGroupForm(forms.ModelForm):
     )
 
 
+class DieGroupChangeValueForm(forms.ModelForm):
+    """Create new Die Group objects"""
+    class Meta:
+        model = DieGroup
+        fields = ['title']
+
+    title = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Name',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
 class DieStandardForm(forms.ModelForm):
     """Create and modify standard dice"""
     class Meta:
