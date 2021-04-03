@@ -37,9 +37,13 @@ from .forms import (
     DieGroupForm,
     DieGroupUpdateForm,
     DieStandardForm,
+    ResourceGroupForm,
+    ResourceForm,
 )
 
 from .models import (
+    ResourceGroup,
+    Resource,
     DieGroup,
     DieStandard,
     HpTracker,
@@ -115,7 +119,10 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
             ).annotate(
                 group_dice_sum=Sum('standard_dice__rolled_value')
             )
-
+        resource_groups = ResourceGroup.objects\
+            .filter(
+                tool_session_id=self.request.session['active_tool_session_id']
+            )
         context['add_hp_tracker_form'] = HpTrackerAddForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
@@ -123,6 +130,9 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['die_group_update_form'] = DieGroupUpdateForm
         context['die_groups'] = die_groups
         context['add_die_standard_form'] = DieStandardForm
+        context['resource_group_form'] = ResourceGroupForm
+        context['resource_groups'] = resource_groups
+        context['resource_form'] = ResourceForm
         return context
 
 
@@ -149,7 +159,7 @@ def save_form_and_serialize_data(form, request):
 
 
 def reload_current_url(request):
-    """this is uses as a return on some views to safely reload the page after
+    """this is used as a return on some views to safely reload the page after
     completing a GET or POST, (after deleting an object for example)"""
 
     redirect_url = request.GET.get('next')
@@ -344,3 +354,45 @@ class RollDie(LoginRequiredMixin, View):
             'rolled_die_value': serialized_die_value,
             'die_group_sum': serialized_die_group_sum,
                             }, status=200)
+
+
+class ResourceGroupCreate(LoginRequiredMixin, View):
+    """Add a ResourceGroup to the database and associate it with the active tool
+    session that the current user has open, post is ajax
+    Resource Groups hold sets of resources"""
+
+    def post(self, request, *args, **kwargs):
+        resource_group_form = ResourceGroupForm(self.request.POST)
+        new_resource_group_response = save_form_and_serialize_data(
+            form=resource_group_form,
+            request=self.request
+        )
+        return new_resource_group_response
+
+
+class ResourceGroupUpdate(LoginRequiredMixin, View):
+    """Change a DieGroup title"""
+
+    def post(self, request, resource_group_uuid):
+        resource_group = ResourceGroup.objects.get(id=resource_group_uuid)
+        form = ResourceGroupForm(
+            request.POST or None, instance=resource_group
+        )
+        if form.is_valid():
+            form_instance = \
+                form.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+class ResourceGroupDelete(LoginRequiredMixin, View):
+    """Delete a DieGroup Object"""
+
+    def post(self, request, resource_group_uuid):
+        return delete_model_object(
+            request=self.request, model=ResourceGroup, uuid=resource_group_uuid
+        )

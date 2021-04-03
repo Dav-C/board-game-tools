@@ -4,11 +4,25 @@ if (localStorage.getItem('activeTool')) {
     $(activeTool).css({'display': 'flex'});
 }
 
+// control messages that popup after certain actions (such as creating a tool)
+let message_timeout;
+function message_control(message_wrapper, message) {
+    'use strict';
+    clearTimeout(message_timeout);
+    $(message_wrapper).empty().prepend(
+        '<div class="message-box success fade_out_quick">'+ message + '</div>'
+    ).css({'display': 'inline'});
+    message_timeout = setTimeout(function () {
+        $(message_wrapper).css({'display': 'none'}).empty();
+    }, 2000);
+}
+
 // Open and Close the add session modal box on user_home.html
 $('#OpenCreateToolSessionModalBtn').click(function() {
     'use strict';
     $('#CreateToolSessionFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
 });
+
 $('#CreateToolSessionFormCancelBtn').click(function() {
     'use strict';
     $('#CreateToolSessionFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
@@ -20,7 +34,9 @@ $('#OpenToolSelectionMenuBtn').click(function() {
     $('#ToolSelectionMenu').css({'top': '0', 'visibility': 'visible'});
     $('#ToolSessionPageHeader').css({'display': 'none'});
     $('body, html').addClass('no_scroll');
+    openToolPageCover();
 });
+
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
@@ -72,6 +88,17 @@ $('#AddDieGroupFormCancelBtn').click(function() {
     $('#AddDieGroupFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
     closeMenuCover();
 });
+$('#createResourceGroupOpenFormBtn').click(function() {
+    'use strict';
+    $('#createResourceGroupForm').trigger('reset');
+    $('#createResourceGroupFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
+    openMenuCover();
+});
+$('#createResourceGroupFormCancelBtn').click(function() {
+    'use strict';
+    $('#createResourceGroupFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
+    closeMenuCover();
+});
 
 // Set active tool windows to visible and reloads the page so newly added tools
 // are loaded from the database
@@ -98,6 +125,12 @@ $("#OpenDieGroupsBtn").click(function () {
     setActiveTool('#DieGroupsViewWrapper.tool-body');
 });
 
+// Set the Resource Groups to the active tool
+$("#openResourceGroupsBtn").click(function () {
+    'use strict';
+    setActiveTool('#resourceGroupsViewWrapper.tool-body');
+});
+
 // controls ajax requests when submitting forms that create new tools
 function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
     'use strict';
@@ -118,6 +151,7 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                     'position': 'absolute',
                     'opacity': '0'
                 });
+                message_control('#toolCreatedSuccessMessageWrapper', 'tool created');
                 $(form_wrapper).css({'visibility': 'hidden', 'opacity': '0'});
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
@@ -140,6 +174,32 @@ $("#AddDieGroupForm").submit(newToolsFormSubmit(
     '#AddDieGroupFormWrapper',
     '#OpenDieGroupsBtn'
 ));
+$("#createresourceGroupForm").submit(newToolsFormSubmit(
+    '#createResourceGroupForm',
+    '#createResourceGroupFormWrapper',
+    '#openResourceGroupsBtn'
+));
+
+
+
+// reveal the dark cover over the tool page when various forms are opened
+function openToolPageCover() {
+    'use strict';
+    $('#toolPageDarkCover').css({
+    'display': 'inline',
+    'position': 'absolute',
+    'opacity': '70%'
+    });
+}
+// close the dark cover over the tool page
+function closeToolPageCover() {
+    'use strict';
+    $('#toolPageDarkCover').css({
+    'display': 'none',
+    'position': 'absolute',
+    'opacity': '0'
+    });
+}
 
 
 // HP TRACKER CONTROL
@@ -233,7 +293,7 @@ $('.hp-tracker-title').click(function() {
 
     function revealHpTitleChangeBtns() {
         hp_tracker_title_box.css({'display': 'none'});
-        hp_tracker_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        hp_tracker_title_input.css({'display': 'flex', 'background-color': '#555555'});
         hp_value_increase_btn.css({'display': 'none'});
         hp_value_decrease_btn.css({'display': 'none'});
         confirm_hp_title_change_btn.css({'display': 'inline'});
@@ -304,13 +364,12 @@ $('.hp-change-value-form').submit(function(e) {
 // DICE CONTROL
 
 // ajax for rolling an entire dice group
-$('.die-group-roll-all-btn').click(function(e) {
+$('.die-group-roll-all-form').submit(function(e) {
     'use strict';
     e.preventDefault();
-    // let group_data_id = $(this).attr("data-id");
     $.ajax({
         type: 'GET',
-        url: $(this).parent().attr('href'),
+        url: $(this).attr('action'),
         success: function (response) {
             let die_values = JSON.parse(response.die_group_dice);
             let die_group_sum = JSON.parse(response.die_group_sum);
@@ -358,7 +417,6 @@ $('.die-roll-btn').click(function(e) {
             console.log('ajaxSuccess');
         },
         error: function (response) {
-        //     console.log(response["responseJSON"]["error"]);
             console.log(response["responseJSON"]["error"]);
         }
     });
@@ -378,12 +436,10 @@ $('.common-die-quick-add-btn').click(function(e) {
         url: form.attr('action'),
         data: serialized_data,
         success: function (response) {
-        $('#dieAddedSuccessMessageWrapper').append(
-            '<div class="message-box success fade_out_quick">Die Added!</div>')
+            message_control('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
-        //     console.log(response["responseJSON"]["error"]);
             console.log(response["responseJSON"]["error"]);
         }
     });
@@ -393,22 +449,16 @@ $('.common-die-quick-add-btn').click(function(e) {
 $('.die-group-add-die-standard-form').submit(function(e) {
     'use strict';
     e.preventDefault();
-    // let data_id = $(this).parent('div').attr('data-id')
-    // let form = $('#' + data_id + '-dieGroupAddDieStandardForm');
-    // let selected_die_num_sides = $(this).attr('data-num-sides').toString();
-    // $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides)
     let serialized_data = $(this).serialize();
     $.ajax({
         type: 'POST',
         url: $(this).attr('action'),
         data: serialized_data,
         success: function (response) {
-        $('#dieAddedSuccessMessageWrapper').append(
-            '<div class="message-box success fade_out_quick">Die Added!</div>')
+            message_control('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
-        //     console.log(response["responseJSON"]["error"]);
             console.log(response["responseJSON"]["error"]);
         }
     });
@@ -420,6 +470,7 @@ $('.die-group-add-die-open-form-btn').click(function() {
     let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
     form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
     $('body, html').addClass('no_scroll')
+    openToolPageCover();
 });
 // close the add die form and reload the die groups
     $('.add-die-form-done-btn').click(function() {
@@ -427,9 +478,9 @@ $('.die-group-add-die-open-form-btn').click(function() {
     let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
     form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
     window.location.reload(true);
+    closeToolPageCover();
 });
 
-// delete a standard die
 
 // reveal editing options for a die group - change title/delete
 $('.die-group-title').click(function() {
@@ -440,38 +491,40 @@ $('.die-group-title').click(function() {
     let die_group_title_input = $('#' + data_id + '-dieGroupTitleInput');
     let confirm_die_group_title_change_btn = $('#' + data_id + '-confirmDieGroupTitleChangeBtn');
     let cancel_die_group_title_change_btn = $('#' + data_id + '-cancelDieGroupTitleChangeBtn');
-    let die_group_roll_all_btn = $('.die-group-roll-all-btn');
     let die_group_add_die_open_form_btn = $('.die-group-add-die-open-form-btn');
     let die_group_delete_btn = $('#' + data_id + '-dieGroupDeleteBtn');
     let rolled_die_value = $('.die-rolled-value.' + data_id);
     let die_delete_btn = $('.delete-btn-small.' + data_id);
+    let die_group_roll_all_form = $('.die-group-roll-all-form')
 
     function revealDieGroupTitleChangeBtns() {
         die_group_title_box.css({'display': 'none'});
         die_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        die_group_roll_all_btn.css({'display': 'none'});
         die_group_add_die_open_form_btn.css({'display': 'none'});
         confirm_die_group_title_change_btn.css({'display': 'inline'});
         cancel_die_group_title_change_btn.css({'display': 'inline'});
         die_group_delete_btn.css({'display': 'inline'});
         rolled_die_value.css({'display': 'none'});
         die_delete_btn.css({'display': 'inline'})
+        die_group_roll_all_form.css({'display': 'none'});
     }
 
     function hideDieGroupTitleChangeBtns() {
         die_group_title_box.css({'display': 'inline'});
         die_group_title_input.css({'display': 'none'});
-        die_group_roll_all_btn.css({'display': 'inline'});
+        die_group_roll_all_form.css({'display': 'inline'});
         die_group_add_die_open_form_btn.css({'display': 'inline'});
         confirm_die_group_title_change_btn.css({'display': 'none'});
         cancel_die_group_title_change_btn.css({'display': 'none'});
         die_group_delete_btn.css({'display': 'none'});
         rolled_die_value.css({'display': 'flex'});
         die_delete_btn.css({'display': 'none'})
+        die_group_roll_all_form.css({'display': 'inline'});
     }
 
     revealDieGroupTitleChangeBtns();
-    die_group_title_input.children('input').val(die_group_title_box.text());
+    die_group_title_input.children('input').val(die_group_title_box.text().trim());
+    die_group_title_input.children('input').focus();
 
     // reveal title, hide input and re-enable buttons if user clicks cancel
     cancel_die_group_title_change_btn.click(function() {
@@ -500,11 +553,96 @@ $('.die-group-update-form').submit(function(e) {
                                                 .empty()
                                                 .prepend(fields.title);
             $('#' + data_id + '-dieGroupTitleInput').css({'display': 'none'});
-            $('.die-group-roll-all-btn').css({'display': 'inline'});
+            $('.die-group-roll-all-form').css({'display': 'inline'});
             $('.die-group-add-die-open-form-btn').css({'display': 'inline'});
             $('#' + data_id + '-confirmDieGroupTitleChangeBtn').css({'display': 'none'});
             $('#' + data_id + '-cancelDieGroupTitleChangeBtn').css({'display': 'none'});
             $('#' + data_id + '-dieGroupDeleteBtn').css({'display': 'none'});
+            $('.delete-btn-small.' + data_id).css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+
+// RESOURCE CONTROL
+
+// reveal editing options for a resource group box
+$('.resource-group-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let resource_group_title_box = $("#" + data_id + "-resourceGroupTitle");
+    let resource_group_title_input = $('#' + data_id + '-resourceGroupTitleInput');
+    let confirm_resource_group_title_change_btn = $('#' + data_id + '-confirmResourceGroupTitleChangeBtn');
+    let cancel_resource_group_title_change_btn = $('#' + data_id + '-cancelResourceGroupTitleChangeBtn');
+    let resource_group_add_resource_open_form_btn = $('.resource-group-add-resource-open-form-btn');
+    let resource_group_delete_btn = $('#' + data_id + '-resourceGroupDeleteBtn');
+    let resource_delete_btn = $('.delete-btn-small.' + data_id);
+    let resource_group_produce_all_form = $('.resource-group-produce-all-form')
+
+
+    function revealResourceGroupTitleChangeBtns() {
+        resource_group_title_box.css({'display': 'none'});
+        resource_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        resource_group_produce_all_form.css({'display': 'none'});
+        resource_group_add_resource_open_form_btn.css({'display': 'none'});
+        confirm_resource_group_title_change_btn.css({'display': 'inline'});
+        cancel_resource_group_title_change_btn.css({'display': 'inline'});
+        resource_group_delete_btn.css({'display': 'inline'});
+        resource_delete_btn.css({'display': 'inline'})
+    }
+
+    function hideResourceGroupTitleChangeBtns() {
+        resource_group_title_box.css({'display': 'inline'});
+        resource_group_title_input.css({'display': 'none'});
+        resource_group_produce_all_form.css({'display': 'inline'});
+        resource_group_add_resource_open_form_btn.css({'display': 'inline'});
+        confirm_resource_group_title_change_btn.css({'display': 'none'});
+        cancel_resource_group_title_change_btn.css({'display': 'none'});
+        resource_group_delete_btn.css({'display': 'none'});
+        resource_delete_btn.css({'display': 'none'})
+    }
+
+        revealResourceGroupTitleChangeBtns();
+    resource_group_title_input.children('input').val(resource_group_title_box.text().trim());
+    resource_group_title_input.children('input').focus();
+
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_resource_group_title_change_btn.click(function() {
+        hideResourceGroupTitleChangeBtns();
+        });
+});
+
+// update a resource group title and hide editing controls
+$('.resource-group-update-form').submit(function(e) {
+    'use strict';
+    // preventing from page reload and default actions
+    e.preventDefault();
+    let data_id = $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // reset the title box and display the value
+            $("#" + data_id + '-resourceGroupTitle').css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
+            $('#' + data_id + '-resourceGroupTitleInput').css({'display': 'none'});
+            $('.resource-group-produce-all-form').css({'display': 'inline'});
+            $('.resource-group-add-resource-open-form-btn').css({'display': 'inline'});
+            $('#' + data_id + '-confirmResourceGroupTitleChangeBtn').css({'display': 'none'});
+            $('#' + data_id + '-cancelResourceGroupTitleChangeBtn').css({'display': 'none'});
+            $('#' + data_id + '-resourceGroupDeleteBtn').css({'display': 'none'});
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -514,9 +652,6 @@ $('.die-group-update-form').submit(function(e) {
 });
 
 console.log('this application has been brought to you by David Cates.');
-
-
-
 
 
 

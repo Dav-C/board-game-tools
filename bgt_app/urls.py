@@ -14,7 +14,12 @@ from .views import (
     DieStandardDelete,
     AddDieStandard,
     RollDieGroup,
-    RollDie
+    RollDie,
+    ResourceGroupCreate,
+    ResourceGroupUpdate,
+    ResourceGroupDelete,
+    # ResourceCreate,
+    # ResourceUpdate,
 )
 
 urlpatterns = [
@@ -56,4 +61,13 @@ urlpatterns = [
 
     path('roll-single-die/<die_uuid>',
          RollDie.as_view(), name='roll_die'),
+
+    path('resource-group-create/',
+         ResourceGroupCreate.as_view(), name='resource_group_create'),
+
+    path('resource-group-update/<resource_group_uuid>',
+         ResourceGroupUpdate.as_view(), name='resource_group_update'),
+
+    path('resource-group-delete/<resource_group_uuid>',
+         ResourceGroupDelete.as_view(), name='resource_group_delete'),
 ]

@@ -4,26 +4,31 @@
 {% block body_class %}tool_session_detail{% endblock body_class %}
 
 {% block page_content %}
-{#Tool selection menu and buttons to open various forms to add tools#}
+{# Tool selection menu and buttons to open various forms to add tools #}
 <div id="ToolSelectionMenu">
+<div id="toolCreatedSuccessMessageWrapper" class="message-wrapper"></div>
     <div id="AddNewToolsMenu">
-        <div class="tools-menu-header"><span class="tools-menu-header-text">Add New Tools</span>
+        <div class="tools-menu-header">
+            <span class="tools-menu-header-text">Add New Tools</span>
         </div>
-{#        This covers the buttons in the tool selection menu when a form is open#}
+{# This covers the buttons in the tool selection menu when a form is open #}
         <div id="ToolSelectionMenuCover"></div>
+{# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">ADD HP TRACKER</button>
-            <button id="AddResourceProductionTrackerOpenFormBtn" class="add-tool-button">Add Production Tracker</button>
+            <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">Add Hp Tracker</button>
+            <button id="createResourceGroupOpenFormBtn" class="add-tool-button">Resources</button>
             <button id="AddDieGroupOpenFormBtn" class="add-tool-button">Add Die Group</button>
         </div>
+{# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <button id="AddScoringCalculatorOpenFormBtn" class="add-tool-button">Add Scoring Calculator</button>
+            <button id="AddScoringCalculatorOpenFormBtn" class="add-tool-button">Add Scoring Calc</button>
             <button id="AddTimerOpenFormBtn" class="add-tool-button">Add Game Timer</button>
+            <button id="AddDrawBagOpenFormBtn" class="add-tool-button">Add Draw Bag</button>
         </div>
 
-{# Forms for adding tools to the tool session#}
-{#Add Hp Tracker Form#}
-        <div id="AddHpTrackerFormWrapper" class="add-hp-tracker-form-wrapper">
+{# Forms for adding tools to the tool session #}
+{# create hp tracker form #}
+        <div id="AddHpTrackerFormWrapper" class="add-new-tool-form-wrapper">
             <div class="form-title-box">
                 <span class="form-title-text">Add HP Tracker</span>
             </div>
@@ -41,8 +46,8 @@
                 <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn">Cancel</button>
             </form>
         </div>
-{#Add Die Group Form#}
-        <div id="AddDieGroupFormWrapper" class="add-die-group-form-wrapper">
+{# create die group form #}
+        <div id="AddDieGroupFormWrapper" class="add-new-tool-form-wrapper">
             <div class="form-title-box">
                 <span class="form-title-text">Add Die Group</span>
             </div>
@@ -60,155 +65,76 @@
                 <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
             </form>
         </div>
+
+{# create resource group form #}
+        <div id="createResourceGroupFormWrapper" class="add-new-tool-form-wrapper">
+            <div class="form-title-box">
+                <span class="form-title-text">create resource group</span>
+            </div>
+                <br />
+            <form method="POST" id="createResourceGroupForm"
+                  action="{% url 'resource_group_create' %}"
+                  class="add-new-tool-form">
+                {% csrf_token %}
+                <br />
+                {{ resource_group_form.title|add_class:'text-input-large' }}
+                <br />
+                <button id="createResourceGroupFormSubmitBtn" type="submit" class="blue-btn">Add</button>
+                <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
+            </form>
+        </div>
     </div>
 
-{#Buttons for selecgint active tools#}
+{#End of add new tools section of the menu#}
+
+{#Buttons for selecting active tools#}
     <div id="SelectActiveToolMenu">
         <div class="tools-menu-header"><span class="tools-menu-header-text">Select Active Tool</span>
         </div>
+{# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
             <button id="OpenHpTrackersBtn"
                     class="select-active-tool-button {% if hp_trackers %}button-visible{% endif %}">HP Trackers</button>
             <button id="OpenDieGroupsBtn"
                     class="select-active-tool-button {% if die_groups %}button-visible{% endif %}">Die Groups</button>
-            <button id="OpenProductionTrackersBtn" class="select-active-tool-button">Production Trackers</button>
+            <button id="openResourceGroupsBtn" class="select-active-tool-button {% if resource_groups %}button-visible{% endif %}">Resources</button>
         </div>
+{# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
             <button id="OpenScoringCalculatorBtn" class="select-active-tool-button">Scoring Calculator</button>
-            <button id="OpenGameTimersBtn" class="select-active-tool-button">GameTimers</button>
+            <button id="openGameTimersBtn" class="select-active-tool-button">GameTimers</button>
+            <button id="openDrawBagsBtn" class="select-active-tool-button">Resources</button>
         </div>
     </div>
+{# collapse menu arrow #}
     <div class="tool-selection-menu-footer">
-        <div id="CloseToolSelectionMenuBtn" class="arrow-up"></div>
+        <div id="CloseToolSelectionMenuBtn" class="menu-open-close-box">
+            <div class="menu-open-close-line"></div>
+            <div class="menu-open-close-line"></div>
+            <div class="menu-open-close-line"></div>
+        </div>
     </div>
+
 </div>
 <div id="ToolSessionPageHeader" class="tool-session-page-header">
-    <div id=OpenToolSelectionMenuBtn class="arrow-down"></div>
+    <div id=OpenToolSelectionMenuBtn class="menu-open-close-box">
+        <div class="menu-open-close-line"></div>
+        <div class="menu-open-close-line"></div>
+        <div class="menu-open-close-line"></div>
+    </div>
 </div>
 
 {#Tool views#}
 <div id="ToolSessionPageWrapper">
+{# This covers the tool page body when various tool forms are open #}
+    <div id="toolPageDarkCover"></div>
     <div class="tool-session-page-body">
 
-{#Hp Trackers#}
-        <div id="HpTrackersViewWrapper" class="tool-body">
-            {% for hp_tracker in hp_trackers %}
-                <div class="hp-tracker-box">
-                    <form method="POST" action="{% url 'hp_tracker_update' hp_tracker.id %}" id="{{ hp_tracker.id }}-HpChangeValueForm" data-id="{{ hp_tracker.id }}" class="hp-change-value-form">
-                        {% csrf_token %}
-                        <div class="hp-tracker-title-box">
-                            <div id="{{ hp_tracker.id }}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
-                            <div id="{{ hp_tracker.id }}-HpTrackerTitleInput" class="hp-tracker-title hidden">
-                                {{ hp_change_value_form.title|add_class:"tool-title-input"}}
-                            </div>
-                        </div>
-                        <div class="hp-tracker-control-box">
-                            <button type="button" id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn" class="cancel-change-btn hp-title-change-cancel-btn">cancel</button>
-                            <button type="button" id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease">-</button>
-                            <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
-                            <div id="{{ hp_tracker.id }}-HpValueInput">{{ hp_change_value_form.hp_value }}</div>
-                            <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
-                            <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-value hp-change-value"></div>
-                            <button type="button" id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase">+</button>
-                            <button type="submit" id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn" class="confirm-change-btn hp-title-change-confirm-btn">confirm</button>
-                        </div>
-                    </form>
-                <form action="{% url 'hp_tracker_delete' hp_tracker.id %}?next={{ request.get_full_path }}" method="POST">
-                {% csrf_token %}
-                    <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="delete-btn-large">press here to delete this tracker</button>
-                </form>
-                </div>
-            {% empty %}
-                <span class="large-text"><i>no hp trackers yet.</i></span>
-            {% endfor %}
-        </div>
+{% include 'bgt_app/hp_trackers.html' %}
 
-{# Die Groups and Dice #}
-        <div id="DieGroupsViewWrapper" class="tool-body">
-        <div id="dieAddedSuccessMessageWrapper"></div>
-            {% for die_group in die_groups %}
-                <div class="die-group-box">
-                <div class="die-group-title-box">
+{% include 'bgt_app/die_groups.html' %}
 
-                    <form method="POST" action="{% url 'die_group_update' die_group.id %}" id="{{ die_group.id }}-dieGroupUpdateForm" data-id="{{ die_group.id }}" class="die-group-update-form">
-                        {% csrf_token %}
-                        <div id="{{ die_group.id }}-dieGroupTitle" class="die-group-title">{{ die_group.title }}</div>
-                        <div id="{{ die_group.id }}-dieGroupTitleInput" class="die-group-title hidden">
-                            {{ die_group_update_form.title|add_class:"tool-title-input"}}
-                        </div>
-                    </form>
-                </div>
-
-                <div class="die-group-control-box">
-                    <button type="button" id="{{ die_group.id }}-cancelDieGroupTitleChangeBtn" class="cancel-change-btn">cancel</button>
-                    <a href="{% url 'roll_die_group' die_group.id %}"><Button class="die-group-roll-all-btn">roll all</Button></a>
-
-                    {% if die_group.group_dice_sum %}
-                        <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">{{ die_group.group_dice_sum }}</div>
-                    {% else %}
-                        <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box"></div>
-                    {% endif %}
-
-                    <button data-id="{{ die_group.id }}" class="die-group-add-die-open-form-btn">add dice</button>
-                    <button type="submit" id="{{ die_group.id }}-confirmDieGroupTitleChangeBtn" class="confirm-change-btn" form="{{ die_group.id }}-dieGroupUpdateForm">confirm</button>
-                </div>
-{# delete die grop form #}
-                <form action="{% url 'die_group_delete' die_group.id %}?next={{ request.get_full_path }}" method="POST">
-                    {% csrf_token %}
-                    <button id="{{ die_group.id }}-dieGroupDeleteBtn" class="delete-btn-large">press here to delete this group</button>
-                </form>
-                <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="die-group-add-die-form-wrapper">
-                    <div class="form-title-box add-die-form-title">
-                        <span class="form-title-text">Add a custom die</span>
-                    </div>
-                    <form action="{% url 'add_die_standard' die_group.id %}"
-                          method="POST" id="{{ die_group.id }}-dieGroupAddDieStandardForm" class="die-group-add-die-standard-form">
-                    {% csrf_token %}
-                        <div id={{ die_group.id }}-addDieStandardNumSidesInput>
-                            {{ add_die_standard_form.num_sides|add_class:"add-custom-die-input" }}
-                        </div>
-                        <button type="submit" class="blue-btn smaller die-group-add-standard-die-submit-btn">add die</button>
-                    </form>
-                    <div class="form-title-box add-die-form-title">
-                        <span class="form-title-text">Quick add common dice</span>
-                    </div>
-                   <div class="common-die-quick-add-btn-box" data-id="{{ die_group.id }}">
-                       <button type="submit" form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="2" class="common-die-quick-add-btn">Coin</button>
-                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="4" class="common-die-quick-add-btn">D4</button>
-                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="6" class="common-die-quick-add-btn">D6</button>
-                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="8" class="common-die-quick-add-btn">D8</button>
-                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="10" class="common-die-quick-add-btn">D10</button>
-                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="12" class="common-die-quick-add-btn">D12</button>
-                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="20" class="common-die-quick-add-btn">D20</button>
-                   </div>
-                   <br />
-                   <br />
-                   <button class="blue-btn smaller add-die-form-done-btn" data-id="{{ die_group.id }}">done</button>
-                </div>
-
-
-                <div class="die-values-box">
-                {% for die in die_group.standard_dice.all %}
-                    <div class="die-row" data-id="{{ die.id }}">
-                        <div class="die-num-sides">D{{ die.num_sides }}</div>
-                        <div id="{{ die.id }}-rolledValue" class="die-rolled-value {{ die_group.id }}">{{ die.rolled_value }}</div>
-{#delete die form#}
-                        <form method="POST" action="{% url 'die_standard_delete' die.id %}?next={{ request.get_full_path }}">
-                        {% csrf_token %}
-                            <button class="delete-btn-small {{ die_group.id }}">&#9746;</button>
-                        </form>
-                        <a href="{% url 'roll_die' die.id %}">
-                            <button class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
-                        </a>
-                    </div>
-                {% empty %}
-                    <span class="large-text"><i>add some dice!</i></span>
-                {% endfor %}
-                {% empty %}
-                    <span class="large-text"><i>no die groups yet.</i></span>
-                {% endfor %}
-            </div>
-        </div>
+{% include 'bgt_app/resource_groups.html' %}
     </div>
 </div>
 

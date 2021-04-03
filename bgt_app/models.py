@@ -104,6 +104,42 @@ class DieStandard(models.Model):
         return f"D:{self.num_sides}"
 
 
+class ResourceGroup(models.Model):
+    class Meta:
+        verbose_name = "Resource Group"
+        verbose_name_plural = "Resource Groups"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=40)
+    tool_session = models.ForeignKey(
+        ToolSession,
+        related_name='resource_groups',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f"{self.title}"
+
+
+class Resource(models.Model):
+    class Meta:
+        verbose_name = "Resource"
+        verbose_name_plural = "Resources"
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=40)
+    quantity = models.SmallIntegerField(default=0)
+    production_available = models.BooleanField(default=False)
+    production_modifier = models.SmallIntegerField(default=0)
+    resource_group = models.ForeignKey(
+        ResourceGroup,
+        related_name='resources',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f'Resource: {self.name}'
 
 
 

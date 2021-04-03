@@ -5,6 +5,8 @@ from .models import (
     HpTracker,
     DieGroup,
     DieStandard,
+    ResourceGroup,
+    Resource,
 )
 
 
@@ -71,7 +73,6 @@ class HpTrackerChangeValueForm(forms.ModelForm):
         required=False,
         widget=forms.NumberInput(
             attrs={
-                'type': 'hidden'
             },
         ),
     )
@@ -96,7 +97,7 @@ class DieGroupForm(forms.ModelForm):
 
 
 class DieGroupUpdateForm(forms.ModelForm):
-    """Create new Die Group objects"""
+    """update Die Group objects"""
     class Meta:
         model = DieGroup
         fields = ['title']
@@ -123,5 +124,44 @@ class DieStandardForm(forms.ModelForm):
         required=True,
         widget=forms.NumberInput(
             attrs={},
+        ),
+    )
+
+
+class ResourceGroupForm(forms.ModelForm):
+    """Create and modify Resource Group objects"""
+    class Meta:
+        model = ResourceGroup
+        fields = ['title']
+
+    title = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Name',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
+
+class ResourceForm(forms.ModelForm):
+    """Create and modify Resources objects"""
+    class Meta:
+        model = Resource
+        fields = ['name',
+                  'quantity',
+                  'production_available',
+                  'production_modifier']
+
+    name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Name',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
         ),
     )
