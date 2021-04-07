@@ -24,31 +24,90 @@
             <form method="GET" action="" class="resource-group-produce-all-form">
                 <button type="submit" class="resource-group-produce-all-btn">produce all</button>
             </form>
-    {##}
-    {#        {% if die_group.group_dice_sum %}#}
-    {#            <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box">{{ die_group.group_dice_sum }}</div>#}
-    {#        {% else %}#}
-    {#            <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box"></div>#}
-    {#        {% endif %}#}
 
-            <button data-id="{{ die_group.id }}" class="resource-group-add-resource-open-form-btn">add</button>
+            <button data-id="{{ resource_group.id }}" class="resource-group-add-resource-open-form-btn">add</button>
             <button type="submit" id="{{ resource_group.id }}-confirmResourceGroupTitleChangeBtn" class="confirm-change-btn" form="{{ resource_group.id }}-resourceGroupUpdateForm">ok</button>
         </div>
 {# delete resource group form #}
         <form action="{% url 'resource_group_delete' resource_group.id %}?next={{ request.get_full_path }}" method="POST" class="delete-tool-form">
             {% csrf_token %}
-            <button id="{{ resource_group.id }}-resourceGroupDeleteBtn" class="delete-btn-large">delete this die group</button>
+            <button id="{{ resource_group.id }}-resourceGroupDeleteBtn" class="delete-btn-large">delete this resource group</button>
         </form>
 
+{# add new resource form #}
+            <div id="{{ resource_group.id }}-resourceGroupCreateResourceFormWrapper" class="create-new-object-object-form-wrapper">
+                <div class="form-title-box">
+                    <span class="form-title-text">custom resource</span>
+                </div>
+                <form action="{% url 'resource_create' resource_group.id %}"
+                      method="POST" id="{{ resource_group.id }}-resourceGroupCreateResourceForm" class="create-custom-object-form resource">
+                {% csrf_token %}
+                    <div class="create-object-form-row">
+                        <div id={{ resource_group.id }}-createResourceNameField class="create-resource-name-input-wrapper">
+                            {{ resource_create_form.name|add_class:"create-resource-name-input" }}
+                        </div>
+                    </div>
+                    <div class="create-object-form-row">
+                        <div id="{{ resource.id }}-resourceProductionAvailableCheckbox" class="resource-production-available-checkbox-wrapper">
+                            {{ resource_create_form.production_available|add_class:"resource-production-available-checkbox" }} enable production
+                        </div>
+                        <button type="submit" class="blue-btn smaller">create</button>
+                    </div>
+                </form>
+                <div class="form-title-box">
+                    <span class="form-title-text">create common resources</span>
+                </div>
+
+{# quick add resource buttons #}
+               <div class="common-object-quick-add-btn-box" data-id="{{ resource_group.id }}">
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="money" class="common-object-quick-create-btn resource-create">mony</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="gold" class="common-object-quick-create-btn resource-create">gold</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="stone" class="common-object-quick-create-btn resource-create">stone</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="wood" class="common-object-quick-create-btn resource-create">wood</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="food" class="common-object-quick-create-btn resource-create">food</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="brick" class="common-object-quick-create-btn resource-create">brick</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="cloth" class="common-object-quick-create-btn resource-create">cloth</button>
+                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="strength" class="common-object-quick-create-btn resource-create">animl</button>
+               </div>
+               <br />
+               <br />
+               <button class="blue-btn smaller create-custom-object-form-done-btn resource" data-id="{{ die_group.id }}">done</button>
+            </div>
+
+{# user's resources #}
         {% for resource in resource_group.resources.all %}
             <div class="resource-box">
-                <div class="resource-name-box">{{ resource.name }}</div>
-                <div class="resource-box-row">
-                    <div class="resource-qty-box">{{ resource.quantity }}</div>
-{#                    <Button class="resource-modifier-btn modifier-decrease">-</Button>#}
-                    <div class="resource-modifier-box">x{{ resource.quantity }}</div>
-{#                    <Button class="resource-modifier-btn modifier-increase">+</Button>#}
-                </div>
+                <form action="{% url "resource_name_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceNameChangeForm" class="resource-name-change-form">
+                    {% csrf_token %}
+                    <div class="resource-box-row">
+                        <div id="{{ resource.id }}-resourceName" class="resource-name-box">{{ resource.name }}</div>
+                        <div id="{{ resource.id }}-resourceNameInput" class="resource-name-input-wrapper absolute-hidden">{{ resource_change_name_form.name|add_class:"resource-name-input" }}</div>
+                        <div>resource image here</div>
+                    </div>
+                </form>
+                <form action="{% url "resource_qty_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceQtyChangeForm" class="resource-qty-change-form">
+                    {% csrf_token %}
+                        <div class="resource-box-row">
+                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn resource-decrease">-</Button>
+                            <div id="{{ resource.id }}-resourceValueChange" class="resource-value-change"></div>
+                            <div id="{{ resource.id }}-resourceQtyInput" class="resource-qty-input-hidden">{{ resource_qty_change_form.quantity }}</div>
+                            <div id="{{ resource.id }}-resourceQtyBox" class="resource-qty-box">{{ resource.quantity }}</div>
+                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn resource-increase">+</Button>
+                        </div>
+                </form>
+                {% if resource.production_available %}
+                <form action="{% url "resource_production_modifier_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceProductionModifierChangeForm" class="resource-production-modifier-change-form">
+                    {% csrf_token %}
+                        <div class="resource-box-row">
+                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-decrease">-</Button>
+                            <div id="{{ resource.id }}-productionModifierValueChange" class="production-modifier-value-change"></div>
+                            <div id="{{ resource.id }}-productionModifierQtyBox" class="production-modifier-qty-box">x{{ resource.production_modifier }}</div>
+                            <div id="{{ resource.id }}-productionModifierQtyInput" class="production-modifier-input-hidden">{{ resource_production_modifier_change_form.production_modifier }}</div>
+                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-increase">+</Button>
+                            <Button type="button" class="resource-change-amt-btn produce-single-resource-btn">prod</Button>
+                        </div>
+                </form>
+                {% endif %}
             </div>
         {% empty %}
             <span class="large-text"><i>add some resources.</i></span>

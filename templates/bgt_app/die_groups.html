@@ -41,35 +41,37 @@
             </form>
 
 {# add new dice form #}
-            <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="die-group-add-die-form-wrapper">
-                <div class="form-title-box add-die-form-title">
+            <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="create-new-object-object-form-wrapper">
+                <div class="form-title-box">
                     <span class="form-title-text">Add a custom die</span>
                 </div>
                 <form action="{% url 'add_die_standard' die_group.id %}"
-                      method="POST" id="{{ die_group.id }}-dieGroupAddDieStandardForm" class="die-group-add-die-standard-form">
+                      method="POST" id="{{ die_group.id }}-dieGroupAddDieStandardForm" class="create-custom-object-form die">
                 {% csrf_token %}
                     <div id={{ die_group.id }}-addDieStandardNumSidesInput>
                         {{ add_die_standard_form.num_sides|add_class:"add-die-standard-input" }}
                     </div>
-                    <button type="submit" class="blue-btn smaller die-group-add-die-standard-btn">add die</button>
+                    <button type="submit" class="blue-btn smaller">add die</button>
                 </form>
-                <div class="form-title-box add-die-form-title">
+                <div class="form-title-box">
                     <span class="form-title-text">Quick add common dice</span>
                 </div>
-{#quick add die buttons #}
-               <div class="common-die-quick-add-btn-box" data-id="{{ die_group.id }}">
-                   <button type="submit" form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="2" class="common-die-quick-add-btn">Coin</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="4" class="common-die-quick-add-btn">D4</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="6" class="common-die-quick-add-btn">D6</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="8" class="common-die-quick-add-btn">D8</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="10" class="common-die-quick-add-btn">D10</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="12" class="common-die-quick-add-btn">D12</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="20" class="common-die-quick-add-btn">D20</button>
+{# quick add die buttons #}
+               <div class="common-object-quick-add-btn-box" data-id="{{ die_group.id }}">
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="2" class="common-object-quick-create-btn die-create">Coin</button>
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="4" class="common-object-quick-create-btn die-create">D4</button>
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="6" class="common-object-quick-create-btn die-create">D6</button>
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="8" class="common-object-quick-create-btn die-create">D8</button>
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="10" class="common-object-quick-create-btn die-create">D10</button>
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="12" class="common-object-quick-create-btn die-create">D12</button>
+                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="20" class="common-object-quick-create-btn die-create">D20</button>
                </div>
                <br />
                <br />
-               <button class="blue-btn smaller add-die-form-done-btn" data-id="{{ die_group.id }}">done</button>
+               <button class="blue-btn smaller create-custom-object-form-done-btn die" data-id="{{ die_group.id }}">done</button>
             </div>
+
+{# user's dice#}
         {% for die in die_group.standard_dice.all %}
         <div class="die-values-box">
             <div class="die-row" data-id="{{ die.id }}">

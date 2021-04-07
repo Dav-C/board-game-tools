@@ -5,17 +5,20 @@ if (localStorage.getItem('activeTool')) {
 }
 
 // control messages that popup after certain actions (such as creating a tool)
-let message_timeout;
-function message_control(message_wrapper, message) {
-    'use strict';
-    clearTimeout(message_timeout);
-    $(message_wrapper).empty().prepend(
-        '<div class="message-box success fade_out_quick">'+ message + '</div>'
-    ).css({'display': 'inline'});
-    message_timeout = setTimeout(function () {
-        $(message_wrapper).css({'display': 'none'}).empty();
-    }, 2000);
-}
+
+let message_control = {
+    display_message: function(message_wrapper, message) {
+        'use strict';
+        let message_timeout;
+        clearTimeout(message_timeout);
+        $(message_wrapper).empty().prepend(
+            '<div class="message-box success fade_out_quick">' + message + '</div>'
+        ).css({'display': 'inline'});
+        message_timeout = setTimeout(function () {
+            $(message_wrapper).css({'display': 'none'}).empty();
+        }, 2000);
+    }
+};
 
 // Open and Close the add session modal box on user_home.html
 $('#OpenCreateToolSessionModalBtn').click(function() {
@@ -135,7 +138,7 @@ $("#openResourceGroupsBtn").click(function () {
 function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
     'use strict';
     $(form).submit(function (e) {
-        // preventing from page reload and default actions
+        // prevent page reload and default actions
         e.preventDefault();
         // serialize the form data.
         let serializedData = $(form).serialize();
@@ -151,7 +154,7 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                     'position': 'absolute',
                     'opacity': '0'
                 });
-                message_control('#toolCreatedSuccessMessageWrapper', 'tool created');
+                message_control.display_message('#toolCreatedSuccessMessageWrapper', 'tool created');
                 $(form_wrapper).css({'visibility': 'hidden', 'opacity': '0'});
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
@@ -180,8 +183,6 @@ $("#createresourceGroupForm").submit(newToolsFormSubmit(
     '#openResourceGroupsBtn'
 ));
 
-
-
 // reveal the dark cover over the tool page when various forms are opened
 function openToolPageCover() {
     'use strict';
@@ -204,13 +205,13 @@ function closeToolPageCover() {
 
 // HP TRACKER CONTROL
 
-// {#control timeout before hp_value increase or decrease is submitted#}
+// control timeout before hp_value increase or decrease is submitted
 localStorage.setItem('hp_change_value', '0');
-let timeoutHandler;
+let hpTrackerTimeoutHandler;
 
 function timeoutControl(element) {
     'use strict';
-    clearTimeout(timeoutHandler);
+    clearTimeout(hpTrackerTimeoutHandler);
     // select the closest for to the clicked button
     let selector = $(element).closest('.hp-change-value-form');
 
@@ -231,7 +232,7 @@ function timeoutControl(element) {
     let title_box = $("#" + data_id + "-HpTrackerTitle");
 
     // After a 2 second delay submit the form and reset the change value to 0
-    timeoutHandler = setTimeout(function () {
+    hpTrackerTimeoutHandler= setTimeout(function () {
         $('#' + data_id + '-HpValueInput input').val(hp_add_subtract_value);
         $('#' + data_id + '-HpTrackerTitleInput input').val(title_box.text());
         $('#' + data_id + '-HpChangeValueForm').submit();
@@ -270,8 +271,6 @@ $('.hp-value-change-btn.increase').click(function () {
     timeoutControl(this);
 
 });
-
-
 
 // reveal editing options for an hp tracker - change title/delete
 $('.hp-tracker-title').click(function() {
@@ -423,7 +422,7 @@ $('.die-roll-btn').click(function(e) {
 });
 
 // ajax for quickly adding a common die via the #dieGroupAddDieStandardForm
-$('.common-die-quick-add-btn').click(function(e) {
+$('.common-object-quick-create-btn.die-create').click(function(e) {
     'use strict';
     e.preventDefault();
     let data_id = $(this).parent('div').attr('data-id')
@@ -436,7 +435,7 @@ $('.common-die-quick-add-btn').click(function(e) {
         url: form.attr('action'),
         data: serialized_data,
         success: function (response) {
-            message_control('#dieAddedSuccessMessageWrapper', 'die added!');
+            message_control.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -446,7 +445,7 @@ $('.common-die-quick-add-btn').click(function(e) {
 });
 
 // ajax for adding a custom die via the #dieGroupAddDieStandardForm
-$('.die-group-add-die-standard-form').submit(function(e) {
+$('.create-custom-object-form.die').submit(function(e) {
     'use strict';
     e.preventDefault();
     let serialized_data = $(this).serialize();
@@ -455,7 +454,7 @@ $('.die-group-add-die-standard-form').submit(function(e) {
         url: $(this).attr('action'),
         data: serialized_data,
         success: function (response) {
-            message_control('#dieAddedSuccessMessageWrapper', 'die added!');
+            message_control.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -473,7 +472,7 @@ $('.die-group-add-die-open-form-btn').click(function() {
     openToolPageCover();
 });
 // close the add die form and reload the die groups
-    $('.add-die-form-done-btn').click(function() {
+    $('.create-custom-object-form-done-btn.die').click(function() {
     let data_id = $(this).attr('data-id');
     let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
     form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
@@ -651,19 +650,257 @@ $('.resource-group-update-form').submit(function(e) {
     });
 });
 
+
+// ajax for quickly adding a common resource via the #resourceGroupCreateResourceForm
+$('.common-object-quick-create-btn.resource-create').click(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).parent('div').attr('data-id')
+    let form = $('#' + data_id + '-resourceGroupCreateResourceForm');
+    let resource_name = $(this).attr('data-name').toString();
+    $('#' + data_id + '-createResourceNameField input').val(resource_name)
+    let serialized_data = form.serialize();
+    $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            message_control.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// ajax for adding a custom die via the #resourceGroupCreateResourceForm
+$('.create-custom-object-form.resource').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            message_control.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// open the create resource form
+$('.resource-group-add-resource-open-form-btn').click(function() {
+    let data_id = $(this).attr('data-id');
+    let form_wrapper = $('#' + data_id + '-resourceGroupCreateResourceFormWrapper');
+    form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+    $('body, html').addClass('no_scroll');
+    openToolPageCover();
+});
+// close the create resource form and reload the resource groups
+    $('.create-custom-object-form-done-btn.resource').click(function() {
+    let data_id = $(this).attr('data-id');
+    let form_wrapper = $('#' + data_id + '-resourceGroupCreateResourceFormWrapper');
+    form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
+    window.location.reload(true);
+    closeToolPageCover();
+});
+
+
+    // -----------------------------------------------
+
+
+let resourceTimeoutHandler;
+let resource_change_value = 0;
+let productionModifierTimeoutHandler;
+let production_modifier_change_value = 0;
+
+bgtApp = {
+    resource_funcs: {
+        resourceValueChangeTimeoutControl: function(
+            element, form_class, input_field_id, value_change_id, object_quantity_box_id) {
+            'use strict';
+            clearTimeout(resourceTimeoutHandler);
+            let form = $(element).closest(form_class);
+            let data_id = '#' + form.attr("data-id");
+            let initial_qty = parseInt($(data_id + object_quantity_box_id).text());
+            let add_subtract_value = initial_qty + resource_change_value;
+            resourceTimeoutHandler = setTimeout(function () {
+                $(data_id + input_field_id).val(add_subtract_value);
+                $(form).submit();
+                $(data_id + value_change_id).css({'display': 'none'});
+                $(data_id + object_quantity_box_id).css({'display': 'inline'});
+                resource_change_value = 0;
+            }, 2000);
+        },
+        resource_increase_value: function(this_value, value_change_id, object_quantity_box_id) {
+            'use strict';
+            let data_id = '#' + $(this_value).attr('data-id');
+            resource_change_value++;
+            $(data_id + object_quantity_box_id).css({'display': 'none'});
+            $(data_id + value_change_id).empty().prepend(resource_change_value).css({'display': 'inline'});
+        },
+
+        resource_decrease_value: function(this_value, value_change_id, object_quantity_box_id) {
+            'use strict';
+            let data_id = '#' + $(this_value).attr('data-id');
+            resource_change_value--;
+            $(data_id + object_quantity_box_id).css({'display': 'none'});
+            $(data_id + value_change_id).empty().prepend(resource_change_value).css({'display': 'inline'});
+        },
+        productionModifierValueChangeTimeoutControl: function(
+            element, form_class, input_field_id, value_change_id, object_quantity_box_id) {
+            'use strict';
+            clearTimeout(productionModifierTimeoutHandler);
+            let form = $(element).closest(form_class);
+            let data_id = '#' + form.attr("data-id");
+            let initial_qty = parseInt($(data_id + object_quantity_box_id).text().replace(/\D/g,''));
+            let add_subtract_value = initial_qty + production_modifier_change_value;
+            productionModifierTimeoutHandler = setTimeout(function () {
+                $(data_id + input_field_id).val(add_subtract_value);
+                $(form).submit();
+                $(data_id + value_change_id).css({'display': 'none'});
+                $(data_id + object_quantity_box_id).css({'display': 'inline'});
+                production_modifier_change_value = 0;
+            }, 2000);
+        },
+        production_modifier_increase_value: function(this_value, value_change_id, object_quantity_box_id) {
+            'use strict';
+            let data_id = '#' + $(this_value).attr('data-id');
+            production_modifier_change_value++;
+            $(data_id + object_quantity_box_id).css({'display': 'none'});
+            $(data_id + value_change_id).empty().prepend(production_modifier_change_value).css({'display': 'inline'});
+        },
+        production_modifier_decrease_value: function(this_value, value_change_id, object_quantity_box_id) {
+            'use strict';
+            let data_id = '#' + $(this_value).attr('data-id');
+            production_modifier_change_value--;
+            $(data_id + object_quantity_box_id).css({'display': 'none'});
+            $(data_id + value_change_id).empty().prepend(production_modifier_change_value).css({'display': 'inline'});
+            console.log($(data_id));
+        },
+    },
+};
+
+// ajax for changing resource qty
+$('.resource-qty-change-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new resource_quantity
+            $("#" + data_id + "-resourceQtyBox").empty().prepend(fields.quantity);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// change the resource quantity with each button click - value is not submitted until
+// after a 2 second delay via resourceTimeoutControl()
+$('.resource-change-amt-btn.resource-increase').click(function() {
+    'use strict';
+    bgtApp.resource_funcs.resource_increase_value(
+        this,
+        '-resourceValueChange',
+        '-resourceQtyBox'
+    );
+    bgtApp.resource_funcs.resourceValueChangeTimeoutControl(
+    this,
+    '.resource-qty-change-form',
+    '-resourceQtyInput input',
+    '-resourceValueChange',
+    '-resourceQtyBox'
+    );
+});
+
+
+$('.resource-change-amt-btn.resource-decrease').click(function() {
+    'use strict';
+    bgtApp.resource_funcs.resource_decrease_value(
+        this,
+        '-resourceValueChange',
+        '-resourceQtyBox'
+    );
+    bgtApp.resource_funcs.resourceValueChangeTimeoutControl(
+    this,
+    '.resource-qty-change-form',
+    '-resourceQtyInput input',
+    '-resourceValueChange',
+    '-resourceQtyBox'
+    );
+});
+
+// ajax for changing production modifier
+$('.resource-production-modifier-change-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new production_modifier
+            $("#" + data_id + "-productionModifierQtyBox").empty().prepend('x' + fields.production_modifier);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// change the production modifier with each button click - value is not submitted until
+// after a 2 second delay via resourceTimeoutControl()
+$('.resource-change-amt-btn.modifier-increase').click(function() {
+    'use strict';
+    bgtApp.resource_funcs.production_modifier_increase_value(
+        this,
+        '-productionModifierValueChange',
+        '-productionModifierQtyBox'
+    );
+    bgtApp.resource_funcs.productionModifierValueChangeTimeoutControl(
+    this,
+    '.resource-production-modifier-change-form',
+    '-productionModifierQtyInput input',
+    '-productionModifierValueChange',
+    '-productionModifierQtyBox'
+    );
+});
+
+
+$('.resource-change-amt-btn.modifier-decrease').click(function() {
+    'use strict';
+    bgtApp.resource_funcs.production_modifier_decrease_value(
+        this,
+        '-productionModifierValueChange',
+        '-productionModifierQtyBox'
+    );
+    bgtApp.resource_funcs.productionModifierValueChangeTimeoutControl(
+    this,
+    '.resource-production-modifier-change-form',
+    '-productionModifierQtyInput input',
+    '-productionModifierValueChange',
+    '-productionModifierQtyBox'
+    );
+});
+
+
 console.log('this application has been brought to you by David Cates.');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

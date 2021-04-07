@@ -146,21 +146,87 @@ class ResourceGroupForm(forms.ModelForm):
     )
 
 
-class ResourceForm(forms.ModelForm):
-    """Create and modify Resources objects"""
+class ResourceCreateForm(forms.ModelForm):
+    """Create a Resource object and declare if it will be using the
+    production feature or not"""
+
     class Meta:
         model = Resource
-        fields = ['name',
-                  'quantity',
-                  'production_available',
-                  'production_modifier']
+        fields = ['name', 'production_available']
 
     name = forms.CharField(
-        required=False,
+        required=True,
         widget=forms.TextInput(
             attrs={
                 'placeholder': 'Name',
                 'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
+    production_available = forms.BooleanField(
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(
+            attrs={
+            },
+        ),
+    )
+
+
+class ResourceNameChangeForm(forms.ModelForm):
+    """Change the name of a Resource object, and/or change the
+    production_available value (true or false)"""
+
+    class Meta:
+        model = Resource
+        fields = ['name']
+
+    name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Name',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
+
+class ResourceQuantityChangeForm(forms.ModelForm):
+    """Create and modify Resources objects"""
+    class Meta:
+        model = Resource
+        fields = ['quantity']
+
+    quantity = forms.IntegerField(
+        required=False,
+        initial=0,
+        widget=forms.NumberInput(
+            attrs={
+                'placeholder': 'amount',
+                'maxlength': '4',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
+
+class ResourceProductionModifierChangeForm(forms.ModelForm):
+    """Change the production modifier of resource objects"""
+
+    class Meta:
+        model = Resource
+        fields = ['production_modifier']
+
+    production_modifier = forms.IntegerField(
+        required=False,
+        initial=0,
+        widget=forms.NumberInput(
+            attrs={
+                'maxlength': '4',
                 'autocomplete': 'off',
             },
         ),

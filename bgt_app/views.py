@@ -38,7 +38,10 @@ from .forms import (
     DieGroupUpdateForm,
     DieStandardForm,
     ResourceGroupForm,
-    ResourceForm,
+    ResourceCreateForm,
+    ResourceNameChangeForm,
+    ResourceQuantityChangeForm,
+    ResourceProductionModifierChangeForm,
 )
 
 from .models import (
@@ -132,7 +135,11 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['add_die_standard_form'] = DieStandardForm
         context['resource_group_form'] = ResourceGroupForm
         context['resource_groups'] = resource_groups
-        context['resource_form'] = ResourceForm
+        context['resource_create_form'] = ResourceCreateForm
+        context['resource_name_change_form'] = ResourceNameChangeForm
+        context['resource_qty_change_form'] = ResourceQuantityChangeForm
+        context['resource_production_modifier_change_form'] = \
+            ResourceProductionModifierChangeForm
         return context
 
 
@@ -157,6 +164,21 @@ def save_form_and_serialize_data(form, request):
     else:
         return JsonResponse({'error': form.errors.as_json()}, status=400)
 
+
+def save_group_nested_object_form_and_serialize(request, form, model, obj_uuid):
+    object_to_save = model.objects.get(id=obj_uuid)
+    form = form(
+        request.POST or None, instance=object_to_save
+    )
+    if form.is_valid():
+        form_instance = \
+            form.save()
+        serialized_form_instance = serializers.serialize(
+            'json', [form_instance, ])
+        return JsonResponse(
+            {'form_instance': serialized_form_instance}, status=200)
+    else:
+        return JsonResponse({'error': form.errors.as_json()}, status=400)
 
 def reload_current_url(request):
     """this is used as a return on some views to safely reload the page after
@@ -396,3 +418,60 @@ class ResourceGroupDelete(LoginRequiredMixin, View):
         return delete_model_object(
             request=self.request, model=ResourceGroup, uuid=resource_group_uuid
         )
+
+
+class ResourceCreate(LoginRequiredMixin, View):
+    """Create a Resource object and associate it with the group that invoked
+    the create request"""
+
+    def post(self, request, resource_group_uuid, *args, **kwargs):
+        form = ResourceCreateForm(self.request.POST)
+
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            # add foreign key for the resource group the new resource
+            # should be linked to and save
+            form_instance.resource_group = \
+                ResourceGroup.objects.get(
+                    id=resource_group_uuid
+                )
+            form_instance.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+class ResourceNameChange(LoginRequiredMixin, View):
+    """Change a Resource quantity or production modifier """
+
+    def post(self, request, resource_uuid):
+        return save_group_nested_object_form_and_serialize(
+            request=self.request,
+            form=ResourceNameChangeForm,
+            model=Resource,
+            obj_uuid=resource_uuid)
+
+
+class ResourceQtyChange(LoginRequiredMixin, View):
+    """Change a Resource quantity or production modifier """
+
+    def post(self, request, resource_uuid):
+        return save_group_nested_object_form_and_serialize(
+            request=self.request,
+            form=ResourceQuantityChangeForm,
+            model=Resource,
+            obj_uuid=resource_uuid)
+
+
+class ResourceProductionModifierChange(LoginRequiredMixin, View):
+    """Change a Resource quantity or production modifier """
+
+    def post(self, request, resource_uuid):
+        return save_group_nested_object_form_and_serialize(
+            request=self.request,
+            form=ResourceProductionModifierChangeForm,
+            model=Resource,
+            obj_uuid=resource_uuid)
