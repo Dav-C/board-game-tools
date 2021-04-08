@@ -21,10 +21,6 @@
 {# resource group control box #}
         <div class="resource-group-control-box">
             <button type="button" id="{{ resource_group.id }}-cancelResourceGroupTitleChangeBtn" class="cancel-change-btn">cancel</button>
-            <form method="GET" action="" class="resource-group-produce-all-form">
-                <button type="submit" class="resource-group-produce-all-btn">produce all</button>
-            </form>
-
             <button data-id="{{ resource_group.id }}" class="resource-group-add-resource-open-form-btn">add</button>
             <button type="submit" id="{{ resource_group.id }}-confirmResourceGroupTitleChangeBtn" class="confirm-change-btn" form="{{ resource_group.id }}-resourceGroupUpdateForm">ok</button>
         </div>
@@ -82,8 +78,13 @@
                     <div class="resource-box-row">
                         <div id="{{ resource.id }}-resourceName" class="resource-name-box">{{ resource.name }}</div>
                         <div id="{{ resource.id }}-resourceNameInput" class="resource-name-input-wrapper absolute-hidden">{{ resource_change_name_form.name|add_class:"resource-name-input" }}</div>
-                        <div>resource image here</div>
+                        <div class="resource-image-box">resource image here</div>
+                        <button form="{{ resource.id }}-deleteSingleResourceForm" class="resource-delete-button {{ resource.id }}">&#10006;</button>
                     </div>
+                </form>
+{# delete single resource form#}
+                <form method="POST" id="{{ resource.id }}-deleteSingleResourceForm" action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}">
+                {% csrf_token %}
                 </form>
                 <form action="{% url "resource_qty_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceQtyChangeForm" class="resource-qty-change-form">
                     {% csrf_token %}
@@ -101,7 +102,7 @@
                         <div class="resource-box-row">
                             <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-decrease">-</Button>
                             <div id="{{ resource.id }}-productionModifierValueChange" class="production-modifier-value-change"></div>
-                            <div id="{{ resource.id }}-productionModifierQtyBox" class="production-modifier-qty-box">x{{ resource.production_modifier }}</div>
+                            <div id="{{ resource.id }}-productionModifierQtyBox" class="production-modifier-qty-box">{{ resource.production_modifier }}</div>
                             <div id="{{ resource.id }}-productionModifierQtyInput" class="production-modifier-input-hidden">{{ resource_production_modifier_change_form.production_modifier }}</div>
                             <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-increase">+</Button>
                             <Button type="button" class="resource-change-amt-btn produce-single-resource-btn">prod</Button>

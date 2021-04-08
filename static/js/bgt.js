@@ -6,7 +6,7 @@ if (localStorage.getItem('activeTool')) {
 
 // control messages that popup after certain actions (such as creating a tool)
 
-let message_control = {
+let messageControl = {
     display_message: function(message_wrapper, message) {
         'use strict';
         let message_timeout;
@@ -154,7 +154,7 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                     'position': 'absolute',
                     'opacity': '0'
                 });
-                message_control.display_message('#toolCreatedSuccessMessageWrapper', 'tool created');
+                messageControl.display_message('#toolCreatedSuccessMessageWrapper', 'tool created');
                 $(form_wrapper).css({'visibility': 'hidden', 'opacity': '0'});
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
@@ -203,7 +203,7 @@ function closeToolPageCover() {
 }
 
 
-// HP TRACKER CONTROL
+// --------------- HP TRACKER CONTROL ---------------
 
 // control timeout before hp_value increase or decrease is submitted
 localStorage.setItem('hp_change_value', '0');
@@ -216,28 +216,28 @@ function timeoutControl(element) {
     let selector = $(element).closest('.hp-change-value-form');
 
     // assign the unique django object id to a variable
-    let data_id = selector.attr("data-id");
+    let data_id = '#' + selector.attr("data-id");
 
     // get the hp change value from local storage
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
 
     // get the current hp value being provided by django context
-    let hp_initial_value = parseInt($("#" + data_id + "-HpValue").text());
+    let hp_initial_value = parseInt($(data_id + "-HpValue").text());
 
     // calculate the amount to be entered into the hp value change form
     let hp_add_subtract_value = hp_initial_value + hp_change_value;
 
     // get the title of the hp tracker to submit with the form so its not set
     // to an empty string when the form posts.
-    let title_box = $("#" + data_id + "-HpTrackerTitle");
+    let title_box = $(data_id + "-HpTrackerTitle");
 
     // After a 2 second delay submit the form and reset the change value to 0
     hpTrackerTimeoutHandler= setTimeout(function () {
-        $('#' + data_id + '-HpValueInput input').val(hp_add_subtract_value);
-        $('#' + data_id + '-HpTrackerTitleInput input').val(title_box.text());
-        $('#' + data_id + '-HpChangeValueForm').submit();
-        $('#' + data_id + '-HpValueChange').css({'display': 'none'});
-        $('#' + data_id + '-HpValueChangeCover').css({'display': 'none'});
+        $(data_id + '-HpValueInput input').val(hp_add_subtract_value);
+        $(data_id + '-HpTrackerTitleInput input').val(title_box.text());
+        $(data_id + '-HpChangeValueForm').submit();
+        $(data_id + '-HpValueChange').css({'display': 'none'});
+        $(data_id + '-HpValueChangeCover').css({'display': 'none'});
         localStorage.setItem('hp_change_value', '0');
     }, 2000);
 }
@@ -288,8 +288,6 @@ $('.hp-tracker-title').click(function() {
     let hp_value = parseInt($("#" + data_id + "-HpValue").text());
     let hp_tracker_delete_btn = $('#' + data_id + '-HpTrackerDeleteBtn');
 
-
-
     function revealHpTitleChangeBtns() {
         hp_tracker_title_box.css({'display': 'none'});
         hp_tracker_title_input.css({'display': 'flex', 'background-color': '#555555'});
@@ -300,7 +298,6 @@ $('.hp-tracker-title').click(function() {
         hp_tracker_delete_btn.css({'display': 'inline'});
         hp_tracker_value_change_buttons.prop('disabled', true);
     }
-
     function hideHpTitleChangeBtns() {
         hp_tracker_title_box.css({'display': 'inline'});
         hp_tracker_title_input.css({'display': 'none'});
@@ -311,7 +308,6 @@ $('.hp-tracker-title').click(function() {
         hp_tracker_delete_btn.css({'display': 'none'});
         hp_tracker_value_change_buttons.prop('disabled', false);
     }
-
     revealHpTitleChangeBtns();
     hp_tracker_title_input.children('input').val(hp_tracker_title_box.text());
     hp_tracker_title_input.children('input').focus();
@@ -360,126 +356,26 @@ $('.hp-change-value-form').submit(function(e) {
     });
 });
 
-// DICE CONTROL
+// --------------- DICE CONTROL ---------------
 
-// ajax for rolling an entire dice group
-$('.die-group-roll-all-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    $.ajax({
-        type: 'GET',
-        url: $(this).attr('action'),
-        success: function (response) {
-            let die_values = JSON.parse(response.die_group_dice);
-            let die_group_sum = JSON.parse(response.die_group_sum);
-            $.each(die_values, function(index){
-                let target_div_id = die_values[index].pk.toString() + '-rolledValue';
-                let die_rolled_value = die_values[index].fields.rolled_value;
-                $('#' + target_div_id ).text(die_rolled_value);
-            });
-            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
-            let group_dice_sum = die_group_sum[0].group_dice_sum;
-            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
-                $('#' + group_sum_target_div_id).text('0');
-            } else {
-                $('#' + group_sum_target_div_id).text(group_dice_sum);
-            }
-            console.log('ajaxSuccess');
+diceControl = {
+    dice_funcs: {
+        open_add_die_form: function(this_value) {
+            let data_id = "#" + $(this_value).attr('data-id');
+            let form_wrapper = $(data_id + '-dieGroupAddNewDieFormWrapper');
+            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+            $('body, html').addClass('no_scroll');
+            openToolPageCover();
         },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
+        close_add_die_form: function(this_value) {
+            let data_id = "#" + $(this_value).attr('data-id');
+            let form_wrapper = $(data_id + '-dieGroupAddNewDieFormWrapper');
+            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
+            window.location.reload(true);
+            closeToolPageCover();
         }
-    });
-});
-
-// ajax for rolling a single die
-$('.die-roll-btn').click(function(e) {
-    'use strict';
-    e.preventDefault();
-    $.ajax({
-        type: 'GET',
-        url: $(this).parent().attr('href'),
-        success: function (response) {
-            let new_die_value = JSON.parse(response.rolled_die_value);
-            let die_group_sum = JSON.parse(response.die_group_sum);
-            let target_div_id = new_die_value[0].pk.toString() + '-rolledValue';
-            let die_rolled_value = new_die_value[0].fields.rolled_value;
-            $('#' + target_div_id ).text(die_rolled_value);
-
-            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
-            let group_dice_sum = die_group_sum[0].group_dice_sum;
-            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
-                $('#' + group_sum_target_div_id).text('0');
-            } else {
-                $('#' + group_sum_target_div_id).text(group_dice_sum);
-            }
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-        }
-    });
-});
-
-// ajax for quickly adding a common die via the #dieGroupAddDieStandardForm
-$('.common-object-quick-create-btn.die-create').click(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).parent('div').attr('data-id')
-    let form = $('#' + data_id + '-dieGroupAddDieStandardForm');
-    let selected_die_num_sides = $(this).attr('data-num-sides').toString();
-    $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides)
-    let serialized_data = form.serialize();
-    $.ajax({
-        type: 'POST',
-        url: form.attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            message_control.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-        }
-    });
-});
-
-// ajax for adding a custom die via the #dieGroupAddDieStandardForm
-$('.create-custom-object-form.die').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            message_control.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-        }
-    });
-});
-
-// open the add die form
-$('.die-group-add-die-open-form-btn').click(function() {
-    let data_id = $(this).attr('data-id');
-    let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
-    form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
-    $('body, html').addClass('no_scroll')
-    openToolPageCover();
-});
-// close the add die form and reload the die groups
-    $('.create-custom-object-form-done-btn.die').click(function() {
-    let data_id = $(this).attr('data-id');
-    let form_wrapper = $('#' + data_id + '-dieGroupAddNewDieFormWrapper');
-    form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
-    window.location.reload(true);
-    closeToolPageCover();
-});
-
+    }
+};
 
 // reveal editing options for a die group - change title/delete
 $('.die-group-title').click(function() {
@@ -494,7 +390,7 @@ $('.die-group-title').click(function() {
     let die_group_delete_btn = $('#' + data_id + '-dieGroupDeleteBtn');
     let rolled_die_value = $('.die-rolled-value.' + data_id);
     let die_delete_btn = $('.delete-btn-small.' + data_id);
-    let die_group_roll_all_form = $('.die-group-roll-all-form')
+    let die_group_roll_all_form = $('.die-group-roll-all-form');
 
     function revealDieGroupTitleChangeBtns() {
         die_group_title_box.css({'display': 'none'});
@@ -504,7 +400,7 @@ $('.die-group-title').click(function() {
         cancel_die_group_title_change_btn.css({'display': 'inline'});
         die_group_delete_btn.css({'display': 'inline'});
         rolled_die_value.css({'display': 'none'});
-        die_delete_btn.css({'display': 'inline'})
+        die_delete_btn.css({'display': 'inline'});
         die_group_roll_all_form.css({'display': 'none'});
     }
 
@@ -530,7 +426,6 @@ $('.die-group-title').click(function() {
         hideDieGroupTitleChangeBtns();
         });
 });
-
 
 // ajax for changing die group title
 $('.die-group-update-form').submit(function(e) {
@@ -566,82 +461,28 @@ $('.die-group-update-form').submit(function(e) {
     });
 });
 
-
-// RESOURCE CONTROL
-
-// reveal editing options for a resource group box
-$('.resource-group-title').click(function() {
+// roll an entire dice group
+$('.die-group-roll-all-form').submit(function(e) {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let resource_group_title_box = $("#" + data_id + "-resourceGroupTitle");
-    let resource_group_title_input = $('#' + data_id + '-resourceGroupTitleInput');
-    let confirm_resource_group_title_change_btn = $('#' + data_id + '-confirmResourceGroupTitleChangeBtn');
-    let cancel_resource_group_title_change_btn = $('#' + data_id + '-cancelResourceGroupTitleChangeBtn');
-    let resource_group_add_resource_open_form_btn = $('.resource-group-add-resource-open-form-btn');
-    let resource_group_delete_btn = $('#' + data_id + '-resourceGroupDeleteBtn');
-    let resource_delete_btn = $('.delete-btn-small.' + data_id);
-    let resource_group_produce_all_form = $('.resource-group-produce-all-form')
-
-
-    function revealResourceGroupTitleChangeBtns() {
-        resource_group_title_box.css({'display': 'none'});
-        resource_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        resource_group_produce_all_form.css({'display': 'none'});
-        resource_group_add_resource_open_form_btn.css({'display': 'none'});
-        confirm_resource_group_title_change_btn.css({'display': 'inline'});
-        cancel_resource_group_title_change_btn.css({'display': 'inline'});
-        resource_group_delete_btn.css({'display': 'inline'});
-        resource_delete_btn.css({'display': 'inline'})
-    }
-
-    function hideResourceGroupTitleChangeBtns() {
-        resource_group_title_box.css({'display': 'inline'});
-        resource_group_title_input.css({'display': 'none'});
-        resource_group_produce_all_form.css({'display': 'inline'});
-        resource_group_add_resource_open_form_btn.css({'display': 'inline'});
-        confirm_resource_group_title_change_btn.css({'display': 'none'});
-        cancel_resource_group_title_change_btn.css({'display': 'none'});
-        resource_group_delete_btn.css({'display': 'none'});
-        resource_delete_btn.css({'display': 'none'})
-    }
-
-        revealResourceGroupTitleChangeBtns();
-    resource_group_title_input.children('input').val(resource_group_title_box.text().trim());
-    resource_group_title_input.children('input').focus();
-
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_resource_group_title_change_btn.click(function() {
-        hideResourceGroupTitleChangeBtns();
-        });
-});
-
-// update a resource group title and hide editing controls
-$('.resource-group-update-form').submit(function(e) {
-    'use strict';
-    // preventing from page reload and default actions
     e.preventDefault();
-    let data_id = $(this).attr("data-id");
-    // serialize the form data.
-    let serializedData = $(this).serialize();
-    // make POST ajax call
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: $(this).attr('action'),
-        data: serializedData,
         success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // reset the title box and display the value
-            $("#" + data_id + '-resourceGroupTitle').css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $('#' + data_id + '-resourceGroupTitleInput').css({'display': 'none'});
-            $('.resource-group-produce-all-form').css({'display': 'inline'});
-            $('.resource-group-add-resource-open-form-btn').css({'display': 'inline'});
-            $('#' + data_id + '-confirmResourceGroupTitleChangeBtn').css({'display': 'none'});
-            $('#' + data_id + '-cancelResourceGroupTitleChangeBtn').css({'display': 'none'});
-            $('#' + data_id + '-resourceGroupDeleteBtn').css({'display': 'none'});
+            let die_values = JSON.parse(response.die_group_dice);
+            let die_group_sum = JSON.parse(response.die_group_sum);
+            $.each(die_values, function(index){
+                let target_div_id = die_values[index].pk.toString() + '-rolledValue';
+                let die_rolled_value = die_values[index].fields.rolled_value;
+                $('#' + target_div_id ).text(die_rolled_value);
+            });
+            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
+            let group_dice_sum = die_group_sum[0].group_dice_sum;
+            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
+                $('#' + group_sum_target_div_id).text('0');
+            } else {
+                $('#' + group_sum_target_div_id).text(group_dice_sum);
+            }
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -650,22 +491,26 @@ $('.resource-group-update-form').submit(function(e) {
     });
 });
 
-
-// ajax for quickly adding a common resource via the #resourceGroupCreateResourceForm
-$('.common-object-quick-create-btn.resource-create').click(function(e) {
+// roll a single die
+$('.die-roll-btn').click(function(e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).parent('div').attr('data-id')
-    let form = $('#' + data_id + '-resourceGroupCreateResourceForm');
-    let resource_name = $(this).attr('data-name').toString();
-    $('#' + data_id + '-createResourceNameField input').val(resource_name)
-    let serialized_data = form.serialize();
     $.ajax({
-        type: 'POST',
-        url: form.attr('action'),
-        data: serialized_data,
+        type: 'GET',
+        url: $(this).parent().attr('href'),
         success: function (response) {
-            message_control.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            let new_die_value = JSON.parse(response.rolled_die_value);
+            let die_group_sum = JSON.parse(response.die_group_sum);
+            let target_div_id = new_die_value[0].pk.toString() + '-rolledValue';
+            let die_rolled_value = new_die_value[0].fields.rolled_value;
+            $('#' + target_div_id ).text(die_rolled_value);
+            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
+            let group_dice_sum = die_group_sum[0].group_dice_sum;
+            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
+                $('#' + group_sum_target_div_id).text('0');
+            } else {
+                $('#' + group_sum_target_div_id).text(group_dice_sum);
+            }
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -674,8 +519,19 @@ $('.common-object-quick-create-btn.resource-create').click(function(e) {
     });
 });
 
-// ajax for adding a custom die via the #resourceGroupCreateResourceForm
-$('.create-custom-object-form.resource').submit(function(e) {
+// open the add die form
+$('.die-group-add-die-open-form-btn').click(function() {
+    'use strict';
+    diceControl.dice_funcs.open_add_die_form(this);
+});
+// close the add die form and reload the die groups
+$('.create-custom-object-form-done-btn.die').click(function() {
+    'use strict';
+    diceControl.dice_funcs.close_add_die_form(this);
+});
+
+// ajax for adding a custom die via the #dieGroupAddDieStandardForm
+$('.create-custom-object-form.die').submit(function(e) {
     'use strict';
     e.preventDefault();
     let serialized_data = $(this).serialize();
@@ -684,7 +540,7 @@ $('.create-custom-object-form.resource').submit(function(e) {
         url: $(this).attr('action'),
         data: serialized_data,
         success: function (response) {
-            message_control.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            messageControl.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -693,34 +549,53 @@ $('.create-custom-object-form.resource').submit(function(e) {
     });
 });
 
-// open the create resource form
-$('.resource-group-add-resource-open-form-btn').click(function() {
-    let data_id = $(this).attr('data-id');
-    let form_wrapper = $('#' + data_id + '-resourceGroupCreateResourceFormWrapper');
-    form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
-    $('body, html').addClass('no_scroll');
-    openToolPageCover();
+// ajax for quickly adding a common die via the #dieGroupAddDieStandardForm
+$('.common-object-quick-create-btn.die-create').click(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).parent('div').attr('data-id')
+    let form = $('#' + data_id + '-dieGroupAddDieStandardForm');
+    let selected_die_num_sides = $(this).attr('data-num-sides').toString();
+    $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides)
+    let serialized_data = form.serialize();
+    $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            messageControl.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
 });
-// close the create resource form and reload the resource groups
-    $('.create-custom-object-form-done-btn.resource').click(function() {
-    let data_id = $(this).attr('data-id');
-    let form_wrapper = $('#' + data_id + '-resourceGroupCreateResourceFormWrapper');
-    form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
-    window.location.reload(true);
-    closeToolPageCover();
-});
 
 
-    // -----------------------------------------------
-
+// --------------- RESOURCE CONTROL ---------------
 
 let resourceTimeoutHandler;
 let resource_change_value = 0;
 let productionModifierTimeoutHandler;
 let production_modifier_change_value = 0;
 
-bgtApp = {
+resourceControl = {
     resource_funcs: {
+        open_create_resource_form: function(this_value) {
+            let data_id = '#' + $(this_value).attr('data-id');
+            let form_wrapper = $(data_id + '-resourceGroupCreateResourceFormWrapper');
+            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+            $('body, html').addClass('no_scroll');
+            openToolPageCover();
+        },
+        close_create_resource_form: function(this_value) {
+            let data_id = '#' + $(this_value).attr('data-id');
+            let form_wrapper = $(data_id + '-resourceGroupCreateResourceFormWrapper');
+            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
+            window.location.reload(true);
+            closeToolPageCover();
+        },
         resourceValueChangeTimeoutControl: function(
             element, form_class, input_field_id, value_change_id, object_quantity_box_id) {
             'use strict';
@@ -732,8 +607,6 @@ bgtApp = {
             resourceTimeoutHandler = setTimeout(function () {
                 $(data_id + input_field_id).val(add_subtract_value);
                 $(form).submit();
-                $(data_id + value_change_id).css({'display': 'none'});
-                $(data_id + object_quantity_box_id).css({'display': 'inline'});
                 resource_change_value = 0;
             }, 2000);
         },
@@ -758,13 +631,11 @@ bgtApp = {
             clearTimeout(productionModifierTimeoutHandler);
             let form = $(element).closest(form_class);
             let data_id = '#' + form.attr("data-id");
-            let initial_qty = parseInt($(data_id + object_quantity_box_id).text().replace(/\D/g,''));
+            let initial_qty = parseInt($(data_id + object_quantity_box_id).text());
             let add_subtract_value = initial_qty + production_modifier_change_value;
             productionModifierTimeoutHandler = setTimeout(function () {
                 $(data_id + input_field_id).val(add_subtract_value);
                 $(form).submit();
-                $(data_id + value_change_id).css({'display': 'none'});
-                $(data_id + object_quantity_box_id).css({'display': 'inline'});
                 production_modifier_change_value = 0;
             }, 2000);
         },
@@ -786,21 +657,133 @@ bgtApp = {
     },
 };
 
-// ajax for changing resource qty
-$('.resource-qty-change-form').submit(function(e) {
+// reveal editing options for a resource group box
+$('.resource-group-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let resource_group_title_box = $("#" + data_id + "-resourceGroupTitle");
+    let resource_group_title_input = $("#" + data_id + '-resourceGroupTitleInput');
+    let confirm_resource_group_title_change_btn = $("#" + data_id + '-confirmResourceGroupTitleChangeBtn');
+    let cancel_resource_group_title_change_btn = $("#" + data_id + '-cancelResourceGroupTitleChangeBtn');
+    let resource_group_add_resource_open_form_btn = $('.resource-group-add-resource-open-form-btn');
+    let resource_group_delete_btn = $("#" + data_id + '-resourceGroupDeleteBtn');
+    let resource_delete_btn = $('.delete-btn-small.' + data_id);
+    let resource_group_produce_all_form = $('.resource-group-produce-all-form');
+
+
+    function revealResourceGroupTitleChangeBtns() {
+        resource_group_title_box.css({'display': 'none'});
+        resource_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        resource_group_produce_all_form.css({'display': 'none'});
+        resource_group_add_resource_open_form_btn.css({'display': 'none'});
+        confirm_resource_group_title_change_btn.css({'display': 'inline'});
+        cancel_resource_group_title_change_btn.css({'display': 'inline'});
+        resource_group_delete_btn.css({'display': 'inline'});
+        resource_delete_btn.css({'display': 'inline'});
+    }
+
+    function hideResourceGroupTitleChangeBtns() {
+        resource_group_title_box.css({'display': 'inline'});
+        resource_group_title_input.css({'display': 'none'});
+        resource_group_produce_all_form.css({'display': 'inline'});
+        resource_group_add_resource_open_form_btn.css({'display': 'inline'});
+        confirm_resource_group_title_change_btn.css({'display': 'none'});
+        cancel_resource_group_title_change_btn.css({'display': 'none'});
+        resource_group_delete_btn.css({'display': 'none'});
+        resource_delete_btn.css({'display': 'none'});
+    }
+
+        revealResourceGroupTitleChangeBtns();
+    resource_group_title_input.children('input').val(resource_group_title_box.text().trim());
+    resource_group_title_input.children('input').focus();
+
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_resource_group_title_change_btn.click(function() {
+        hideResourceGroupTitleChangeBtns();
+        });
+});
+
+// update a resource group title and hide editing controls
+$('.resource-group-update-form').submit(function(e) {
+    'use strict';
+    // preventing from page reload and default actions
+    e.preventDefault();
+    let data_id = '#' + $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // reset the title box and display the value
+            $(data_id + '-resourceGroupTitle').css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
+            $(data_id + '-resourceGroupTitleInput').css({'display': 'none'});
+            $('.resource-group-produce-all-form').css({'display': 'inline'});
+            $('.resource-group-add-resource-open-form-btn').css({'display': 'inline'});
+            $(data_id + '-confirmResourceGroupTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-cancelResourceGroupTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-resourceGroupDeleteBtn').css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// open the create resource form
+$('.resource-group-add-resource-open-form-btn').click(function() {
+    'use strict';
+    resourceControl.resource_funcs.open_create_resource_form(this);
+});
+
+// close the create resource form and reload the resource groups
+$('.create-custom-object-form-done-btn.resource').click(function(){
+    'use strict';
+    resourceControl.resource_funcs.close_create_resource_form(this);
+});
+
+// ajax for quickly adding a common resource via the #resourceGroupCreateResourceForm
+$('.common-object-quick-create-btn.resource-create').click(function(e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).attr('data-id');
+    let data_id = "#" + $(this).parent('div').attr('data-id');
+    let form = $(data_id + '-resourceGroupCreateResourceForm');
+    let resource_name = $(this).attr('data-name').toString();
+    $(data_id + '-createResourceNameField input').val(resource_name);
+    let serialized_data = form.serialize();
+    $.ajax({
+        type: 'POST',
+        url: form.attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            messageControl.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
+// ajax for adding a resource via the #resourceGroupCreateResourceForm
+$('.create-custom-object-form.resource').submit(function(e) {
+    'use strict';
+    e.preventDefault();
     let serialized_data = $(this).serialize();
     $.ajax({
         type: 'POST',
         url: $(this).attr('action'),
         data: serialized_data,
         success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new resource_quantity
-            $("#" + data_id + "-resourceQtyBox").empty().prepend(fields.quantity);
+            messageControl.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -813,12 +796,12 @@ $('.resource-qty-change-form').submit(function(e) {
 // after a 2 second delay via resourceTimeoutControl()
 $('.resource-change-amt-btn.resource-increase').click(function() {
     'use strict';
-    bgtApp.resource_funcs.resource_increase_value(
+    resourceControl.resource_funcs.resource_increase_value(
         this,
         '-resourceValueChange',
         '-resourceQtyBox'
     );
-    bgtApp.resource_funcs.resourceValueChangeTimeoutControl(
+    resourceControl.resource_funcs.resourceValueChangeTimeoutControl(
     this,
     '.resource-qty-change-form',
     '-resourceQtyInput input',
@@ -830,12 +813,12 @@ $('.resource-change-amt-btn.resource-increase').click(function() {
 
 $('.resource-change-amt-btn.resource-decrease').click(function() {
     'use strict';
-    bgtApp.resource_funcs.resource_decrease_value(
+    resourceControl.resource_funcs.resource_decrease_value(
         this,
         '-resourceValueChange',
         '-resourceQtyBox'
     );
-    bgtApp.resource_funcs.resourceValueChangeTimeoutControl(
+    resourceControl.resource_funcs.resourceValueChangeTimeoutControl(
     this,
     '.resource-qty-change-form',
     '-resourceQtyInput input',
@@ -844,11 +827,11 @@ $('.resource-change-amt-btn.resource-decrease').click(function() {
     );
 });
 
-// ajax for changing production modifier
-$('.resource-production-modifier-change-form').submit(function(e) {
+// changing resource qty
+$('.resource-qty-change-form').submit(function(e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).attr('data-id');
+    let data_id = '#' + $(this).attr('data-id');
     let serialized_data = $(this).serialize();
     $.ajax({
         type: 'POST',
@@ -857,8 +840,9 @@ $('.resource-production-modifier-change-form').submit(function(e) {
         success: function (response) {
             let form_instance = JSON.parse(response['form_instance']);
             let fields = form_instance[0]['fields'];
-            // display the new production_modifier
-            $("#" + data_id + "-productionModifierQtyBox").empty().prepend('x' + fields.production_modifier);
+            // display the new resource_quantity
+            $(data_id + '-resourceQtyBox').empty().prepend(fields.quantity).css({'display': 'inline'});;
+            $(data_id + '-resourceValueChange').css({'display': 'none'});
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -871,12 +855,12 @@ $('.resource-production-modifier-change-form').submit(function(e) {
 // after a 2 second delay via resourceTimeoutControl()
 $('.resource-change-amt-btn.modifier-increase').click(function() {
     'use strict';
-    bgtApp.resource_funcs.production_modifier_increase_value(
+    resourceControl.resource_funcs.production_modifier_increase_value(
         this,
         '-productionModifierValueChange',
         '-productionModifierQtyBox'
     );
-    bgtApp.resource_funcs.productionModifierValueChangeTimeoutControl(
+    resourceControl.resource_funcs.productionModifierValueChangeTimeoutControl(
     this,
     '.resource-production-modifier-change-form',
     '-productionModifierQtyInput input',
@@ -888,12 +872,12 @@ $('.resource-change-amt-btn.modifier-increase').click(function() {
 
 $('.resource-change-amt-btn.modifier-decrease').click(function() {
     'use strict';
-    bgtApp.resource_funcs.production_modifier_decrease_value(
+    resourceControl.resource_funcs.production_modifier_decrease_value(
         this,
         '-productionModifierValueChange',
         '-productionModifierQtyBox'
     );
-    bgtApp.resource_funcs.productionModifierValueChangeTimeoutControl(
+    resourceControl.resource_funcs.productionModifierValueChangeTimeoutControl(
     this,
     '.resource-production-modifier-change-form',
     '-productionModifierQtyInput input',
@@ -902,5 +886,28 @@ $('.resource-change-amt-btn.modifier-decrease').click(function() {
     );
 });
 
+// change production modifier
+$('.resource-production-modifier-change-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = "#" + $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new production_modifier
+            $(data_id + '-productionModifierQtyBox').empty().prepend(fields.production_modifier).css({'display': 'inline'});
+            $(data_id + '-productionModifierValueChange').css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
 
 console.log('this application has been brought to you by David Cates.');

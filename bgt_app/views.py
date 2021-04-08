@@ -416,7 +416,9 @@ class ResourceGroupDelete(LoginRequiredMixin, View):
 
     def post(self, request, resource_group_uuid):
         return delete_model_object(
-            request=self.request, model=ResourceGroup, uuid=resource_group_uuid
+            request=self.request,
+            model=ResourceGroup,
+            uuid=resource_group_uuid
         )
 
 
@@ -442,6 +444,18 @@ class ResourceCreate(LoginRequiredMixin, View):
                 {'form_instance': serialized_form_instance}, status=200)
         else:
             return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+class ResourceDelete(LoginRequiredMixin, View):
+    """Delete a Resource object"""
+    def post(self, request, resource_uuid):
+        resource_to_delete = get_object_or_404(Resource, id=resource_uuid)
+        if resource_to_delete.resource_group.tool_session.session_owner.user.id == request.user.id:
+            resource_to_delete.delete()
+            return reload_current_url(request)
+        else:
+            messages.error(request, "Insufficient Permission")
+        return redirect('user_home')
 
 
 class ResourceNameChange(LoginRequiredMixin, View):

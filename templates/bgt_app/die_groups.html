@@ -48,10 +48,12 @@
                 <form action="{% url 'add_die_standard' die_group.id %}"
                       method="POST" id="{{ die_group.id }}-dieGroupAddDieStandardForm" class="create-custom-object-form die">
                 {% csrf_token %}
+                <div class="create-object-form-row">
                     <div id={{ die_group.id }}-addDieStandardNumSidesInput>
                         {{ add_die_standard_form.num_sides|add_class:"add-die-standard-input" }}
                     </div>
                     <button type="submit" class="blue-btn smaller">add die</button>
+                </div>
                 </form>
                 <div class="form-title-box">
                     <span class="form-title-text">Quick add common dice</span>
@@ -83,6 +85,7 @@
                 {% csrf_token %}
                     <button class="delete-btn-small {{ die_group.id }}">&#10006;</button>
                 </form>
+{# roll single die #}
                 <a href="{% url 'roll_die' die.id %}">
                     <button class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
                 </a>

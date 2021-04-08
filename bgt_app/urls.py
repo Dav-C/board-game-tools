@@ -19,6 +19,7 @@ from .views import (
     ResourceGroupUpdate,
     ResourceGroupDelete,
     ResourceCreate,
+    ResourceDelete,
     ResourceNameChange,
     ResourceQtyChange,
     ResourceProductionModifierChange,
@@ -75,6 +76,9 @@ urlpatterns = [
 
     path('resource-create/<resource_group_uuid>',
          ResourceCreate.as_view(), name='resource_create'),
+
+    path('resource-delete/<resource_uuid>',
+         ResourceDelete.as_view(), name='resource_delete'),
 
     path('resource-name-change/<resource_uuid>',
          ResourceNameChange.as_view(), name='resource_name_change'),
