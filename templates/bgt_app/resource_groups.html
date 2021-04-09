@@ -76,16 +76,14 @@
                 <form action="{% url "resource_name_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceNameChangeForm" class="resource-name-change-form">
                     {% csrf_token %}
                     <div class="resource-box-row">
-                        <div id="{{ resource.id }}-resourceName" class="resource-name-box">{{ resource.name }}</div>
-                        <div id="{{ resource.id }}-resourceNameInput" class="resource-name-input-wrapper absolute-hidden">{{ resource_change_name_form.name|add_class:"resource-name-input" }}</div>
-                        <div class="resource-image-box">resource image here</div>
-                        <button form="{{ resource.id }}-deleteSingleResourceForm" class="resource-delete-button {{ resource.id }}">&#10006;</button>
+                        <div id="{{ resource.id }}-resourceName" class="resource-name-box" data-id="{{ resource.id }}">{{ resource.name }}</div>
+                        <div id="{{ resource.id }}-resourceNameInputWrapper" class="resource-name-input-wrapper absolute-hidden">{{ resource_name_change_form.name|add_class:"resource-name-input" }}</div>
+                        <div id="{{ resource.id }}-resourceImageBox" class="resource-image-box">resource image here</div>
+                        <button id="{{ resource.id }}-confirmChangeBtn" class="confirm-change-btn resource-name-change-confirm-btn" data-id="{{ resource.id }}">&#10003;</button>
+                        <button id="{{ resource.id }}-cancelChangeBtn"  type="button" class="cancel-change-btn resource-name-change-cancel-btn" data-id="{{ resource.id }}">&#10006;</button>
                     </div>
                 </form>
 {# delete single resource form#}
-                <form method="POST" id="{{ resource.id }}-deleteSingleResourceForm" action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}">
-                {% csrf_token %}
-                </form>
                 <form action="{% url "resource_qty_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceQtyChangeForm" class="resource-qty-change-form">
                     {% csrf_token %}
                         <div class="resource-box-row">
@@ -96,6 +94,7 @@
                             <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn resource-increase">+</Button>
                         </div>
                 </form>
+{# production section - only shown if production is available for the resource#}
                 {% if resource.production_available %}
                 <form action="{% url "resource_production_modifier_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceProductionModifierChangeForm" class="resource-production-modifier-change-form">
                     {% csrf_token %}
@@ -105,10 +104,20 @@
                             <div id="{{ resource.id }}-productionModifierQtyBox" class="production-modifier-qty-box">{{ resource.production_modifier }}</div>
                             <div id="{{ resource.id }}-productionModifierQtyInput" class="production-modifier-input-hidden">{{ resource_production_modifier_change_form.production_modifier }}</div>
                             <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-increase">+</Button>
-                            <Button type="button" class="resource-change-amt-btn produce-single-resource-btn">prod</Button>
+                            <Button type="button" form="{{ resource.id }}-produceResourceForm" class="resource-change-amt-btn produce-single-resource-btn">prod</Button>
                         </div>
                 </form>
+                <form id="{{ resource.id }}-produceResourceForm" method="POST" action="{% url 'resource_qty_change' resource.id%}" data-id="{{ resource.id }}" class="produce-resource-form">
+                {% csrf_token %}
+                    <div id="{{ resource.id }}-newResourceQtyInput">{{ resource_qty_change_form.quantity|add_class:"absolute-hidden" }}</div>
+                </form>
                 {% endif %}
+                <div class="resource-box-row">
+                    <button form="{{ resource.id }}-deleteSingleResourceForm" id="{{ resource.id }}-resourceDeleteButton" class="delete-btn-large resource-delete-button {{ resource.id }}">delete this resource</button>
+                    <form method="POST" id="{{ resource.id }}-deleteSingleResourceForm" action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}">
+                    {% csrf_token %}
+                    </form>
+                </div>
             </div>
         {% empty %}
             <span class="large-text"><i>add some resources.</i></span>

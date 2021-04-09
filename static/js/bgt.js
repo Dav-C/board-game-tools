@@ -42,7 +42,7 @@ $('#OpenToolSelectionMenuBtn').click(function() {
 
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
-    $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
+    $('#ToolSelectionMenu').css({'top': '-80vh', 'visibility': 'hidden'});
     setTimeout(function(){
     $('#ToolSessionPageHeader').css({'display': 'flex'});
     window.location.reload(true);
@@ -596,6 +596,24 @@ resourceControl = {
             window.location.reload(true);
             closeToolPageCover();
         },
+        reveal_resource_title_change_and_delete_btn: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            $(data_id + '-resourceName').css({'display':'none'});
+            $(data_id + '-resourceNameInputWrapper').removeClass('absolute-hidden').children('input').focus();;
+            $(data_id + '-resourceDeleteButton').css({'display':'inline'});
+            $(data_id + '-resourceImageBox').css({'display':'none'});
+            $(data_id + '-confirmChangeBtn').css({'display':'inline'});
+            $(data_id + '-cancelChangeBtn').css({'display':'inline'});
+        },
+        hide_resource_title_change_and_delete_btn: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            $(data_id + '-resourceName').css({'display':'inline'});
+            $(data_id + '-resourceNameInputWrapper').addClass('absolute-hidden');
+            $(data_id + '-resourceDeleteButton').css({'display':'none'});
+            $(data_id + '-resourceImageBox').css({'display':'inline'});
+            $(data_id + '-confirmChangeBtn').css({'display':'none'});
+            $(data_id + '-cancelChangeBtn').css({'display':'none'});
+        },
         resourceValueChangeTimeoutControl: function(
             element, form_class, input_field_id, value_change_id, object_quantity_box_id) {
             'use strict';
@@ -654,6 +672,16 @@ resourceControl = {
             $(data_id + value_change_id).empty().prepend(production_modifier_change_value).css({'display': 'inline'});
             console.log($(data_id));
         },
+        calculate_resource_production_value: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            let resource_qty = parseInt($(data_id + '-resourceQtyBox').text());
+            let production_qty = parseInt($(data_id + '-productionModifierQtyBox').text());
+            let new_resource_qty = (resource_qty + production_qty);
+            console.log(resource_qty);
+            console.log(production_qty);
+            console.log(new_resource_qty);
+            return new_resource_qty;
+        }
     },
 };
 
@@ -792,6 +820,42 @@ $('.create-custom-object-form.resource').submit(function(e) {
     });
 });
 
+// open the resource name change form and reveal the individual resource
+// delete buttons
+$('.resource-name-box').click(function(){
+    'use strict';
+    resourceControl.resource_funcs.reveal_resource_title_change_and_delete_btn($(this).attr('data-id'));
+});
+// hide the resource name change form and reveal the individual resource
+// delete buttons
+$('.resource-name-change-cancel-btn').click(function(){
+    'use strict';
+    resourceControl.resource_funcs.hide_resource_title_change_and_delete_btn($(this).attr('data-id'));
+});
+
+$('.resource-name-change-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new resource_name
+            $('#' + data_id + '-resourceName').empty().prepend(fields.name).css({'display': 'inline'});
+            resourceControl.resource_funcs.hide_resource_title_change_and_delete_btn(data_id);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+
 // change the resource quantity with each button click - value is not submitted until
 // after a 2 second delay via resourceTimeoutControl()
 $('.resource-change-amt-btn.resource-increase').click(function() {
@@ -909,5 +973,37 @@ $('.resource-production-modifier-change-form').submit(function(e) {
         }
     });
 });
+
+$('.produce-single-resource-btn').click(function(){
+    let data_id = $(this).closest('form').attr('data-id')
+    console.log(data_id)
+    let form = $('#' + data_id + '-produceResourceForm')
+    let new_resource_qty = resourceControl.resource_funcs.calculate_resource_production_value(data_id)
+    $("#" + data_id + '-newResourceQtyInput input').val(new_resource_qty)
+    form.submit();
+})
+
+$('.produce-resource-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new production_modifier
+            $("#" + data_id + '-resourceQtyBox').empty().prepend(fields.quantity).css({'display': 'inline'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+        }
+    });
+});
+// produce resource
 
 console.log('this application has been brought to you by David Cates.');

@@ -15,12 +15,12 @@
                 </div>
                 <div class="hp-tracker-control-box">
                     <button type="button" id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn" class="cancel-change-btn">cancel</button>
-                    <button type="button" id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease">-</button>
+                    <button type="button" id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease disable-double-tap-to-zoom">-</button>
                     <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
                     <div id="{{ hp_tracker.id }}-HpValueInput" class="hp-value-input-hidden">{{ hp_change_value_form.hp_value }}</div>
                     <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
                     <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-change-value"></div>
-                    <button type="button" id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase">+</button>
+                    <button type="button" id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase disable-double-tap-to-zoom">+</button>
                     <button type="submit" id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn" class="confirm-change-btn">ok</button>
                 </div>
             </form>
