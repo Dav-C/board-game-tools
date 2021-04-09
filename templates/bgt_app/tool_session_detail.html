@@ -21,7 +21,7 @@
         </div>
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <button id="AddScoringCalculatorOpenFormBtn" class="add-tool-button">Add Scoring Calc</button>
+            <button id="createScoringGroupOpenFormBtn" class="add-tool-button">Add Scoring Calc</button>
             <button id="AddTimerOpenFormBtn" class="add-tool-button">Add Game Timer</button>
             <button id="AddDrawBagOpenFormBtn" class="add-tool-button">Add Draw Bag</button>
         </div>
@@ -83,6 +83,24 @@
                 <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
             </form>
         </div>
+
+{# create scoring group form #}
+        <div id="createScoringGroupFormWrapper" class="add-new-tool-form-wrapper">
+            <div class="form-title-box">
+                <span class="form-title-text">create scoring group</span>
+            </div>
+                <br />
+            <form method="POST" id="createScoringGroupForm"
+                  action="{% url 'scoring_group_create' %}"
+                  class="add-new-tool-form">
+                {% csrf_token %}
+                <br />
+                {{ scoring_group_form.title|add_class:'text-input-large' }}
+                <br />
+                <button id="createScoringGroupFormSubmitBtn" type="submit" class="blue-btn">Add</button>
+                <button id="createScoringGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
+            </form>
+        </div>
     </div>
 
 {#End of add new tools section of the menu#}
@@ -101,7 +119,7 @@
         </div>
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
-            <button id="OpenScoringCalculatorBtn" class="select-active-tool-button">Scoring Calculator</button>
+            <button id="openScoringGroupsBtn" class="select-active-tool-button {% if scoring_groups %}button-visible{% endif %}">Scoring</button>
             <button id="openGameTimersBtn" class="select-active-tool-button">GameTimers</button>
             <button id="openDrawBagsBtn" class="select-active-tool-button">Resources</button>
         </div>

@@ -42,9 +42,20 @@ from .forms import (
     ResourceNameChangeForm,
     ResourceQuantityChangeForm,
     ResourceProductionModifierChangeForm,
+    ScoringGroupForm,
+    ScoringCategorySimpleForm,
+    ScoringCategoryItemsPerPointCreateForm,
+    ScoringCategoryItemsPerPointNameChangeForm,
+    ScoringCategoryItemsPerPointUpdateForm,
+    ScoringCategoryPointsPerItemForm,
+    ScoringCategoryPointsPerItemUpdateForm
 )
 
 from .models import (
+    ScoringGroup,
+    ScoringCategorySimple,
+    ScoringCategoryItemsPerPoint,
+    ScoringCategoryPointsPerItem,
     ResourceGroup,
     Resource,
     DieGroup,
@@ -126,6 +137,10 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
             .filter(
                 tool_session_id=self.request.session['active_tool_session_id']
             )
+        scoring_groups = ScoringGroup.objects\
+            .filter(
+                tool_session_id=self.request.session['active_tool_session_id']
+            )
         context['add_hp_tracker_form'] = HpTrackerAddForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
@@ -140,6 +155,8 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['resource_qty_change_form'] = ResourceQuantityChangeForm
         context['resource_production_modifier_change_form'] = \
             ResourceProductionModifierChangeForm
+        context['scoring_group_form'] = ScoringGroupForm
+        context['scoring_groups'] = scoring_groups
         return context
 
 
@@ -489,3 +506,17 @@ class ResourceProductionModifierChange(LoginRequiredMixin, View):
             form=ResourceProductionModifierChangeForm,
             model=Resource,
             obj_uuid=resource_uuid)
+
+
+class ScoringGroupCreate(LoginRequiredMixin, View):
+    """Add a ScoringGroup to the database and associate it with the active tool
+    session that the current user has open, post is ajax
+    Resource Groups hold sets of resources"""
+
+    def post(self, request, *args, **kwargs):
+        resource_group_form = ScoringGroupForm(self.request.POST)
+        new_resource_group_response = save_form_and_serialize_data(
+            form=resource_group_form,
+            request=self.request
+        )
+        return new_resource_group_response

@@ -102,6 +102,17 @@ $('#createResourceGroupFormCancelBtn').click(function() {
     $('#createResourceGroupFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
     closeMenuCover();
 });
+$('#createScoringGroupOpenFormBtn').click(function() {
+    'use strict';
+    $('#createScoringGroupForm').trigger('reset');
+    $('#createScoringGroupFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
+    openMenuCover();
+});
+$('#createScoringGroupFormCancelBtn').click(function() {
+    'use strict';
+    $('#createScoringGroupFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
+    closeMenuCover();
+});
 
 // Set active tool windows to visible and reloads the page so newly added tools
 // are loaded from the database
@@ -177,10 +188,15 @@ $("#AddDieGroupForm").submit(newToolsFormSubmit(
     '#AddDieGroupFormWrapper',
     '#OpenDieGroupsBtn'
 ));
-$("#createresourceGroupForm").submit(newToolsFormSubmit(
+$("#createResourceGroupForm").submit(newToolsFormSubmit(
     '#createResourceGroupForm',
     '#createResourceGroupFormWrapper',
     '#openResourceGroupsBtn'
+));
+$("#createScoringGroupForm").submit(newToolsFormSubmit(
+    '#createScoringGroupForm',
+    '#createScoringGroupFormWrapper',
+    '#openScoringGroupsBtn'
 ));
 
 // reveal the dark cover over the tool page when various forms are opened

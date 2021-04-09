@@ -23,6 +23,7 @@ from .views import (
     ResourceNameChange,
     ResourceQtyChange,
     ResourceProductionModifierChange,
+    ScoringGroupCreate,
 )
 
 urlpatterns = [
@@ -87,5 +88,9 @@ urlpatterns = [
          ResourceQtyChange.as_view(), name='resource_qty_change'),
 
     path('resource-production-modifier-change/<resource_uuid>',
-         ResourceProductionModifierChange.as_view(), name='resource_production_modifier_change'),
+         ResourceProductionModifierChange.as_view(),
+         name='resource_production_modifier_change'),
+
+    path('scoring-group-create/',
+         ScoringGroupCreate.as_view(), name='scoring_group_create'),
 ]

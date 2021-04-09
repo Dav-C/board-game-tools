@@ -142,4 +142,82 @@ class Resource(models.Model):
         return f'Resource: {self.name}'
 
 
+class ScoringGroup(models.Model):
+    class Meta:
+        verbose_name = "Scoring Group"
+        verbose_name_plural = "Scoring Groups"
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=40)
+    tool_session = models.ForeignKey(
+        ToolSession,
+        related_name='scoring_groups',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f"{self.title}"
+
+
+class ScoringCategorySimple(models.Model):
+    class Meta:
+        verbose_name = "Simple Scoring Category"
+        verbose_name_plural = "Simple Scoring Categories"
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=40)
+    points = models.SmallIntegerField(default=0)
+    scoring_group = models.ForeignKey(
+        ScoringGroup,
+        related_name='scoring_categories_simple',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f'Resource: {self.name}'
+
+
+class ScoringCategoryItemsPerPoint(models.Model):
+    class Meta:
+        verbose_name = "Items Per Point Scoring Category"
+        verbose_name_plural = "Items Per Point Scoring Categories"
+
+    round_up_down_choices = [('up', 'up'), ('down', 'down')]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=40)
+    points = models.SmallIntegerField(default=0)
+    scoring_items_qty = models.SmallIntegerField(default=0)
+    items_per_point_trigger = models.SmallIntegerField(default=0)
+    points_per_point_trigger = models.SmallIntegerField(default=0)
+    round_up_down = models.CharField(max_length=5, choices=round_up_down_choices)
+    scoring_group = models.ForeignKey(
+        ScoringGroup,
+        related_name='scoring_categories_items_per_point',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f'Resource: {self.name}'
+
+
+class ScoringCategoryPointsPerItem(models.Model):
+    class Meta:
+        verbose_name = "Points Per Item Scoring Category"
+        verbose_name_plural = "Points Per Item Scoring Categories"
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=40)
+    points = models.SmallIntegerField(default=0)
+    scoring_items_qty = models.SmallIntegerField(default=0)
+    points_per_item = models.SmallIntegerField(default=0)
+    scoring_group = models.ForeignKey(
+        ScoringGroup,
+        related_name='scoring_categories_points_per_item',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f'Resource: {self.name}'
