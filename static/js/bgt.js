@@ -7,16 +7,28 @@ if (localStorage.getItem('activeTool')) {
 // control messages that popup after certain actions (such as creating a tool)
 
 let messageControl = {
-    display_message: function(message_wrapper, message) {
+    display_success_message: function(message_wrapper, message) {
         'use strict';
-        let message_timeout;
-        clearTimeout(message_timeout);
+        let message_timeout_success;
+        clearTimeout(message_timeout_success);
         $(message_wrapper).empty().prepend(
             '<div class="message-box success fade_out_quick">' + message + '</div>'
         ).css({'display': 'inline'});
-        message_timeout = setTimeout(function () {
+        message_timeout_success = setTimeout(function () {
             $(message_wrapper).css({'display': 'none'}).empty();
         }, 2000);
+    },
+
+    display_error_message: function(message_wrapper, message) {
+        'use strict';
+        let message_timeout_error;
+        clearTimeout(message_timeout_error);
+        $(message_wrapper).empty().prepend(
+            '<div class="message-box error fade_out">' + message + '</div>'
+        ).css({'display': 'inline'});
+        message_timeout_error = setTimeout(function () {
+            $(message_wrapper).css({'display': 'none'}).empty();
+        }, 6000);
     }
 };
 
@@ -145,6 +157,12 @@ $("#openResourceGroupsBtn").click(function () {
     setActiveTool('#resourceGroupsViewWrapper.tool-body');
 });
 
+// Set the Scoring Groups to the active tool
+$("#openScoringGroupsBtn").click(function () {
+    'use strict';
+    setActiveTool('#scoringGroupsViewWrapper.tool-body');
+});
+
 // controls ajax requests when submitting forms that create new tools
 function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
     'use strict';
@@ -165,13 +183,14 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                     'position': 'absolute',
                     'opacity': '0'
                 });
-                messageControl.display_message('#toolCreatedSuccessMessageWrapper', 'tool created');
+                messageControl.display_success_message('#toolCreatedSuccessMessageWrapper', 'tool created');
                 $(form_wrapper).css({'visibility': 'hidden', 'opacity': '0'});
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
             },
             error: function (response) {
                 console.log(response["responseJSON"]["error"]);
+                messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
             }
         });
     });
@@ -368,6 +387,7 @@ $('.hp-change-value-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -473,6 +493,7 @@ $('.die-group-update-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -503,6 +524,7 @@ $('.die-group-roll-all-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -531,6 +553,7 @@ $('.die-roll-btn').click(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -556,11 +579,12 @@ $('.create-custom-object-form.die').submit(function(e) {
         url: $(this).attr('action'),
         data: serialized_data,
         success: function (response) {
-            messageControl.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
+            messageControl.display_success_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -579,11 +603,12 @@ $('.common-object-quick-create-btn.die-create').click(function(e) {
         url: form.attr('action'),
         data: serialized_data,
         success: function (response) {
-            messageControl.display_message('#dieAddedSuccessMessageWrapper', 'die added!');
+            messageControl.display_success_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -686,16 +711,12 @@ resourceControl = {
             production_modifier_change_value--;
             $(data_id + object_quantity_box_id).css({'display': 'none'});
             $(data_id + value_change_id).empty().prepend(production_modifier_change_value).css({'display': 'inline'});
-            console.log($(data_id));
         },
         calculate_resource_production_value: function(data_id_value) {
             let data_id = '#' + data_id_value;
             let resource_qty = parseInt($(data_id + '-resourceQtyBox').text());
             let production_qty = parseInt($(data_id + '-productionModifierQtyBox').text());
             let new_resource_qty = (resource_qty + production_qty);
-            console.log(resource_qty);
-            console.log(production_qty);
-            console.log(new_resource_qty);
             return new_resource_qty;
         }
     },
@@ -738,14 +759,14 @@ $('.resource-group-title').click(function() {
         resource_delete_btn.css({'display': 'none'});
     }
 
-        revealResourceGroupTitleChangeBtns();
+    revealResourceGroupTitleChangeBtns();
     resource_group_title_input.children('input').val(resource_group_title_box.text().trim());
     resource_group_title_input.children('input').focus();
 
     // reveal title, hide input and re-enable buttons if user clicks cancel
     cancel_resource_group_title_change_btn.click(function() {
-        hideResourceGroupTitleChangeBtns();
-        });
+    hideResourceGroupTitleChangeBtns();
+    });
 });
 
 // update a resource group title and hide editing controls
@@ -778,6 +799,7 @@ $('.resource-group-update-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -808,11 +830,12 @@ $('.common-object-quick-create-btn.resource-create').click(function(e) {
         url: form.attr('action'),
         data: serialized_data,
         success: function (response) {
-            messageControl.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -827,11 +850,12 @@ $('.create-custom-object-form.resource').submit(function(e) {
         url: $(this).attr('action'),
         data: serialized_data,
         success: function (response) {
-            messageControl.display_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+            messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
             console.log('ajaxSuccess');
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -842,13 +866,12 @@ $('.resource-name-box').click(function(){
     'use strict';
     resourceControl.resource_funcs.reveal_resource_title_change_and_delete_btn($(this).attr('data-id'));
 });
-// hide the resource name change form and reveal the individual resource
+// hide the resource name change form and hide the individual resource
 // delete buttons
 $('.resource-name-change-cancel-btn').click(function(){
     'use strict';
     resourceControl.resource_funcs.hide_resource_title_change_and_delete_btn($(this).attr('data-id'));
 });
-
 $('.resource-name-change-form').submit(function(e) {
     'use strict';
     e.preventDefault();
@@ -868,6 +891,7 @@ $('.resource-name-change-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -889,7 +913,6 @@ $('.resource-change-amt-btn.resource-increase').click(function() {
     '-resourceQtyBox'
     );
 });
-
 
 $('.resource-change-amt-btn.resource-decrease').click(function() {
     'use strict';
@@ -927,6 +950,7 @@ $('.resource-qty-change-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
@@ -986,13 +1010,14 @@ $('.resource-production-modifier-change-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
 
+// produce resource
 $('.produce-single-resource-btn').click(function(){
     let data_id = $(this).closest('form').attr('data-id')
-    console.log(data_id)
     let form = $('#' + data_id + '-produceResourceForm')
     let new_resource_qty = resourceControl.resource_funcs.calculate_resource_production_value(data_id)
     $("#" + data_id + '-newResourceQtyInput input').val(new_resource_qty)
@@ -1017,9 +1042,269 @@ $('.produce-resource-form').submit(function(e) {
         },
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
 });
-// produce resource
+
+// --------------- SCORING CONTROL ---------------
+
+scoringControl = {
+    scoring_funcs: {
+        reveal_scoring_category_title_change_and_delete_btn: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            let scoring_category_name = $(data_id + '-scoringCategoryName')
+            scoring_category_name.css({'display':'none'});
+            $(data_id + '-scoringCategoryNameInputWrapper')
+                .removeClass('absolute-hidden')
+                .children('input')
+                .val(scoring_category_name.text().trim())
+                .focus();
+            $(data_id + '-scoringCategoryDeleteButton').css({'display':'inline'});
+            $(data_id + '-nameConfirmChangeBtn').css({'display':'inline'});
+            $(data_id + '-nameCancelChangeBtn').css({'display':'inline'});
+            $(data_id + '-scoringValueBoxForm').css({'display': 'none'});
+            $(data_id + '-scoringCategoryNameChangeForm').css({'width': '100%'});
+        },
+        hide_scoring_category_title_change_and_delete_btn: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            $(data_id + '-scoringCategoryName').css({'display':'flex'});
+            $(data_id + '-scoringCategoryNameInputWrapper').addClass('absolute-hidden');
+            $(data_id + '-scoringCategoryDeleteButton').css({'display':'none'});
+            $(data_id + '-nameConfirmChangeBtn').css({'display':'none'});
+            $(data_id + '-nameCancelChangeBtn').css({'display':'none'});
+            $(data_id + '-scoringValueBoxForm').css({'display': 'flex'});
+             $(data_id + '-scoringCategoryNameChangeForm').css({'width': '70%'});
+        },
+        reveal_scoring_category_score_box_input: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            let scoring_category_score_box = $(data_id + '-scoringCategoryScoreBox')
+            scoring_category_score_box.css({'display':'none'});
+            $(data_id + '-scoringCategoryScoreBoxInputWrapper')
+                .removeClass('absolute-hidden')
+                .children('input')
+                .val(scoring_category_score_box.text().trim())
+                .focus();
+            $(data_id + '-valueChangeConfirmCancelBtns').removeClass('absolute-hidden');
+            $(data_id + '-valueConfirmChangeBtn').css({'display':'inline'});
+            $(data_id + '-valueCancelChangeBtn').css({'display':'inline'});
+            $(data_id + '-scoringCategoryName').css({'display':'none'});
+            $(data_id + '-scoringCategoryNameDisabled').removeClass('absolute-hidden');
+        },
+        hide_scoring_category_score_box_input: function(data_id_value) {
+            let data_id = '#' + data_id_value;
+            $(data_id + '-scoringCategoryScoreBox').css({'display':'inline'});
+            $(data_id + '-scoringCategoryScoreBoxInputWrapper').addClass('absolute-hidden')
+            $(data_id + '-valueChangeConfirmCancelBtns').addClass('absolute-hidden');
+            $(data_id + '-valueConfirmChangeBtn').css({'display':'none'});
+            $(data_id + '-valueCancelChangeBtn').css({'display':'none'});
+            $(data_id + '-scoringCategoryName').css({'display':'flex'});
+            $(data_id + '-scoringCategoryNameDisabled').addClass('absolute-hidden')
+        },
+        open_create_scoring_category_forms_box: function(this_value) {
+            let data_id = '#' + $(this_value).attr('data-id');
+            let form_wrapper = $(data_id + '-scoringCategoryCreateFormWrapper');
+            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+            $('body, html').addClass('no_scroll');
+            openToolPageCover();
+        },
+        close_create_scoring_category_forms_box: function(this_value) {
+            let data_id = '#' + $(this_value).attr('data-id');
+            let form_wrapper = $(data_id + '-scoringCategoryCreateFormWrapper');
+            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
+            window.location.reload(true);
+            closeToolPageCover();
+        },
+        change_scoring_category_create_type: function(this_value) {
+            let data_id = $(this_value).attr('data-id');
+            let active_form = $('#' + data_id + this_value.value)
+            $('.create-custom-object-form.' + data_id).addClass('absolute-hidden')
+            active_form.removeClass('absolute-hidden')
+        },
+    }
+}
+
+// reveal editing options for a scoring group box
+$('.scoring-group-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let scoring_group_title_box = $("#" + data_id + "-scoringGroupTitle");
+    let scoring_group_title_input = $("#" + data_id + '-scoringGroupTitleInput');
+    let confirm_scoring_group_title_change_btn = $("#" + data_id + '-confirmScoringGroupTitleChangeBtn');
+    let cancel_scoring_group_title_change_btn = $("#" + data_id + '-cancelScoringGroupTitleChangeBtn');
+    let scoring_group_add_category_open_form_btn = $('.scoring-group-add-category-open-form-btn');
+    let scoring_group_delete_btn = $("#" + data_id + '-scoringGroupDeleteBtn');
+
+
+    function revealScoringGroupTitleChangeBtns() {
+        scoring_group_title_box.css({'display': 'none'});
+        scoring_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        scoring_group_add_category_open_form_btn.css({'display': 'none'});
+        confirm_scoring_group_title_change_btn.css({'display': 'inline'});
+        cancel_scoring_group_title_change_btn.css({'display': 'inline'});
+        scoring_group_delete_btn.css({'display': 'inline'});
+    }
+
+    function hideScoringGroupTitleChangeBtns() {
+        scoring_group_title_box.css({'display': 'inline'});
+        scoring_group_title_input.css({'display': 'none'});
+        scoring_group_add_category_open_form_btn.css({'display': 'inline'});
+        confirm_scoring_group_title_change_btn.css({'display': 'none'});
+        cancel_scoring_group_title_change_btn.css({'display': 'none'});
+        scoring_group_delete_btn.css({'display': 'none'});
+    }
+
+        revealScoringGroupTitleChangeBtns();
+    scoring_group_title_input.children('input').val(scoring_group_title_box.text().trim());
+    scoring_group_title_input.children('input').focus();
+
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_scoring_group_title_change_btn.click(function() {
+        hideScoringGroupTitleChangeBtns();
+        });
+});
+
+// update a scoring group title and hide editing controls
+$('.scoring-group-form').submit(function(e) {
+    'use strict';
+    // preventing from page reload and default actions
+    e.preventDefault();
+    let data_id = '#' + $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // reset the title box and display the value
+            $(data_id + '-scoringGroupTitle').css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
+            $(data_id + '-scoringGroupTitleInput').css({'display': 'none'});
+            $('.scoring-group-add-category-open-form-btn').css({'display': 'inline'});
+            $(data_id + '-confirmScoringGroupTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-cancelScoringGroupTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-scoringGroupDeleteBtn').css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    })
+});
+
+
+// open the scoring category name change form and reveal the individual
+// scoring category delete buttons
+$('.scoring-category-name-box').click(function(){
+    'use strict';
+    scoringControl.scoring_funcs.reveal_scoring_category_title_change_and_delete_btn($(this).attr('data-id'));
+});
+// close the scoring category name change form and hide the individual
+// scoring category delete buttons
+$('.scoring-category-name-change-cancel-btn').click(function(){
+    'use strict';
+    scoringControl.scoring_funcs.hide_scoring_category_title_change_and_delete_btn($(this).attr('data-id'));
+});
+// change the name of a scoring category
+$('.scoring-category-name-change-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new scoring_category_name
+            $('#' + data_id + '-scoringCategoryName').empty().prepend(fields.name).css({'display': 'inline'});
+            scoringControl.scoring_funcs.hide_scoring_category_title_change_and_delete_btn(data_id);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    });
+});
+
+// reveal the form for changing a score value
+$('.scoring-category-score-box').click(function() {
+    scoringControl.scoring_funcs.reveal_scoring_category_score_box_input($(this).attr('data-id'))
+})
+// hide the form for changing a score value
+$('.scoring-category-value-box-cancel-btn').click(function() {
+    scoringControl.scoring_funcs.hide_scoring_category_score_box_input($(this).attr('data-id'))
+})
+// change the points value of a simple scoring category
+$('.scoring-value-box-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new points value
+            $('#' + data_id + '-scoringCategoryScoreBox').empty().prepend(fields.points).css({'display': 'inline'});
+            scoringControl.scoring_funcs.hide_scoring_category_score_box_input(data_id);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    });
+});
+
+
+// change selected scoring category type
+$('.scoring-category-type-select').change(function() {
+    scoringControl.scoring_funcs.change_scoring_category_create_type(this)
+});
+
+// add a scoring category
+$('.scoring-group-add-category-open-form-btn').click(function() {
+    'use_strict';
+    scoringControl.scoring_funcs.open_create_scoring_category_forms_box(this);
+})
+// close the add scoring category form
+$('.create-custom-object-form-done-btn.scoring_category').click(function() {
+    'use_strict';
+    scoringControl.scoring_funcs.close_create_scoring_category_forms_box(this);
+})
+
+// ajax for adding a simple scoring category
+$('.create-custom-object-form.scoring-category-simple').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'category added!');
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    });
+});
 
 console.log('this application has been brought to you by David Cates.');

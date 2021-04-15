@@ -44,6 +44,7 @@ from .forms import (
     ResourceProductionModifierChangeForm,
     ScoringGroupForm,
     ScoringCategorySimpleForm,
+    ScoringCategorySimpleUpdateForm,
     ScoringCategoryItemsPerPointCreateForm,
     ScoringCategoryItemsPerPointNameChangeForm,
     ScoringCategoryItemsPerPointUpdateForm,
@@ -157,6 +158,21 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
             ResourceProductionModifierChangeForm
         context['scoring_group_form'] = ScoringGroupForm
         context['scoring_groups'] = scoring_groups
+        context['scoring_cat_simple_form'] = ScoringCategorySimpleForm
+        context['scoring_cat_simple_update_form'] = \
+            ScoringCategorySimpleUpdateForm
+        context['scoring_cat_items_per_point_create_form'] = \
+            ScoringCategoryItemsPerPointCreateForm
+        context['scoring_cat_items_per_point_name_change_form'] = \
+            ScoringCategoryItemsPerPointNameChangeForm
+        context['scoring_cat_items_per_point_update_form'] = \
+            ScoringCategoryItemsPerPointUpdateForm
+        context['scoring_cat_points_per_item_form'] = \
+            ScoringCategoryPointsPerItemForm
+        context['scoring_cat_points_per_item_update_form'] = \
+            ScoringCategoryPointsPerItemForm
+
+
         return context
 
 
@@ -476,7 +492,7 @@ class ResourceDelete(LoginRequiredMixin, View):
 
 
 class ResourceNameChange(LoginRequiredMixin, View):
-    """Change a Resource quantity or production modifier """
+    """Change a Resource object's name field """
 
     def post(self, request, resource_uuid):
         return save_group_nested_object_form_and_serialize(
@@ -520,3 +536,96 @@ class ScoringGroupCreate(LoginRequiredMixin, View):
             request=self.request
         )
         return new_resource_group_response
+
+
+class ScoringGroupUpdate(LoginRequiredMixin, View):
+    """Change a ScoringGroup title"""
+
+    def post(self, request, scoring_group_uuid):
+        scoring_group = ScoringGroup.objects.get(id=scoring_group_uuid)
+        form = ResourceGroupForm(
+            request.POST or None, instance=scoring_group
+        )
+        if form.is_valid():
+            form_instance = \
+                form.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+class ScoringGroupDelete(LoginRequiredMixin, View):
+    """Delete a ScoringGroup Object"""
+
+    def post(self, request, scoring_group_uuid):
+        return delete_model_object(
+            request=self.request,
+            model=ScoringGroup,
+            uuid=scoring_group_uuid
+        )
+
+
+class ScoringCategorySimpleCreate(LoginRequiredMixin, View):
+    """Create a ScoringCategorySimple object and associate it with the group
+    that invoked the create request"""
+
+    def post(self, request, scoring_group_uuid, *args, **kwargs):
+        form = ScoringCategorySimpleForm(self.request.POST)
+
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            # add foreign key for the scoring group the new category
+            # should be linked to and save
+            form_instance.scoring_group = \
+                ScoringGroup.objects.get(
+                    id=scoring_group_uuid
+                )
+            form_instance.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+class ScoringCategorySimpleDelete(LoginRequiredMixin, View):
+    """Delete a ScoringCategorySimple object"""
+
+    def post(self, request, category_uuid):
+        category_to_delete = get_object_or_404(
+            ScoringCategorySimple, id=category_uuid
+        )
+        if category_to_delete\
+                .scoring_group.tool_session\
+                .session_owner.user.id == request.user.id:
+            category_to_delete.delete()
+            return reload_current_url(request)
+        else:
+            messages.error(request, "Insufficient Permission")
+            return redirect('user_home')
+
+
+class ScoringCategorySimpleNameChange(LoginRequiredMixin, View):
+    """Change a ScoringCategorySimple object's name field """
+
+    def post(self, request, category_uuid):
+        return save_group_nested_object_form_and_serialize(
+            request=self.request,
+            form=ScoringCategorySimpleForm,
+            model=ScoringCategorySimple,
+            obj_uuid=category_uuid)
+
+class ScoringCategorySimpleUpdate(LoginRequiredMixin, View):
+    """Change a ScoringCategorySimple object's points field """
+
+    def post(self, request, category_uuid):
+        return save_group_nested_object_form_and_serialize(
+            request=self.request,
+            form=ScoringCategorySimpleUpdateForm,
+            model=ScoringCategorySimple,
+            obj_uuid=category_uuid)

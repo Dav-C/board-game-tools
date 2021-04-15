@@ -24,6 +24,12 @@ from .views import (
     ResourceQtyChange,
     ResourceProductionModifierChange,
     ScoringGroupCreate,
+    ScoringGroupUpdate,
+    ScoringGroupDelete,
+    ScoringCategorySimpleCreate,
+    ScoringCategorySimpleDelete,
+    ScoringCategorySimpleNameChange,
+    ScoringCategorySimpleUpdate
 )
 
 urlpatterns = [
@@ -93,4 +99,24 @@ urlpatterns = [
 
     path('scoring-group-create/',
          ScoringGroupCreate.as_view(), name='scoring_group_create'),
+
+    path('scoring-group-update/<scoring_group_uuid>',
+         ScoringGroupUpdate.as_view(), name='scoring_group_update'),
+
+    path('scoring-group-delete/<scoring_group_uuid>',
+         ScoringGroupDelete.as_view(), name='scoring_group_delete'),
+
+    path('scoring-category-simple-create/<scoring_group_uuid>',
+         ScoringCategorySimpleCreate.as_view(), name='scoring-category-simple-create'),
+
+    path('scoring-category-simple-delete/<category_uuid>',
+         ScoringCategorySimpleDelete.as_view(), name='scoring_category_simple_delete'),
+
+    path('scoring-category-simple-name-change/<category_uuid>',
+         ScoringCategorySimpleNameChange.as_view(),
+         name='scoring_category_simple_name_change'),
+
+    path('scoring-category-simple-update/<category_uuid>',
+         ScoringCategorySimpleUpdate.as_view(),
+         name='scoring_category_simple_update'),
 ]

@@ -175,7 +175,7 @@ class ScoringCategorySimple(models.Model):
     )
 
     def __str__(self):
-        return f'Resource: {self.name}'
+        return f'{self.name}'
 
 
 class ScoringCategoryItemsPerPoint(models.Model):
@@ -200,7 +200,7 @@ class ScoringCategoryItemsPerPoint(models.Model):
     )
 
     def __str__(self):
-        return f'Resource: {self.name}'
+        return f'{self.name}'
 
 
 class ScoringCategoryPointsPerItem(models.Model):
@@ -220,4 +220,4 @@ class ScoringCategoryPointsPerItem(models.Model):
     )
 
     def __str__(self):
-        return f'Resource: {self.name}'
+        return f'{self.name}'

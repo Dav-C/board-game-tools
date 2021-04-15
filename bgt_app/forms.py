@@ -272,6 +272,23 @@ class ScoringCategorySimpleForm(forms.ModelForm):
     )
 
 
+class ScoringCategorySimpleUpdateForm(forms.ModelForm):
+    """Change the points field of a ScoringCategorySimple object"""
+    class Meta:
+        model = ScoringCategorySimple
+        fields = ['points']
+
+    points = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(
+            attrs={
+                'maxlength': '4',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
+
 class ScoringCategoryItemsPerPointCreateForm(forms.ModelForm):
     """Create a ScoringCategoryItemsPerPoint object"""
     class Meta:
@@ -362,7 +379,7 @@ class ScoringCategoryItemsPerPointUpdateForm(forms.ModelForm):
 
 
 class ScoringCategoryPointsPerItemForm(forms.ModelForm):
-    """Change the name of a ScoringCategoryPointsPerItem object"""
+    """Create or change the name of a ScoringCategoryPointsPerItem object"""
 
     class Meta:
         model = ScoringCategoryPointsPerItem

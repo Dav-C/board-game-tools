@@ -4,6 +4,7 @@
 {% block body_class %}tool_session_detail{% endblock body_class %}
 
 {% block page_content %}
+<div id="errorMessageWrapper" class="message-wrapper"></div>
 {# Tool selection menu and buttons to open various forms to add tools #}
 <div id="ToolSelectionMenu">
 <div id="toolCreatedSuccessMessageWrapper" class="message-wrapper"></div>
@@ -16,8 +17,8 @@
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
             <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">Add Hp Tracker</button>
-            <button id="createResourceGroupOpenFormBtn" class="add-tool-button">Resources</button>
             <button id="AddDieGroupOpenFormBtn" class="add-tool-button">Add Die Group</button>
+            <button id="createResourceGroupOpenFormBtn" class="add-tool-button">Resources</button>
         </div>
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
@@ -153,6 +154,8 @@
 {% include 'bgt_app/die_groups.html' %}
 
 {% include 'bgt_app/resource_groups.html' %}
+
+{% include 'bgt_app/scoring_groups.html' %}
     </div>
 </div>
 
