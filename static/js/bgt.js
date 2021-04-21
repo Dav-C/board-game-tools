@@ -81,6 +81,17 @@ function closeMenuCover() {
 }
 // Open and Close various forms for adding tools via the tool selection menu on
 // tool_session_detail.html
+$('#createPlayerOpenFormBtn').click(function() {
+    'use strict';
+    $('#createPlayerForm').trigger('reset');
+    $('#createPlayerFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
+    openMenuCover();
+});
+$('#createPlayerFormCancelBtn').click(function() {
+    'use strict';
+    $('#createPlayerFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
+    closeMenuCover();
+});
 $('#AddHpTrackerOpenFormBtn').click(function() {
     'use strict';
     $('#AddHpTrackerForm').trigger('reset');
@@ -141,6 +152,11 @@ function setActiveTool(activeToolWrapperClass) {
 }
 
 // Set the Hp Trackers to the active tool
+$("#OpenPlayersBtn").click(function () {
+    'use strict';
+    setActiveTool('#playersViewWrapper.tool-body');
+});
+// Set the Hp Trackers to the active tool
 $("#OpenHpTrackersBtn").click(function () {
     'use strict';
     setActiveTool('#HpTrackersViewWrapper.tool-body');
@@ -183,7 +199,7 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                     'position': 'absolute',
                     'opacity': '0'
                 });
-                messageControl.display_success_message('#toolCreatedSuccessMessageWrapper', 'tool created');
+                messageControl.display_success_message('#toolCreatedSuccessMessageWrapper', 'created successfully');
                 $(form_wrapper).css({'visibility': 'hidden', 'opacity': '0'});
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
@@ -197,6 +213,12 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
 }
 
 // ajax function calls for adding new tools
+$("#createPlayerForm").submit(newToolsFormSubmit(
+    '#createPlayerForm',
+    '#createPlayerFormWrapper',
+    '#OpenPlayersBtn'
+));
+
 $("#AddHpTrackerForm").submit(newToolsFormSubmit(
     '#AddHpTrackerForm',
     '#AddHpTrackerFormWrapper',
@@ -489,6 +511,7 @@ $('.die-group-update-form').submit(function(e) {
             $('#' + data_id + '-cancelDieGroupTitleChangeBtn').css({'display': 'none'});
             $('#' + data_id + '-dieGroupDeleteBtn').css({'display': 'none'});
             $('.delete-btn-small.' + data_id).css({'display': 'none'});
+            $('.die-rolled-value.' + data_id).css({'display': 'flex'});
             console.log('ajaxSuccess');
         },
         error: function (response) {
@@ -1064,6 +1087,7 @@ scoringControl = {
             $(data_id + '-nameConfirmChangeBtn').css({'display':'inline'});
             $(data_id + '-nameCancelChangeBtn').css({'display':'inline'});
             $(data_id + '-scoringValueBoxForm').css({'display': 'none'});
+            $(data_id + '-scoringCategoryScoreBox').css({'display': 'none'});
             $(data_id + '-scoringCategoryNameChangeForm').css({'width': '100%'});
         },
         hide_scoring_category_title_change_and_delete_btn: function(data_id_value) {
@@ -1074,7 +1098,8 @@ scoringControl = {
             $(data_id + '-nameConfirmChangeBtn').css({'display':'none'});
             $(data_id + '-nameCancelChangeBtn').css({'display':'none'});
             $(data_id + '-scoringValueBoxForm').css({'display': 'flex'});
-             $(data_id + '-scoringCategoryNameChangeForm').css({'width': '70%'});
+            $(data_id + '-scoringCategoryScoreBox').css({'display': 'inline'});
+            $(data_id + '-scoringCategoryNameChangeForm').css({'width': '70%'});
         },
         reveal_scoring_category_score_box_input: function(data_id_value) {
             let data_id = '#' + data_id_value;
@@ -1090,6 +1115,9 @@ scoringControl = {
             $(data_id + '-valueCancelChangeBtn').css({'display':'inline'});
             $(data_id + '-scoringCategoryName').css({'display':'none'});
             $(data_id + '-scoringCategoryNameDisabled').removeClass('absolute-hidden');
+            $(data_id + '-scoringValueBoxForm-ipp').css({'height': '24.5rem'});
+            $(data_id + '-scoringValueBoxForm-ppi').css({'height': '18rem'});
+
         },
         hide_scoring_category_score_box_input: function(data_id_value) {
             let data_id = '#' + data_id_value;
@@ -1100,6 +1128,8 @@ scoringControl = {
             $(data_id + '-valueCancelChangeBtn').css({'display':'none'});
             $(data_id + '-scoringCategoryName').css({'display':'flex'});
             $(data_id + '-scoringCategoryNameDisabled').addClass('absolute-hidden')
+            $(data_id + '-scoringValueBoxForm-ipp').css({'height': '0'});
+            $(data_id + '-scoringValueBoxForm-ppi').css({'height': '0'});
         },
         open_create_scoring_category_forms_box: function(this_value) {
             let data_id = '#' + $(this_value).attr('data-id');
@@ -1115,11 +1145,29 @@ scoringControl = {
             window.location.reload(true);
             closeToolPageCover();
         },
-        change_scoring_category_create_type: function(this_value) {
-            let data_id = $(this_value).attr('data-id');
-            let active_form = $('#' + data_id + this_value.value)
-            $('.create-custom-object-form.' + data_id).addClass('absolute-hidden')
-            active_form.removeClass('absolute-hidden')
+        calculate_items_per_point_score: function(data_id) {
+            let total_items = parseInt($('#' + data_id + '-ppiTotalItems').val());
+            let items_per_group = parseInt($('#' + data_id + '-ppiItemsPerGroup').val());
+            let points_per_group = parseInt($('#' + data_id + '-ppiPointsPerGroup').val());
+            let rounding_value = $('#' + data_id + '-roundingValue').text().trim();
+            let points_input_field = $('#' + data_id + '-ippScoringCategoryScoreBoxInputWrapper input')
+            let calculated_value = 0;
+            let final_value = 0;
+            calculated_value = (total_items / items_per_group) * points_per_group;
+            switch (rounding_value) {
+                case 'none':
+                    final_value = calculated_value.toFixed(2);
+                    points_input_field.val(final_value);
+                    break;
+                case 'up':
+                    final_value = Math.ceil(calculated_value);
+                    points_input_field.val(final_value);
+                    break;
+                case 'down':
+                    final_value = Math.floor(calculated_value);
+                    points_input_field.val(final_value);
+                    break;
+            }
         },
     }
 }
@@ -1133,14 +1181,14 @@ $('.scoring-group-title').click(function() {
     let scoring_group_title_input = $("#" + data_id + '-scoringGroupTitleInput');
     let confirm_scoring_group_title_change_btn = $("#" + data_id + '-confirmScoringGroupTitleChangeBtn');
     let cancel_scoring_group_title_change_btn = $("#" + data_id + '-cancelScoringGroupTitleChangeBtn');
-    let scoring_group_add_category_open_form_btn = $('.scoring-group-add-category-open-form-btn');
+    let scoring_group_control_box_btn = $('.scoring-group-control-box-btn');
     let scoring_group_delete_btn = $("#" + data_id + '-scoringGroupDeleteBtn');
 
 
     function revealScoringGroupTitleChangeBtns() {
         scoring_group_title_box.css({'display': 'none'});
         scoring_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        scoring_group_add_category_open_form_btn.css({'display': 'none'});
+        scoring_group_control_box_btn.css({'display': 'none'});
         confirm_scoring_group_title_change_btn.css({'display': 'inline'});
         cancel_scoring_group_title_change_btn.css({'display': 'inline'});
         scoring_group_delete_btn.css({'display': 'inline'});
@@ -1149,7 +1197,7 @@ $('.scoring-group-title').click(function() {
     function hideScoringGroupTitleChangeBtns() {
         scoring_group_title_box.css({'display': 'inline'});
         scoring_group_title_input.css({'display': 'none'});
-        scoring_group_add_category_open_form_btn.css({'display': 'inline'});
+        scoring_group_control_box_btn.css({'display': 'inline'});
         confirm_scoring_group_title_change_btn.css({'display': 'none'});
         cancel_scoring_group_title_change_btn.css({'display': 'none'});
         scoring_group_delete_btn.css({'display': 'none'});
@@ -1186,7 +1234,7 @@ $('.scoring-group-form').submit(function(e) {
                                                 .empty()
                                                 .prepend(fields.title);
             $(data_id + '-scoringGroupTitleInput').css({'display': 'none'});
-            $('.scoring-group-add-category-open-form-btn').css({'display': 'inline'});
+            $('.scoring-group-control-box-btn').css({'display': 'inline'});
             $(data_id + '-confirmScoringGroupTitleChangeBtn').css({'display': 'none'});
             $(data_id + '-cancelScoringGroupTitleChangeBtn').css({'display': 'none'});
             $(data_id + '-scoringGroupDeleteBtn').css({'display': 'none'});
@@ -1270,10 +1318,40 @@ $('.scoring-value-box-form').submit(function(e) {
     });
 });
 
+// calculate an items per point scoring category and submit the form
+$('.scoring-category-value-box-confirm-btn.ipp').click(function() {
+    let data_id = $(this).attr('data-id');
+    scoringControl.scoring_funcs.calculate_items_per_point_score(data_id);
+    $('#' + data_id + '-scoringValueBoxForm-ipp').submit();
+})
 
-// change selected scoring category type
-$('.scoring-category-type-select').change(function() {
-    scoringControl.scoring_funcs.change_scoring_category_create_type(this)
+
+// change the points value of an items per point scoring category
+$('.scoring-value-box-form.ipp').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    $('.disable-before-submit').prop('disabled', true);
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // display the new points value
+            $('#' + data_id + '-scoringCategoryScoreBox').empty().prepend(fields.points).css({'display': 'inline'});
+            scoringControl.scoring_funcs.hide_scoring_category_score_box_input(data_id);
+            $('.disable-before-submit').prop('disabled', false);
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+            $('.disable-before-submit').prop('disabled', false);
+        }
+    });
 });
 
 // add a scoring category
@@ -1287,8 +1365,8 @@ $('.create-custom-object-form-done-btn.scoring_category').click(function() {
     scoringControl.scoring_funcs.close_create_scoring_category_forms_box(this);
 })
 
-// ajax for adding a simple scoring category
-$('.create-custom-object-form.scoring-category-simple').submit(function(e) {
+// ajax for adding a scoring category
+$('.create-custom-object-form.scoring-category').submit(function(e) {
     'use strict';
     e.preventDefault();
     let serialized_data = $(this).serialize();

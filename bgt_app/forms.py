@@ -8,9 +8,8 @@ from .models import (
     ResourceGroup,
     Resource,
     ScoringGroup,
-    ScoringCategorySimple,
-    ScoringCategoryItemsPerPoint,
-    ScoringCategoryPointsPerItem,
+    ScoringCategory,
+    Player,
 )
 
 
@@ -28,6 +27,32 @@ class ToolSessionForm(forms.ModelForm):
         ),
     )
 
+
+class PlayerForm(forms.ModelForm):
+    """Create and update Player objects"""
+    class Meta:
+        model = Player
+        fields = ['name', 'color']
+
+    name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
+    color = forms.ChoiceField(
+        required=True,
+        choices=Player.player_color_choices,
+        widget=forms.Select(
+            attrs={
+                'autocomplete': 'off',
+            },
+        ),
+    )
 
 class HpTrackerAddForm(forms.ModelForm):
     """Create new HpTracker objects"""
@@ -254,59 +279,48 @@ class ScoringGroupForm(forms.ModelForm):
     )
 
 
-class ScoringCategorySimpleForm(forms.ModelForm):
-    """Create a ScoringCategorySimple object or update the name field"""
+class ScoringCategoryCreateForm(forms.ModelForm):
+    """Create a ScoringCategory object """
     class Meta:
-        model = ScoringCategorySimple
-        fields = ['name']
+        model = ScoringCategory
+        fields = ['name',
+                  'points_gained_or_lost',
+                  'items_per_group',
+                  'rounding']
 
     name = forms.CharField(
         required=True,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Name',
+                'placeholder': 'cards, coins, etc.',
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
         ),
     )
-
-
-class ScoringCategorySimpleUpdateForm(forms.ModelForm):
-    """Change the points field of a ScoringCategorySimple object"""
-    class Meta:
-        model = ScoringCategorySimple
-        fields = ['points']
-
-    points = forms.IntegerField(
+    points_gained_or_lost = forms.IntegerField(
         required=True,
         widget=forms.NumberInput(
             attrs={
+                'placeholder': 'number',
                 'maxlength': '4',
                 'autocomplete': 'off',
             },
         ),
     )
-
-
-class ScoringCategoryItemsPerPointCreateForm(forms.ModelForm):
-    """Create a ScoringCategoryItemsPerPoint object"""
-    class Meta:
-        model = ScoringCategoryItemsPerPoint
-        fields = ['name', 'round_up_down']
-
-    name = forms.CharField(
+    items_per_group = forms.IntegerField(
         required=True,
-        widget=forms.TextInput(
+        widget=forms.NumberInput(
             attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
+                'placeholder': 'number',
+                'maxlength': '4',
                 'autocomplete': 'off',
             },
         ),
-    ),
-    round_up_down = forms.ChoiceField(
+    )
+    rounding = forms.ChoiceField(
         required=True,
+        choices=ScoringCategory.rounding_choices,
         widget=forms.Select(
             attrs={
                 'autocomplete': 'off',
@@ -315,119 +329,37 @@ class ScoringCategoryItemsPerPointCreateForm(forms.ModelForm):
     )
 
 
-class ScoringCategoryItemsPerPointNameChangeForm(forms.ModelForm):
-    """Change the name of a ScoringCategoryItemsPerPoint object"""
-    class Meta:
-        model = ScoringCategoryItemsPerPoint
-        fields = ['name', 'round_up_down']
+# class ScoringCategoryNameChangeForm(forms.ModelForm):
+#     """Change the name of a ScoringCategory object """
+#     class Meta:
+#         model = ScoringCategory
+#         fields = ['name']
+#
+#     name = forms.CharField(
+#         required=True,
+#         widget=forms.TextInput(
+#             attrs={
+#                 'placeholder': 'Name',
+#                 'maxlength': '40',
+#                 'autocomplete': 'off',
+#             },
+#         ),
+#     )
+#
+#
+# class ScoringCategoryPointsForm(forms.ModelForm):
+#     """Change the points field of a ScoringCategorySimple object"""
+#     class Meta:
+#         model = ScoringCategory
+#         fields = ['points']
+#
+#     points = forms.IntegerField(
+#         required=True,
+#         widget=forms.NumberInput(
+#             attrs={
+#                 'maxlength': '4',
+#                 'autocomplete': 'off',
+#             },
+#         ),
+#     )
 
-    name = forms.CharField(
-        required=True,
-        widget=forms.TextInput(
-            attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-
-
-class ScoringCategoryItemsPerPointUpdateForm(forms.ModelForm):
-    """Update a ScoringCategoryItemsPerPoint object"""
-    class Meta:
-        model = ScoringCategoryItemsPerPoint
-        fields = ['points', 'scoring_items_qty',
-                  'items_per_point_trigger', 'points_per_point_trigger']
-
-    points = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-    scoring_items_qty = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-    items_per_point_trigger = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-    points_per_point_trigger = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-
-
-class ScoringCategoryPointsPerItemForm(forms.ModelForm):
-    """Create or change the name of a ScoringCategoryPointsPerItem object"""
-
-    class Meta:
-        model = ScoringCategoryPointsPerItem
-        fields = ['name']
-
-    name = forms.CharField(
-        required=True,
-        widget=forms.TextInput(
-            attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
-                'autocomplete': 'off',
-            },
-        ),
-    )
-
-
-class ScoringCategoryPointsPerItemUpdateForm(forms.ModelForm):
-    """Update a ScoringCategoryPointsPerItem object"""
-
-    class Meta:
-        model = ScoringCategoryPointsPerItem
-        fields = ['points', 'scoring_items_qty', 'points_per_item']
-
-    points = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-    scoring_items_qty = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    ),
-    points_per_item = forms.IntegerField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                'maxlength': '5',
-                'autocomplete': 'off',
-            },
-        ),
-    )

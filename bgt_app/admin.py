@@ -8,9 +8,8 @@ from .models import (
     ResourceGroup,
     Resource,
     ScoringGroup,
-    ScoringCategorySimple,
-    ScoringCategoryItemsPerPoint,
-    ScoringCategoryPointsPerItem,
+    ScoringCategory,
+    Player,
 )
 
 admin.site.register(UserProfile)
@@ -21,6 +20,6 @@ admin.site.register(DieStandard)
 admin.site.register(ResourceGroup)
 admin.site.register(Resource)
 admin.site.register(ScoringGroup)
-admin.site.register(ScoringCategorySimple)
-admin.site.register(ScoringCategoryItemsPerPoint)
-admin.site.register(ScoringCategoryPointsPerItem)
+admin.site.register(ScoringCategory)
+admin.site.register(Player)
+

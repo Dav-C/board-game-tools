@@ -5,185 +5,236 @@
 <div id="scoringItemCreatedSuccessMessageWrapper" class="message-wrapper"></div>
 <div id="scoringGroupsViewWrapper" class="tool-body">
     {% for scoring_group in scoring_groups %}
-    <div class="scoring-group-box">
-        <form method="POST" action="{% url 'scoring_group_update' scoring_group.id %}"
-              id="{{ scoring_group.id }}-scoringGroupForm"
-              data-id="{{ scoring_group.id }}"
-              class="scoring-group-form">
-            <div class="tool-title-box">
-                {% csrf_token %}
-                <div id="{{ scoring_group.id }}-scoringGroupTitle" class="tool-title scoring-group-title">{{ scoring_group.title }}</div>
-                <div id="{{ scoring_group.id }}-scoringGroupTitleInput" class="tool-title no-display">
-                    {{ scoring_group_form.title|add_class:"tool-title-input"}}
+        <div class="scoring-group-box">
+            <form method="POST" action="{% url 'scoring_group_update' scoring_group.id %}"
+                  id="{{ scoring_group.id }}-scoringGroupForm"
+                  data-id="{{ scoring_group.id }}"
+                  class="scoring-group-form">
+                <div class="tool-title-box">
+                    {% csrf_token %}
+                    <div id="{{ scoring_group.id }}-scoringGroupTitle"
+                         class="tool-title scoring-group-title">
+                        {{ scoring_group.title }}
+                    </div>
+                    <div id="{{ scoring_group.id }}-scoringGroupTitleInput"
+                         class="tool-title no-display">
+                        {{ scoring_group_form.title|add_class:"tool-title-input"}}
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
 {# resource group control box #}
-        <div class="scoring-group-control-box">
-            <button type="button" id="{{ scoring_group.id }}-cancelScoringGroupTitleChangeBtn" class="cancel-change-btn">cancel</button>
-            <button data-id="{{ scoring_group.id }}" class="scoring-group-add-category-open-form-btn">add</button>
-            <button type="submit" id="{{ scoring_group.id }}-confirmScoringGroupTitleChangeBtn" class="confirm-change-btn" form="{{ scoring_group.id }}-scoringGroupForm">ok</button>
-        </div>
+            <div class="scoring-group-control-box">
+                <button type="button"
+                        id="{{ scoring_group.id }}-cancelScoringGroupTitleChangeBtn"
+                        class="cancel-change-btn">cancel
+                </button>
+                <button data-id="{{ scoring_group.id }}"
+                        class="scoring-group-add-player-open-form-btn scoring-group-control-box-btn">+ player
+                </button>
+                <button type="submit"
+                        id="{{ scoring_group.id }}-confirmScoringGroupTitleChangeBtn"
+                        class="confirm-change-btn" form="{{ scoring_group.id }}-scoringGroupForm">ok
+                </button>
+                <button data-id="{{ scoring_group.id }}"
+                        class="scoring-group-add-category-open-form-btn scoring-group-control-box-btn">+ criteria
+                </button>
+            </div>
 {# delete scoring group form #}
-        <form action="{% url 'scoring_group_delete' scoring_group.id %}?next={{ request.get_full_path }}" method="POST" class="delete-tool-form">
-            {% csrf_token %}
-            <button id="{{ scoring_group.id }}-scoringGroupDeleteBtn" class="delete-btn-large">delete this scoring group</button>
-        </form>
-
-{# add new scoring category forms box #}
+            <form id="{{ scoring_group.id }}-deleteToolForm"
+                  class="delete-tool-form"
+                  action="{% url 'scoring_group_delete' scoring_group.id %}?next={{ request.get_full_path }}"
+                  method="POST">
+                {% csrf_token %}
+                <button id="{{ scoring_group.id }}-scoringGroupDeleteBtn"
+                        class="delete-btn-large">delete this scoring group
+                </button>
+            </form>
+{# create new scoring categories #}
             <div id="{{ scoring_group.id }}-scoringCategoryCreateFormWrapper" class="create-new-object-form-wrapper">
                 <div class="form-title-box">
                     <span class="form-title-text">create scoring category</span>
                 </div>
-{# select type of scoring category to create #}
-                <select name="scoring category type" id="{{ scoring_group.id }}scoringCategoryType" data-id="{{ scoring_group.id }}" class="scoring-category-type-select">
-                    <option value="" disabled selected>scoring category type</option>
-                    <option value="-scoringCategorySimpleCreateForm">simple</option>
-                    <option value="-scoringCategoryIPPCreateForm">items per point</option>
-                    <option value="-scoringCategoryPPICreateForm">points per item</option>
-                </select>
-{# create simple scoring categories#}
-                <form action="{% url 'scoring-category-simple-create' scoring_group.id %}"
-                      method="POST" id="{{ scoring_group.id }}-scoringCategorySimpleCreateForm" class="{{ scoring_group.id }} create-custom-object-form scoring-category-simple absolute-hidden">
-                {% csrf_token %}
+                <br />
+                <form id="{{ scoring_group.id }}-scoringCategoryCreateForm"
+                      class="{{ scoring_group.id }} create-custom-object-form scoring-category"
+                      action="{% url 'scoring_category_create' scoring_group.id %}"
+                      method="POST">
+                    {% csrf_token %}
                     <div class="create-object-form-row">
-                        <div id={{ scoring_group.id }}-createScoringCategorySimpleNameField class="create-scoring-category-name-input-wrapper">
-                            {{ scoring_cat_simple_form.name|add_class:"create-scoring-category-name-input" }}
+                        <div id={{ scoring_group.id }}-createScoringCategoryCategoryNameField
+                             class="create-scoring-category-input-wrapper">
+                            {{ scoring_category_create_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}
+                            <span class="create-scoring-category-field-text">points</span>
                         </div>
                     </div>
+                    <div class="create-object-form-row">
+                        <div id={{ scoring_group.id }}-createScoringCategoryTypeField
+                             class="create-scoring-category-input-wrapper">
+                            <span class="create-scoring-category-field-text">for every</span>
+                            {{ scoring_category_create_form.items_per_group|add_class:"create-scoring-category-input" }}
+                        </div>
+                    </div>
+                    <div class="create-object-form-row">
+                        <div id={{ scoring_group.id }}-createScoringCategoryRoundingField
+                             class="create-scoring-category-input-wrapper">
+                            {{ scoring_category_create_form.name|add_class:"create-scoring-category-input" }}
+                        </div>
+                    </div>
+                <br />
+                    <div class="create-object-form-row">
+                        <span class="create-scoring-category-field-text">rounding</span>
+                        {{ scoring_category_create_form.rounding|add_class:"create-scoring-category-input" }}
+                    </div>
+                    <br>
                     <div class="create-object-form-row">
                         <button type="submit" class="blue-btn smaller">create</button>
                     </div>
                 </form>
-{# create items per point scoring categories #}
-                <form action=""
-                      method="POST" id="{{ scoring_group.id }}-scoringCategoryIPPCreateForm" class="{{ scoring_group.id }} create-custom-object-form scoring-category-ipp absolute-hidden">
-                {% csrf_token %}
-                    <div class="create-object-form-row">
-                        <div id={{ scoring_group.id }}-createScoringCategoryIPPNameField class="create-scoring-category-name-input-wrapper">
-{#                            {{ scoring_cat_items_per_point.name|add_class:"create-scoring-category-name-input" }}#} ITEMS PER POINT
-                        </div>
-                    </div>
-                    <div class="create-object-form-row">
-                        <button type="submit" class="blue-btn smaller">create</button>
-                    </div>
-                </form>
-{# create points per item scoring categories#}
-                <form action=""
-                      method="POST" id="{{ scoring_group.id }}-scoringCategoryPPICreateForm" class="{{ scoring_group.id }} create-custom-object-form scoring-category-ppi absolute-hidden">
-                {% csrf_token %}
-                    <div class="create-object-form-row">
-                        <div id={{ scoring_group.id }}-createScoringCategoryPPINameField class="create-scoring-category-name-input-wrapper">
-{#                            {{ scoring_cat_items_per_point.name|add_class:"create-scoring-category-name-input" }}#} POINTS PER ITEM
-                        </div>
-                    </div>
-                    <div class="create-object-form-row">
-                        <button type="submit" class="blue-btn smaller">create</button>
-                    </div>
-                </form>
-                <button class="blue-btn smaller create-custom-object-form-done-btn scoring_category" data-id="{{ scoring_group.id }}">done</button>
+                <button class="blue-btn smaller create-custom-object-form-done-btn scoring_category"
+                        data-id="{{ scoring_group.id }}">done
+                </button>
             </div>
 {# user's scoring categories #}
-        {% for category_simple in scoring_group.scoring_categories_simple.all %}
-            <div class="scoring-category-box">
-            <div class="scoring-category-box-row">
-                <form action="{% url 'scoring_category_simple_name_change' category_simple.id %}" method="POST" data-id="{{ category_simple.id }}" id="{{ category_simple.id }}-scoringCategoryNameChangeForm" class="scoring-category-name-change-form">
-                    {% csrf_token %}
-                        <div id="{{ category_simple.id }}-scoringCategoryName" class="scoring-category-name-box" data-id="{{ category_simple.id }}">{{ category_simple.name }}</div>
-                        <div id="{{ category_simple.id }}-scoringCategoryNameDisabled" class="scoring-category-name-box-disabled absolute-hidden" data-id="{{ category_simple.id }}">{{ category_simple.name }}</div>
-                        <div id="{{ category_simple.id }}-scoringCategoryNameInputWrapper" class="scoring-category-name-input-wrapper absolute-hidden">{{ scoring_cat_simple_form.name|add_class:"scoring-category-name-input" }}</div>
-                        <button id="{{ category_simple.id }}-nameConfirmChangeBtn" class="confirm-change-btn scoring-category-name-change-confirm-btn" data-id="{{ category_simple.id }}">&#10003;</button>
-                        <button id="{{ category_simple.id }}-nameCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-name-change-cancel-btn" data-id="{{ category_simple.id }}">&#10006;</button>
-                </form>
-                <form action="{% url 'scoring_category_simple_update' category_simple.id %}" id="{{ category_simple.id }}-scoringValueBoxForm" class="scoring-value-box-form" data-id="{{ category_simple.id }}">
-                    {% csrf_token %}
-                    <div id="{{ category_simple.id }}-scoringCategoryScoreBox" class="scoring-category-score-box" data-id="{{ category_simple.id }}">{{ category_simple.points }}</div>
-                    <div id="{{ category_simple.id }}-scoringCategoryScoreBoxInputWrapper" class="scoring-category-score-box-input-wrapper absolute-hidden">{{ scoring_cat_simple_update_form.points|add_class:"scoring-category-score-box" }}</div>
-                </form>
-            </div>
-            <div id="{{ category_simple.id }}-valueChangeConfirmCancelBtns" class="scoring-category-box-row">
-                <button  form="{{ category_simple.id }}-scoringValueBoxForm" id="{{ category_simple.id }}-valueConfirmChangeBtn" class="confirm-change-btn scoring-category-value-box-confirm-btn" data-id="{{ category_simple.id }}">&#10003;</button>
-                <button id="{{ category_simple.id }}-valueCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-value-box-cancel-btn" data-id="{{ category_simple.id }}">&#10006;</button>
-            </div>
-
-
-{# delete single scoring category form#}
-{#                <form action="{% url "resource_qty_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceQtyChangeForm" class="resource-qty-change-form">#}
-{#                    {% csrf_token %}#}
-{#                        <div class="resource-box-row">#}
-{#                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn resource-decrease">-</Button>#}
-{#                            <div id="{{ resource.id }}-resourceValueChange" class="resource-value-change"></div>#}
-{#                            <div id="{{ resource.id }}-resourceQtyInput" class="resource-qty-input-hidden">{{ resource_qty_change_form.quantity }}</div>#}
-{#                            <div id="{{ resource.id }}-resourceQtyBox" class="resource-qty-box">{{ resource.quantity }}</div>#}
-{#                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn resource-increase">+</Button>#}
-{#                        </div>#}
-{#                </form>#}
-{##}
-{#                    <div class="create-object-form-row">#}
-{#                        <div id="{{ scoring.id }}-resourceProductionAvailableCheckbox" class="resource-production-available-checkbox-wrapper">#}
-{#                            {{ resource_create_form.production_available|add_class:"resource-production-available-checkbox" }} enable production#}
-{#                        </div>#}
-{#                    </div>#}
-                <div class="scoring-category-box-row">
-                    <button form="{{ resource.id }}-deleteSingleScoringCategoryForm" id="{{ category_simple.id }}-scoringCategoryDeleteButton" class="delete-btn-large scoring-category-delete-button {{ category_simple.id }}">delete this category</button>
-                    <form method="POST" id="{{ resource.id }}-deleteSingleScoringCategoryForm" action="{% url 'scoring_category_simple_delete' category_simple.id %}?next={{ request.get_full_path }}">
-                    {% csrf_token %}
-                    </form>
+        {% for scoring_category in scoring_group.scoring_categories.all %}
+{#simple scoring categories#}
+                <div class="scoring-category-box">
+                    <div class="scoring-category-box-row">
+                        <form action="" method="POST" data-id="{{ scoring_category.id }}" id="{{ scoring_category.id }}-scoringCategoryNameChangeForm" class="scoring-category-name-change-form">
+                            {% csrf_token %}
+                                <div id="{{ scoring_category.id }}-scoringCategoryName" class="scoring-category-name-box" data-id="{{ scoring_category.id }}">{{ scoring_category.name }}</div>
+                                <div id="{{ scoring_category.id }}-scoringCategoryNameDisabled" class="scoring-category-name-box-disabled absolute-hidden" data-id="{{ scoring_category.id }}">{{ scoring_category.name }}</div>
+                                <div id="{{ scoring_category.id }}-scoringCategoryNameInputWrapper" class="scoring-category-name-input-wrapper absolute-hidden">{{ scoring_category_name_change_form.name|add_class:"scoring-category-name-input" }}</div>
+                                <button id="{{ scoring_category.id }}-nameConfirmChangeBtn" class="confirm-change-btn scoring-category-name-change-confirm-btn" data-id="{{ scoring_category.id }}">&#10003;</button>
+                                <button id="{{ scoring_category.id }}-nameCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-name-change-cancel-btn" data-id="{{ scoring_category.id }}">&#10006;</button>
+                        </form>
+                        <form action="" id="{{ scoring_category.id }}-scoringValueBoxForm" class="scoring-value-box-form" data-id="{{ scoring_category.id }}">
+                            {% csrf_token %}
+                            <div id="{{ scoring_category.id }}-scoringCategoryScoreBox" class="scoring-category-score-box" data-id="{{ scoring_category.id }}">{{ scoring_category.points }}</div>
+                            <div id="{{ scoring_category.id }}-scoringCategoryScoreBoxInputWrapper" class="scoring-category-score-box-input-wrapper absolute-hidden">{{ scoring_category_points_form.points|add_class:"scoring-category-score-box" }}</div>
+                        </form>
+                    </div>
+                    <div id="{{ scoring_category.id }}-valueChangeConfirmCancelBtns" class="scoring-category-box-row">
+                        <button  form="{{ scoring_category.id }}-scoringValueBoxForm" id="{{ scoring_category.id }}-valueConfirmChangeBtn" class="confirm-change-btn scoring-category-value-box-confirm-btn" data-id="{{ scoring_category.id }}">&#10003;</button>
+                        <button id="{{ scoring_category.id }}-valueCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-value-box-cancel-btn" data-id="{{ scoring_category.id }}">&#10006;</button>
+                    </div>
+                    <div class="scoring-category-box-row">
+                        <button form="{{ scoring_category.id }}-deleteSingleScoringCategoryForm" id="{{ scoring_category.id }}-scoringCategoryDeleteButton" class="delete-btn-large scoring-category-delete-button {{ scoring_category.id }}">delete this category</button>
+{#                        <form method="POST" id="{{ scoring_category.id }}-deleteSingleScoringCategoryForm" action="{% url 'scoring_category_delete' scoring_category.id %}?next={{ request.get_full_path }}">#}
+{#                        {% csrf_token %}#}
+{#                        </form>#}
+                    </div>
                 </div>
-            </div>
-    {% empty %}
-        <span class="large-text"><i>add some scoring categories.</i></span>
-    {% endfor %}
+{# items per point categories #}
+{#            {% elif scoring_category.type == 'items_per_point' %}#}
+{#                <div class="scoring-category-box">#}
+{#                    <div class="scoring-category-box-row">#}
+{#                        <form action="{% url 'scoring_category_name_change' scoring_category.id %}" method="POST" data-id="{{ scoring_category.id }}" id="{{ scoring_category.id }}-scoringCategoryNameChangeForm" class="scoring-category-name-change-form">#}
+{#                            {% csrf_token %}#}
+{#                                <div id="{{ scoring_category.id }}-scoringCategoryName" class="scoring-category-name-box" data-id="{{ scoring_category.id }}">{{ scoring_category.name }}</div>#}
+{#                                <div id="{{ scoring_category.id }}-scoringCategoryNameDisabled" class="scoring-category-name-box-disabled absolute-hidden" data-id="{{ scoring_category.id }}">{{ scoring_category.name }}</div>#}
+{#                                <div id="{{ scoring_category.id }}-scoringCategoryNameInputWrapper" class="scoring-category-name-input-wrapper absolute-hidden">{{ scoring_category_name_change_form.name|add_class:"scoring-category-name-input" }}</div>#}
+{#                                <button id="{{ scoring_category.id }}-nameConfirmChangeBtn" class="confirm-change-btn scoring-category-name-change-confirm-btn" data-id="{{ scoring_category.id }}">&#10003;</button>#}
+{#                                <button id="{{ scoring_category.id }}-nameCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-name-change-cancel-btn" data-id="{{ scoring_category.id }}">&#10006;</button>#}
+{#                        </form>#}
+{#                        <div id="{{ scoring_category.id }}-scoringCategoryScoreBox" class="scoring-category-score-box ipp" data-id="{{ scoring_category.id }}">{{ scoring_category.points }}</div>#}
+{#                        </form>#}
+{#                    </div>#}
+{# update scoring category items per point values #}
+{#                    <div class="scoring-category-box-row">#}
+{#                        <form action="{% url 'scoring_category_points_update' scoring_category.id %}" id="{{ scoring_category.id }}-scoringValueBoxForm-ipp" class="scoring-value-box-form ipp extended" data-id="{{ scoring_category.id }}">#}
+{#                            {% csrf_token %}#}
+{#                            <div id="{{ scoring_category.id }}-ippScoringCategoryScoreBoxInputWrapper" class="absolute-hidden">{{ scoring_category_points_form.points }}</div>#}
+{#                            <div id="{{ scoring_category.id }}-roundingValue" class="absolute-hidden">{{ scoring_category.rounding }}</div>#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                <span class="scoring-value-field-text">how many items total? (coins, cards, resources etc.)</span>#}
+{#                                <input type="number" placeholder="0" name="{{ scoring_category.id }}-ppiTotalItems" id="{{ scoring_category.id }}-ppiTotalItems" class="scoring-category-score-box ipp disable-before-submit">#}
+{#                            </div>#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                <span class="scoring-value-field-text">how many of these items are needed to score points?</span>#}
+{#                               <input type="number" placeholder="0" name="{{ scoring_category.id }}-ppiItemsPerGroup" id="{{ scoring_category.id }}-ppiItemsPerGroup" class="scoring-category-score-box ipp disable-before-submit">#}
+{#                            </div>#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                <span class="scoring-value-field-text">how many points gained per group of these items?</span>#}
+{#                                <input type="number" placeholder="0" name="{{ scoring_category.id }}-ppiPointsPerGroup" id="{{ scoring_category.id }}-ppiPointsPerGroup" class="scoring-category-score-box ipp disable-before-submit">#}
+{#                            </div>#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                {% if scoring_category.rounding == 'none' %}#}
+{#                                    <span class="scoring-value-field-text secondary-text">points are not rounded</span>#}
+{#                                {% else %}#}
+{#                                    <span class="scoring-value-field-text secondary-text">points are rounded {{ scoring_category.rounding }}</span>#}
+{#                                {% endif %}#}
+{#                            </div>#}
+{#                            <div id="{{ scoring_category.id }}-valueChangeConfirmCancelBtns" class="scoring-category-box-row">#}
+{#                                <button  form="{{ scoring_category.id }}-scoringValueBoxForm-ipp" type="button" id="{{ scoring_category.id }}-valueConfirmChangeBtn" class="confirm-change-btn scoring-category-value-box-confirm-btn ipp" data-id="{{ scoring_category.id }}">&#10003;</button>#}
+{#                                <button id="{{ scoring_category.id }}-valueCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-value-box-cancel-btn" data-id="{{ scoring_category.id }}">&#10006;</button>#}
+{#                            </div>#}
+{#                        </form>#}
+{#                    </div>#}
+{#                    <div class="scoring-category-box-row">#}
+{#                        <button form="{{ scoring_category.id }}-deleteSingleScoringCategoryForm" id="{{ scoring_category.id }}-scoringCategoryDeleteButton" class="delete-btn-large scoring-category-delete-button {{ scoring_category.id }}">delete this category</button>#}
+{#                        <form method="POST" id="{{ scoring_category.id }}-deleteSingleScoringCategoryForm" action="{% url 'scoring_category_delete' scoring_category.id %}?next={{ request.get_full_path }}">#}
+{#                        {% csrf_token %}#}
+{#                        </form>#}
+{#                    </div>#}
+{#                </div>#}
+{# points per item #}
+{#            {% elif scoring_category.type == 'points_per_item' %}#}
+{#                <div class="scoring-category-box">#}
+{#                    <div class="scoring-category-box-row">#}
+{#                        <form action="{% url 'scoring_category_name_change' scoring_category.id %}" method="POST" data-id="{{ scoring_category.id }}" id="{{ scoring_category.id }}-scoringCategoryNameChangeForm" class="scoring-category-name-change-form">#}
+{#                            {% csrf_token %}#}
+{#                                <div id="{{ scoring_category.id }}-scoringCategoryName" class="scoring-category-name-box" data-id="{{ scoring_category.id }}">{{ scoring_category.name }}</div>#}
+{#                                <div id="{{ scoring_category.id }}-scoringCategoryNameDisabled" class="scoring-category-name-box-disabled absolute-hidden" data-id="{{ scoring_category.id }}">{{ scoring_category.name }}</div>#}
+{#                                <div id="{{ scoring_category.id }}-scoringCategoryNameInputWrapper" class="scoring-category-name-input-wrapper absolute-hidden">{{ scoring_category_name_change_form.name|add_class:"scoring-category-name-input" }}</div>#}
+{#                                <button id="{{ scoring_category.id }}-nameConfirmChangeBtn" class="confirm-change-btn scoring-category-name-change-confirm-btn" data-id="{{ scoring_category.id }}">&#10003;</button>#}
+{#                                <button id="{{ scoring_category.id }}-nameCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-name-change-cancel-btn" data-id="{{ scoring_category.id }}">&#10006;</button>#}
+{#                        </form>#}
+{#                        <div id="{{ scoring_category.id }}-scoringCategoryScoreBox" class="scoring-category-score-box ipp" data-id="{{ scoring_category.id }}">{{ scoring_category.points }}</div>#}
+{#                        </form>#}
+{#                    </div>#}
+{# update scoring category points per item values #}
+{#                    <div class="scoring-category-box-row">#}
+{#                        <form action="{% url 'scoring_category_points_update' scoring_category.id %}" id="{{ scoring_category.id }}-scoringValueBoxForm-ppi" class="scoring-value-box-form ppi extended" data-id="{{ scoring_category.id }}">#}
+{#                            {% csrf_token %}#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                <span class="scoring-value-field-text">how many items total?</span>#}
+{#                                <input type="number" placeholder="0" id="{{ scoring_category.id }}-totalItems" class="scoring-category-score-box ipp">#}
+{#                            </div>#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                <span class="scoring-value-field-text">how many points per item?</span>#}
+{#                               <input type="number" placeholder="0" id="{{ scoring_category.id }}-pointsPerItem" class="scoring-category-score-box ipp">#}
+{#                            </div>#}
+{#                            <div class="scoring-category-box-row ipp">#}
+{#                                {% if scoring_category.rounding == 'none' %}#}
+{#                                    <span class="scoring-value-field-text secondary-text">points are not rounded</span>#}
+{#                                {% else %}#}
+{#                                    <span class="scoring-value-field-text secondary-text">points are rounded {{ scoring_category.rounding }}</span>#}
+{#                                {% endif %}#}
+{#                            </div>#}
+{#                            <div id="{{ scoring_category.id }}-valueChangeConfirmCancelBtns" class="scoring-category-box-row">#}
+{#                                <button  form="{{ scoring_category.id }}-scoringValueBoxForm" id="{{ scoring_category.id }}-valueConfirmChangeBtn" class="confirm-change-btn scoring-category-value-box-confirm-btn" data-id="{{ scoring_category.id }}">&#10003;</button>#}
+{#                                <button id="{{ scoring_category.id }}-valueCancelChangeBtn"  type="button" class="cancel-change-btn scoring-category-value-box-cancel-btn" data-id="{{ scoring_category.id }}">&#10006;</button>#}
+{#                            </div>#}
+{#                        </form>#}
+{#                    </div>#}
+{#                    <div class="scoring-category-box-row">#}
+{#                        <button form="{{ scoring_category.id }}-deleteSingleScoringCategoryForm-ppi" id="{{ scoring_category.id }}-scoringCategoryDeleteButton" class="delete-btn-large scoring-category-delete-button {{ scoring_category.id }}">delete this category</button>#}
+{#                        <form method="POST" id="{{ scoring_category.id }}-deleteSingleScoringCategoryForm" action="{% url 'scoring_category_delete' scoring_category.id %}?next={{ request.get_full_path }}">#}
+{#                        {% csrf_token %}#}
+{#                        </form>#}
+{#                    </div>#}
+{#                </div>#}
+
+            {% empty %}
+                <span class="large-text"><i>add some scoring categories.</i></span>
+            {% endfor %}
         <div class="scoring-category-box">
             <div class="scoring-category-box-row">SCORE HERE</div>
         </div>
-
     </div>
     {% empty %}
         <span class="large-text"><i>nothing to score yet.</i></span>
     {% endfor %}
 </div>
-
-{# quick add resource buttons #}
-{#               <div class="common-object-quick-add-btn-box" data-id="{{ resource_group.id }}">#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="money" class="common-object-quick-create-btn resource-create">mony</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="gold" class="common-object-quick-create-btn resource-create">gold</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="stone" class="common-object-quick-create-btn resource-create">stone</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="wood" class="common-object-quick-create-btn resource-create">wood</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="food" class="common-object-quick-create-btn resource-create">food</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="brick" class="common-object-quick-create-btn resource-create">brick</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="cloth" class="common-object-quick-create-btn resource-create">cloth</button>#}
-{#                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm" data-name="strength" class="common-object-quick-create-btn resource-create">animl</button>#}
-{#               </div>#}
-{#               <br />#}
-{#               <br />#}
-{#               <button class="blue-btn smaller create-custom-object-form-done-btn resource" data-id="{{ die_group.id }}">done</button>#}
-{#            </div>#}
-{##}
-
-{# production section - only shown if production is available for the resource#}
-{#                {% if resource.production_available %}#}
-{#                <form action="{% url "resource_production_modifier_change" resource.id %}" method="POST" data-id="{{ resource.id }}" id={{ resource.id }}-resourceProductionModifierChangeForm" class="resource-production-modifier-change-form">#}
-{#                    {% csrf_token %}#}
-{#                        <div class="resource-box-row">#}
-{#                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-decrease">-</Button>#}
-{#                            <div id="{{ resource.id }}-productionModifierValueChange" class="production-modifier-value-change"></div>#}
-{#                            <div id="{{ resource.id }}-productionModifierQtyBox" class="production-modifier-qty-box">{{ resource.production_modifier }}</div>#}
-{#                            <div id="{{ resource.id }}-productionModifierQtyInput" class="production-modifier-input-hidden">{{ resource_production_modifier_change_form.production_modifier }}</div>#}
-{#                            <Button data-id="{{ resource.id }}" type="button" class="resource-change-amt-btn modifier-increase">+</Button>#}
-{#                            <Button type="button" form="{{ resource.id }}-produceResourceForm" class="resource-change-amt-btn produce-single-resource-btn">prod</Button>#}
-{#                        </div>#}
-{#                </form>#}
-{#                <form id="{{ resource.id }}-produceResourceForm" method="POST" action="{% url 'resource_qty_change' resource.id%}" data-id="{{ resource.id }}" class="produce-resource-form">#}
-{#                {% csrf_token %}#}
-{#                    <div id="{{ resource.id }}-newResourceQtyInput">{{ resource_qty_change_form.quantity|add_class:"absolute-hidden" }}</div>#}
-{#                </form>#}
-{#                {% endif %}#}
-{#                <div class="resource-box-row">#}
-{#                    <button form="{{ resource.id }}-deleteSingleResourceForm" id="{{ resource.id }}-resourceDeleteButton" class="delete-btn-large resource-delete-button {{ resource.id }}">delete this resource</button>#}
-{#                    <form method="POST" id="{{ resource.id }}-deleteSingleResourceForm" action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}">#}
-{#                    {% csrf_token %}#}
-{#                    </form>#}
-{#                </div>#}
 
 

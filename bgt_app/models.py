@@ -93,7 +93,7 @@ class DieStandard(models.Model):
                     MaxValueValidator(limit_value=100)],
     )
     rolled_value = models.SmallIntegerField(default=0)
-    die_group = models.ForeignKey(
+    group = models.ForeignKey(
         DieGroup,
         related_name='standard_dice',
         on_delete=models.CASCADE,
@@ -131,7 +131,7 @@ class Resource(models.Model):
     quantity = models.SmallIntegerField(default=0)
     production_available = models.BooleanField(default=False)
     production_modifier = models.SmallIntegerField(default=0)
-    resource_group = models.ForeignKey(
+    group = models.ForeignKey(
         ResourceGroup,
         related_name='resources',
         on_delete=models.CASCADE,
@@ -160,16 +160,39 @@ class ScoringGroup(models.Model):
         return f"{self.title}"
 
 
-class ScoringCategorySimple(models.Model):
+class ScoringCategory(models.Model):
     class Meta:
-        verbose_name = "Simple Scoring Category"
-        verbose_name_plural = "Simple Scoring Categories"
+        verbose_name = "Scoring Category"
+        verbose_name_plural = "Scoring Categories"
+
+    rounding_choices = [
+        ('up', 'round up'),
+        ('down', 'round down'),
+        ('none', 'no rounding'),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
-    points = models.SmallIntegerField(default=0)
-    scoring_group = models.ForeignKey(
+    points_gained_or_lost = models.SmallIntegerField(
+        default=0,
+        validators=[
+            MinValueValidator(limit_value=-1000),
+            MaxValueValidator(limit_value=1000)
+        ],
+    )
+    items_per_group = models.SmallIntegerField(
+        default=0,
+        validators=[
+            MinValueValidator(limit_value=-1000),
+            MaxValueValidator(limit_value=1000)
+        ],
+    )
+    rounding = models.CharField(
+        max_length=5, choices=rounding_choices, default='none'
+    )
+    group = models.ForeignKey(
         ScoringGroup,
-        related_name='scoring_categories_simple',
+        related_name='scoring_categories',
         on_delete=models.CASCADE,
         null=True
     )
@@ -178,46 +201,42 @@ class ScoringCategorySimple(models.Model):
         return f'{self.name}'
 
 
-class ScoringCategoryItemsPerPoint(models.Model):
+class Player(models.Model):
     class Meta:
-        verbose_name = "Items Per Point Scoring Category"
-        verbose_name_plural = "Items Per Point Scoring Categories"
+        verbose_name = "Player"
+        verbose_name_plural = "Players"
 
-    round_up_down_choices = [('up', 'up'), ('down', 'down')]
+    player_color_choices = [
+        ('black', 'black'),
+        ('white', 'white'),
+        ('green', 'green'),
+        ('blue', 'blue'),
+        ('yellow', 'yellow'),
+        ('purple', 'purple'),
+        ('orange', 'orange'),
+        ('red', 'red'),
+        ('brown', 'brown'),
+    ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
-    points = models.SmallIntegerField(default=0)
-    scoring_items_qty = models.SmallIntegerField(default=0)
-    items_per_point_trigger = models.SmallIntegerField(default=0)
-    points_per_point_trigger = models.SmallIntegerField(default=0)
-    round_up_down = models.CharField(max_length=5, choices=round_up_down_choices)
-    scoring_group = models.ForeignKey(
-        ScoringGroup,
-        related_name='scoring_categories_items_per_point',
-        on_delete=models.CASCADE,
-        null=True
+    color = models.CharField(max_length=10, choices=player_color_choices)
+    tool_session = models.ForeignKey(ToolSession,
+                                     related_name='players',
+                                     on_delete=models.CASCADE,
+                                     null=True
+                                     )
+    score = models.SmallIntegerField(
+        null=True,
+        validators=[
+            MinValueValidator(limit_value=-1000),
+            MaxValueValidator(limit_value=1000)],
     )
-
-    def __str__(self):
-        return f'{self.name}'
-
-
-class ScoringCategoryPointsPerItem(models.Model):
-    class Meta:
-        verbose_name = "Points Per Item Scoring Category"
-        verbose_name_plural = "Points Per Item Scoring Categories"
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=40)
-    points = models.SmallIntegerField(default=0)
-    scoring_items_qty = models.SmallIntegerField(default=0)
-    points_per_item = models.SmallIntegerField(default=0)
-    scoring_group = models.ForeignKey(
-        ScoringGroup,
-        related_name='scoring_categories_points_per_item',
-        on_delete=models.CASCADE,
-        null=True
-    )
+    scoring_group = models.ForeignKey(ScoringGroup,
+                                      related_name='players',
+                                      on_delete=models.CASCADE,
+                                      null=True
+                                      )
 
     def __str__(self):
         return f'{self.name}'

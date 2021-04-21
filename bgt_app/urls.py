@@ -5,6 +5,7 @@ from .views import (
     Logout,
     UserHome,
     ToolSessionDetail,
+    PlayerCreate,
     AddHpTracker,
     HpTrackerUpdate,
     HpTrackerDelete,
@@ -26,10 +27,10 @@ from .views import (
     ScoringGroupCreate,
     ScoringGroupUpdate,
     ScoringGroupDelete,
-    ScoringCategorySimpleCreate,
-    ScoringCategorySimpleDelete,
-    ScoringCategorySimpleNameChange,
-    ScoringCategorySimpleUpdate
+    ScoringCategoryCreate,
+    # ScoringCategoryDelete,
+    # ScoringCategoryNameChange,
+    # ScoringCategoryPointsUpdate,
 )
 
 urlpatterns = [
@@ -42,10 +43,13 @@ urlpatterns = [
     path('tool-session/<str:slug>/',
          ToolSessionDetail.as_view(), name='tool_session_detail'),
 
+    path('player-create/',
+         PlayerCreate.as_view(), name='player_create'),
+
     path('add-hp-tracker/',
          AddHpTracker.as_view(), name='add_hp_tracker'),
 
-    path('hp-tracker-update/<uuid>',
+    path('hp-tracker-update/<hp_tracker_uuid>',
          HpTrackerUpdate.as_view(), name='hp_tracker_update'),
 
     path('hp-tracker-delete/<uuid>',
@@ -54,7 +58,7 @@ urlpatterns = [
     path('add-die-group/',
          AddDieGroup.as_view(), name='add_die_group'),
 
-    path('die-group-update/<uuid>',
+    path('die-group-update/<die_group_uuid>',
          DieGroupUpdate.as_view(), name='die_group_update'),
 
     path('die-group-delete/<uuid>',
@@ -106,17 +110,19 @@ urlpatterns = [
     path('scoring-group-delete/<scoring_group_uuid>',
          ScoringGroupDelete.as_view(), name='scoring_group_delete'),
 
-    path('scoring-category-simple-create/<scoring_group_uuid>',
-         ScoringCategorySimpleCreate.as_view(), name='scoring-category-simple-create'),
+    path('scoring-category-create/<scoring_group_uuid>',
+         ScoringCategoryCreate.as_view(),
+         name='scoring_category_create'),
 
-    path('scoring-category-simple-delete/<category_uuid>',
-         ScoringCategorySimpleDelete.as_view(), name='scoring_category_simple_delete'),
-
-    path('scoring-category-simple-name-change/<category_uuid>',
-         ScoringCategorySimpleNameChange.as_view(),
-         name='scoring_category_simple_name_change'),
-
-    path('scoring-category-simple-update/<category_uuid>',
-         ScoringCategorySimpleUpdate.as_view(),
-         name='scoring_category_simple_update'),
+    # path('scoring-category-delete/<category_uuid>',
+    #      ScoringCategoryDelete.as_view(),
+    #      name='scoring_category_delete'),
+    #
+    # path('scoring-category-name-change/<category_uuid>',
+    #      ScoringCategoryNameChange.as_view(),
+    #      name='scoring_category_name_change'),
+    #
+    # path('scoring-category-update/<category_uuid>',
+    #      ScoringCategoryPointsUpdate.as_view(),
+    #      name='scoring_category_points_update'),
 ]
