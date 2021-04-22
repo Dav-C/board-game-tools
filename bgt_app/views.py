@@ -566,23 +566,23 @@ class ScoringCategoryCreate(LoginRequiredMixin, View):
         )
 
 
-# class ScoringCategoryDelete(LoginRequiredMixin, View):
-#     """Delete a ScoringCategorySimple object"""
-#
-#     def post(self, request, category_uuid):
-#         category_to_delete = get_object_or_404(
-#             ScoringCategory, id=category_uuid
-#         )
-#         if category_to_delete\
-#                 .group.tool_session\
-#                 .session_owner.user.id == request.user.id:
-#             category_to_delete.delete()
-#             return reload_current_url(request)
-#         else:
-#             messages.error(request, "Insufficient Permission")
-#             return redirect('user_home')
-#
-#
+class ScoringCategoryDelete(LoginRequiredMixin, View):
+    """Delete a ScoringCategorySimple object"""
+
+    def post(self, request, category_uuid):
+        category_to_delete = get_object_or_404(
+            ScoringCategory, id=category_uuid
+        )
+        if category_to_delete\
+                .group.tool_session\
+                .session_owner.user.id == request.user.id:
+            category_to_delete.delete()
+            return reload_current_url(request)
+        else:
+            messages.error(request, "Insufficient Permission")
+            return redirect('user_home')
+
+
 # class ScoringCategoryNameChange(LoginRequiredMixin, View):
 #     """Change a ScoringCategorySimple object's name field """
 #

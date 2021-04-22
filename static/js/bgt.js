@@ -1074,63 +1074,70 @@ $('.produce-resource-form').submit(function(e) {
 
 scoringControl = {
     scoring_funcs: {
-        reveal_scoring_category_title_change_and_delete_btn: function(data_id_value) {
-            let data_id = '#' + data_id_value;
-            let scoring_category_name = $(data_id + '-scoringCategoryName')
-            scoring_category_name.css({'display':'none'});
-            $(data_id + '-scoringCategoryNameInputWrapper')
-                .removeClass('absolute-hidden')
-                .children('input')
-                .val(scoring_category_name.text().trim())
-                .focus();
-            $(data_id + '-scoringCategoryDeleteButton').css({'display':'inline'});
-            $(data_id + '-nameConfirmChangeBtn').css({'display':'inline'});
-            $(data_id + '-nameCancelChangeBtn').css({'display':'inline'});
-            $(data_id + '-scoringValueBoxForm').css({'display': 'none'});
-            $(data_id + '-scoringCategoryScoreBox').css({'display': 'none'});
-            $(data_id + '-scoringCategoryNameChangeForm').css({'width': '100%'});
+        change_open_sub_group: function(sub_group_wrapper, this_value) {
+            let data_id = $(this_value).parent().attr('data-id');
+            $('#' + data_id + '-scoringGroupPlayersWrapper').addClass('absolute-hidden');
+            $('#' + data_id + '-scoringGroupCategoriesWrapper').addClass('absolute-hidden');
+            $('#' + data_id + '-scoringGroupScoresWrapper').addClass('absolute-hidden');
+            $(sub_group_wrapper).removeClass('absolute-hidden');
         },
-        hide_scoring_category_title_change_and_delete_btn: function(data_id_value) {
-            let data_id = '#' + data_id_value;
-            $(data_id + '-scoringCategoryName').css({'display':'flex'});
-            $(data_id + '-scoringCategoryNameInputWrapper').addClass('absolute-hidden');
-            $(data_id + '-scoringCategoryDeleteButton').css({'display':'none'});
-            $(data_id + '-nameConfirmChangeBtn').css({'display':'none'});
-            $(data_id + '-nameCancelChangeBtn').css({'display':'none'});
-            $(data_id + '-scoringValueBoxForm').css({'display': 'flex'});
-            $(data_id + '-scoringCategoryScoreBox').css({'display': 'inline'});
-            $(data_id + '-scoringCategoryNameChangeForm').css({'width': '70%'});
-        },
-        reveal_scoring_category_score_box_input: function(data_id_value) {
-            let data_id = '#' + data_id_value;
-            let scoring_category_score_box = $(data_id + '-scoringCategoryScoreBox')
-            scoring_category_score_box.css({'display':'none'});
-            $(data_id + '-scoringCategoryScoreBoxInputWrapper')
-                .removeClass('absolute-hidden')
-                .children('input')
-                .val(scoring_category_score_box.text().trim())
-                .focus();
-            $(data_id + '-valueChangeConfirmCancelBtns').removeClass('absolute-hidden');
-            $(data_id + '-valueConfirmChangeBtn').css({'display':'inline'});
-            $(data_id + '-valueCancelChangeBtn').css({'display':'inline'});
-            $(data_id + '-scoringCategoryName').css({'display':'none'});
-            $(data_id + '-scoringCategoryNameDisabled').removeClass('absolute-hidden');
-            $(data_id + '-scoringValueBoxForm-ipp').css({'height': '24.5rem'});
-            $(data_id + '-scoringValueBoxForm-ppi').css({'height': '18rem'});
-
-        },
-        hide_scoring_category_score_box_input: function(data_id_value) {
-            let data_id = '#' + data_id_value;
-            $(data_id + '-scoringCategoryScoreBox').css({'display':'inline'});
-            $(data_id + '-scoringCategoryScoreBoxInputWrapper').addClass('absolute-hidden')
-            $(data_id + '-valueChangeConfirmCancelBtns').addClass('absolute-hidden');
-            $(data_id + '-valueConfirmChangeBtn').css({'display':'none'});
-            $(data_id + '-valueCancelChangeBtn').css({'display':'none'});
-            $(data_id + '-scoringCategoryName').css({'display':'flex'});
-            $(data_id + '-scoringCategoryNameDisabled').addClass('absolute-hidden')
-            $(data_id + '-scoringValueBoxForm-ipp').css({'height': '0'});
-            $(data_id + '-scoringValueBoxForm-ppi').css({'height': '0'});
-        },
+        // reveal_scoring_category_title_change_and_delete_btn: function(data_id_value) {
+        //     let data_id = '#' + data_id_value;
+        //     let scoring_category_name = $(data_id + '-scoringCategoryName')
+        //     scoring_category_name.css({'display':'none'});
+        //     $(data_id + '-scoringCategoryNameInputWrapper')
+        //         .removeClass('absolute-hidden')
+        //         .children('input')
+        //         .val(scoring_category_name.text().trim())
+        //         .focus();
+        //     $(data_id + '-scoringCategoryDeleteButton').css({'display':'inline'});
+        //     $(data_id + '-nameConfirmChangeBtn').css({'display':'inline'});
+        //     $(data_id + '-nameCancelChangeBtn').css({'display':'inline'});
+        //     $(data_id + '-scoringValueBoxForm').css({'display': 'none'});
+        //     $(data_id + '-scoringCategoryScoreBox').css({'display': 'none'});
+        //     $(data_id + '-scoringCategoryNameChangeForm').css({'width': '100%'});
+        // },
+        // hide_scoring_category_title_change_and_delete_btn: function(data_id_value) {
+        //     let data_id = '#' + data_id_value;
+        //     $(data_id + '-scoringCategoryName').css({'display':'flex'});
+        //     $(data_id + '-scoringCategoryNameInputWrapper').addClass('absolute-hidden');
+        //     $(data_id + '-scoringCategoryDeleteButton').css({'display':'none'});
+        //     $(data_id + '-nameConfirmChangeBtn').css({'display':'none'});
+        //     $(data_id + '-nameCancelChangeBtn').css({'display':'none'});
+        //     $(data_id + '-scoringValueBoxForm').css({'display': 'flex'});
+        //     $(data_id + '-scoringCategoryScoreBox').css({'display': 'inline'});
+        //     $(data_id + '-scoringCategoryNameChangeForm').css({'width': '70%'});
+        // },
+        // reveal_scoring_category_score_box_input: function(data_id_value) {
+        //     let data_id = '#' + data_id_value;
+        //     let scoring_category_score_box = $(data_id + '-scoringCategoryScoreBox')
+        //     scoring_category_score_box.css({'display':'none'});
+        //     $(data_id + '-scoringCategoryScoreBoxInputWrapper')
+        //         .removeClass('absolute-hidden')
+        //         .children('input')
+        //         .val(scoring_category_score_box.text().trim())
+        //         .focus();
+        //     $(data_id + '-valueChangeConfirmCancelBtns').removeClass('absolute-hidden');
+        //     $(data_id + '-valueConfirmChangeBtn').css({'display':'inline'});
+        //     $(data_id + '-valueCancelChangeBtn').css({'display':'inline'});
+        //     $(data_id + '-scoringCategoryName').css({'display':'none'});
+        //     $(data_id + '-scoringCategoryNameDisabled').removeClass('absolute-hidden');
+        //     $(data_id + '-scoringValueBoxForm-ipp').css({'height': '24.5rem'});
+        //     $(data_id + '-scoringValueBoxForm-ppi').css({'height': '18rem'});
+        //
+        // },
+        // hide_scoring_category_score_box_input: function(data_id_value) {
+        //     let data_id = '#' + data_id_value;
+        //     $(data_id + '-scoringCategoryScoreBox').css({'display':'inline'});
+        //     $(data_id + '-scoringCategoryScoreBoxInputWrapper').addClass('absolute-hidden')
+        //     $(data_id + '-valueChangeConfirmCancelBtns').addClass('absolute-hidden');
+        //     $(data_id + '-valueConfirmChangeBtn').css({'display':'none'});
+        //     $(data_id + '-valueCancelChangeBtn').css({'display':'none'});
+        //     $(data_id + '-scoringCategoryName').css({'display':'flex'});
+        //     $(data_id + '-scoringCategoryNameDisabled').addClass('absolute-hidden')
+        //     $(data_id + '-scoringValueBoxForm-ipp').css({'height': '0'});
+        //     $(data_id + '-scoringValueBoxForm-ppi').css({'height': '0'});
+        // },
         open_create_scoring_category_forms_box: function(this_value) {
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-scoringCategoryCreateFormWrapper');
@@ -1145,30 +1152,30 @@ scoringControl = {
             window.location.reload(true);
             closeToolPageCover();
         },
-        calculate_items_per_point_score: function(data_id) {
-            let total_items = parseInt($('#' + data_id + '-ppiTotalItems').val());
-            let items_per_group = parseInt($('#' + data_id + '-ppiItemsPerGroup').val());
-            let points_per_group = parseInt($('#' + data_id + '-ppiPointsPerGroup').val());
-            let rounding_value = $('#' + data_id + '-roundingValue').text().trim();
-            let points_input_field = $('#' + data_id + '-ippScoringCategoryScoreBoxInputWrapper input')
-            let calculated_value = 0;
-            let final_value = 0;
-            calculated_value = (total_items / items_per_group) * points_per_group;
-            switch (rounding_value) {
-                case 'none':
-                    final_value = calculated_value.toFixed(2);
-                    points_input_field.val(final_value);
-                    break;
-                case 'up':
-                    final_value = Math.ceil(calculated_value);
-                    points_input_field.val(final_value);
-                    break;
-                case 'down':
-                    final_value = Math.floor(calculated_value);
-                    points_input_field.val(final_value);
-                    break;
-            }
-        },
+        // calculate_items_per_point_score: function(data_id) {
+        //     let total_items = parseInt($('#' + data_id + '-ppiTotalItems').val());
+        //     let items_per_group = parseInt($('#' + data_id + '-ppiItemsPerGroup').val());
+        //     let points_per_group = parseInt($('#' + data_id + '-ppiPointsPerGroup').val());
+        //     let rounding_value = $('#' + data_id + '-roundingValue').text().trim();
+        //     let points_input_field = $('#' + data_id + '-ippScoringCategoryScoreBoxInputWrapper input')
+        //     let calculated_value = 0;
+        //     let final_value = 0;
+        //     calculated_value = (total_items / items_per_group) * points_per_group;
+        //     switch (rounding_value) {
+        //         case 'none':
+        //             final_value = calculated_value.toFixed(2);
+        //             points_input_field.val(final_value);
+        //             break;
+        //         case 'up':
+        //             final_value = Math.ceil(calculated_value);
+        //             points_input_field.val(final_value);
+        //             break;
+        //         case 'down':
+        //             final_value = Math.floor(calculated_value);
+        //             points_input_field.val(final_value);
+        //             break;
+        //     }
+        // },
     }
 }
 
@@ -1246,113 +1253,116 @@ $('.scoring-group-form').submit(function(e) {
         }
     })
 });
-
-
-// open the scoring category name change form and reveal the individual
-// scoring category delete buttons
-$('.scoring-category-name-box').click(function(){
-    'use strict';
-    scoringControl.scoring_funcs.reveal_scoring_category_title_change_and_delete_btn($(this).attr('data-id'));
-});
-// close the scoring category name change form and hide the individual
-// scoring category delete buttons
-$('.scoring-category-name-change-cancel-btn').click(function(){
-    'use strict';
-    scoringControl.scoring_funcs.hide_scoring_category_title_change_and_delete_btn($(this).attr('data-id'));
-});
-// change the name of a scoring category
-$('.scoring-category-name-change-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new scoring_category_name
-            $('#' + data_id + '-scoringCategoryName').empty().prepend(fields.name).css({'display': 'inline'});
-            scoringControl.scoring_funcs.hide_scoring_category_title_change_and_delete_btn(data_id);
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+$('.scoring-group-control-box-btn').click(function() {
+    let sub_group_wrapper = $(this).attr('data-id');
+    scoringControl.scoring_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
 
-// reveal the form for changing a score value
-$('.scoring-category-score-box').click(function() {
-    scoringControl.scoring_funcs.reveal_scoring_category_score_box_input($(this).attr('data-id'))
-})
-// hide the form for changing a score value
-$('.scoring-category-value-box-cancel-btn').click(function() {
-    scoringControl.scoring_funcs.hide_scoring_category_score_box_input($(this).attr('data-id'))
-})
-// change the points value of a simple scoring category
-$('.scoring-value-box-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new points value
-            $('#' + data_id + '-scoringCategoryScoreBox').empty().prepend(fields.points).css({'display': 'inline'});
-            scoringControl.scoring_funcs.hide_scoring_category_score_box_input(data_id);
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
-});
+// // open the scoring category name change form and reveal the individual
+// // scoring category delete buttons
+// $('.scoring-category-name-box').click(function(){
+//     'use strict';
+//     scoringControl.scoring_funcs.reveal_scoring_category_title_change_and_delete_btn($(this).attr('data-id'));
+// });
+// // close the scoring category name change form and hide the individual
+// // scoring category delete buttons
+// $('.scoring-category-name-change-cancel-btn').click(function(){
+//     'use strict';
+//     scoringControl.scoring_funcs.hide_scoring_category_title_change_and_delete_btn($(this).attr('data-id'));
+// });
+// // change the name of a scoring category
+// $('.scoring-category-name-change-form').submit(function(e) {
+//     'use strict';
+//     e.preventDefault();
+//     let data_id = $(this).attr('data-id');
+//     let serialized_data = $(this).serialize();
+//     $.ajax({
+//         type: 'POST',
+//         url: $(this).attr('action'),
+//         data: serialized_data,
+//         success: function (response) {
+//             let form_instance = JSON.parse(response['form_instance']);
+//             let fields = form_instance[0]['fields'];
+//             // display the new scoring_category_name
+//             $('#' + data_id + '-scoringCategoryName').empty().prepend(fields.name).css({'display': 'inline'});
+//             scoringControl.scoring_funcs.hide_scoring_category_title_change_and_delete_btn(data_id);
+//             console.log('ajaxSuccess');
+//         },
+//         error: function (response) {
+//             console.log(response["responseJSON"]["error"]);
+//             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+//         }
+//     });
+// });
 
-// calculate an items per point scoring category and submit the form
-$('.scoring-category-value-box-confirm-btn.ipp').click(function() {
-    let data_id = $(this).attr('data-id');
-    scoringControl.scoring_funcs.calculate_items_per_point_score(data_id);
-    $('#' + data_id + '-scoringValueBoxForm-ipp').submit();
-})
-
-
-// change the points value of an items per point scoring category
-$('.scoring-value-box-form.ipp').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).attr('data-id');
-    $('.disable-before-submit').prop('disabled', true);
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new points value
-            $('#' + data_id + '-scoringCategoryScoreBox').empty().prepend(fields.points).css({'display': 'inline'});
-            scoringControl.scoring_funcs.hide_scoring_category_score_box_input(data_id);
-            $('.disable-before-submit').prop('disabled', false);
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-            $('.disable-before-submit').prop('disabled', false);
-        }
-    });
-});
+// // reveal the form for changing a score value
+// $('.scoring-category-score-box').click(function() {
+//     scoringControl.scoring_funcs.reveal_scoring_category_score_box_input($(this).attr('data-id'))
+// })
+// // hide the form for changing a score value
+// $('.scoring-category-value-box-cancel-btn').click(function() {
+//     scoringControl.scoring_funcs.hide_scoring_category_score_box_input($(this).attr('data-id'))
+// })
+// // change the points value of a simple scoring category
+// $('.scoring-value-box-form').submit(function(e) {
+//     'use strict';
+//     e.preventDefault();
+//     let data_id = $(this).attr('data-id');
+//     let serialized_data = $(this).serialize();
+//     $.ajax({
+//         type: 'POST',
+//         url: $(this).attr('action'),
+//         data: serialized_data,
+//         success: function (response) {
+//             let form_instance = JSON.parse(response['form_instance']);
+//             let fields = form_instance[0]['fields'];
+//             // display the new points value
+//             $('#' + data_id + '-scoringCategoryScoreBox').empty().prepend(fields.points).css({'display': 'inline'});
+//             scoringControl.scoring_funcs.hide_scoring_category_score_box_input(data_id);
+//             console.log('ajaxSuccess');
+//         },
+//         error: function (response) {
+//             console.log(response["responseJSON"]["error"]);
+//             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+//         }
+//     });
+// });
+//
+// // calculate an items per point scoring category and submit the form
+// $('.scoring-category-value-box-confirm-btn.ipp').click(function() {
+//     let data_id = $(this).attr('data-id');
+//     scoringControl.scoring_funcs.calculate_items_per_point_score(data_id);
+//     $('#' + data_id + '-scoringValueBoxForm-ipp').submit();
+// })
+//
+//
+// // change the points value of an items per point scoring category
+// $('.scoring-value-box-form.ipp').submit(function(e) {
+//     'use strict';
+//     e.preventDefault();
+//     let data_id = $(this).attr('data-id');
+//     $('.disable-before-submit').prop('disabled', true);
+//     let serialized_data = $(this).serialize();
+//     $.ajax({
+//         type: 'POST',
+//         url: $(this).attr('action'),
+//         data: serialized_data,
+//         success: function (response) {
+//             let form_instance = JSON.parse(response['form_instance']);
+//             let fields = form_instance[0]['fields'];
+//             // display the new points value
+//             $('#' + data_id + '-scoringCategoryScoreBox').empty().prepend(fields.points).css({'display': 'inline'});
+//             scoringControl.scoring_funcs.hide_scoring_category_score_box_input(data_id);
+//             $('.disable-before-submit').prop('disabled', false);
+//             console.log('ajaxSuccess');
+//         },
+//         error: function (response) {
+//             console.log(response["responseJSON"]["error"]);
+//             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+//             $('.disable-before-submit').prop('disabled', false);
+//         }
+//     });
+// });
 
 // add a scoring category
 $('.scoring-group-add-category-open-form-btn').click(function() {

@@ -232,11 +232,10 @@ class Player(models.Model):
             MinValueValidator(limit_value=-1000),
             MaxValueValidator(limit_value=1000)],
     )
-    scoring_group = models.ForeignKey(ScoringGroup,
-                                      related_name='players',
-                                      on_delete=models.CASCADE,
-                                      null=True
-                                      )
+    scoring_groups = models.ManyToManyField(ScoringGroup,
+                                            related_name='players',
+                                            null=True
+                                            )
 
     def __str__(self):
         return f'{self.name}'

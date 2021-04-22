@@ -43,10 +43,13 @@
                 <br />
                 {{ player_form.name|add_class:'text-input-large' }}
                 <br />
-                {{ player_form.color|add_class:'text-input-large' }}
+                <div class="create-player-color-select-field">
+                    <span>player color</span>
+                    <span>{{ player_form.color|add_class:'text-input-large create-player-color-select-field-select-box' }}</span>
+                </div>
                 <br />
-                <button id="createPlayerFormSubmitBtn" type="submit" class="blue-btn">Add</button>
-                <button id="createPlayerFormCancelBtn" type="button" class="red-btn">Cancel</button>
+                <button id="createPlayerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
+                <button id="createPlayerFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
             </form>
         </div>
 
@@ -65,8 +68,8 @@
                 <br />
                 {{ add_hp_tracker_form.hp_value|add_class:'text-input-large' }}
                 <br />
-                <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn">Add</button>
-                <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn">Cancel</button>
+                <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
+                <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
             </form>
         </div>
 {# create die group form #}
@@ -84,8 +87,8 @@
                 <br />
                 {{ die_group_form.hp_value|add_class:'text-input-large' }}
                 <br />
-                <button id="AddDieGroupFormSubmitBtn" type="submit" class="blue-btn">Add</button>
-                <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
+                <button id="AddDieGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
+                <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
             </form>
         </div>
 
@@ -102,15 +105,15 @@
                 <br />
                 {{ resource_group_form.title|add_class:'text-input-large' }}
                 <br />
-                <button id="createResourceGroupFormSubmitBtn" type="submit" class="blue-btn">Add</button>
-                <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
+                <button id="createResourceGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
+                <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
             </form>
         </div>
 
 {# create scoring group form #}
         <div id="createScoringGroupFormWrapper" class="add-new-tool-form-wrapper">
             <div class="form-title-box">
-                <span class="form-title-text">create scoring group</span>
+                <span class="form-title-text">create scoring calculator</span>
             </div>
                 <br />
             <form method="POST" id="createScoringGroupForm"
@@ -120,8 +123,8 @@
                 <br />
                 {{ scoring_group_form.title|add_class:'text-input-large' }}
                 <br />
-                <button id="createScoringGroupFormSubmitBtn" type="submit" class="blue-btn">Add</button>
-                <button id="createScoringGroupFormCancelBtn" type="button" class="red-btn">Cancel</button>
+                <button id="createScoringGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn create-form-btn">Add</button>
+                <button id="createScoringGroupFormCancelBtn" type="button" class="red-btn create-form-btn create-form-btn">Cancel</button>
             </form>
         </div>
     </div>

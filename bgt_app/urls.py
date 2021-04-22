@@ -28,7 +28,7 @@ from .views import (
     ScoringGroupUpdate,
     ScoringGroupDelete,
     ScoringCategoryCreate,
-    # ScoringCategoryDelete,
+    ScoringCategoryDelete,
     # ScoringCategoryNameChange,
     # ScoringCategoryPointsUpdate,
 )
@@ -114,10 +114,10 @@ urlpatterns = [
          ScoringCategoryCreate.as_view(),
          name='scoring_category_create'),
 
-    # path('scoring-category-delete/<category_uuid>',
-    #      ScoringCategoryDelete.as_view(),
-    #      name='scoring_category_delete'),
-    #
+    path('scoring-category-delete/<category_uuid>',
+         ScoringCategoryDelete.as_view(),
+         name='scoring_category_delete'),
+
     # path('scoring-category-name-change/<category_uuid>',
     #      ScoringCategoryNameChange.as_view(),
     #      name='scoring_category_name_change'),

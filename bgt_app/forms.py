@@ -38,6 +38,7 @@ class PlayerForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(
             attrs={
+                'placeholder': 'player name',
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
@@ -53,6 +54,7 @@ class PlayerForm(forms.ModelForm):
             },
         ),
     )
+
 
 class HpTrackerAddForm(forms.ModelForm):
     """Create new HpTracker objects"""
@@ -117,7 +119,7 @@ class DieGroupForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Name',
+                'placeholder': 'die collection name',
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
@@ -152,7 +154,9 @@ class DieStandardForm(forms.ModelForm):
     num_sides = forms.IntegerField(
         required=True,
         widget=forms.NumberInput(
-            attrs={},
+            attrs={
+                'placeholder': 'sides'
+            },
         ),
     )
 
@@ -271,7 +275,7 @@ class ScoringGroupForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Name',
+                'placeholder': 'name of game',
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
@@ -328,38 +332,33 @@ class ScoringCategoryCreateForm(forms.ModelForm):
         ),
     )
 
-
-# class ScoringCategoryNameChangeForm(forms.ModelForm):
-#     """Change the name of a ScoringCategory object """
+# class addPlayerToScoringGroupForm(forms.ModelForm):
+#     """associate players with a scoring group"""
 #     class Meta:
 #         model = ScoringCategory
-#         fields = ['name']
+#         fields = ['scoring_groups']
 #
-#     name = forms.CharField(
+#     scoring_groups = forms.(
 #         required=True,
-#         widget=forms.TextInput(
+#         widget=forms.CheckboxInput(
 #             attrs={
-#                 'placeholder': 'Name',
+#                 'placeholder': 'cards, coins, etc.',
 #                 'maxlength': '40',
 #                 'autocomplete': 'off',
 #             },
 #         ),
 #     )
+
+# class CustomMMCF(forms.ModelMultipleChoiceField):
+#     def label_from_instance(self, producer):
+#         return f"{producer.first_name} {producer.last_name}"
 #
-#
-# class ScoringCategoryPointsForm(forms.ModelForm):
-#     """Change the points field of a ScoringCategorySimple object"""
-#     class Meta:
-#         model = ScoringCategory
-#         fields = ['points']
-#
-#     points = forms.IntegerField(
-#         required=True,
-#         widget=forms.NumberInput(
+#     producers = CustomMMCF(
+#         required=False,
+#         queryset=User.objects.filter(groups__name__exact="producers"),
+#         widget=forms.CheckboxSelectMultiple(
 #             attrs={
-#                 'maxlength': '4',
-#                 'autocomplete': 'off',
-#             },
+#                 "class": "course_form_checkbox producer_checkbox",
+#             }
 #         ),
 #     )
-
