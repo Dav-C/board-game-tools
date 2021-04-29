@@ -33,6 +33,7 @@ from django.views.generic.edit import FormMixin
 from .forms import (
     ToolSessionForm,
     PlayerForm,
+    PlayerScoreForm,
     HpTrackerAddForm,
     HpTrackerChangeValueForm,
     DieGroupForm,
@@ -44,9 +45,8 @@ from .forms import (
     ResourceQuantityChangeForm,
     ResourceProductionModifierChangeForm,
     ScoringGroupForm,
+    ScoringGroupAddPlayersForm,
     ScoringCategoryCreateForm,
-    # ScoringCategoryNameChangeForm,
-    # ScoringCategoryPointsForm,
 )
 
 from .models import (
@@ -122,28 +122,34 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         # put the active tool session id into a session value to be used for
         # assigning new objects to the right tool session other views
         self.request.session['active_tool_session_id'] = str(self.object.id)
-
+        active_tool_session_id = self.request.session['active_tool_session_id']
         players = Player.objects\
-            .filter(
-                tool_session_id=self.request.session['active_tool_session_id']
-            )
+            .filter(tool_session_id=active_tool_session_id)
         hp_trackers = self.object.hp_tracker.all()
         die_groups = DieGroup.objects\
             .filter(
-                tool_session_id=self.request.session['active_tool_session_id']
+                tool_session_id=active_tool_session_id
             ).annotate(
                 group_dice_sum=Sum('standard_dice__rolled_value')
             )
         resource_groups = ResourceGroup.objects\
             .filter(
-                tool_session_id=self.request.session['active_tool_session_id']
+                tool_session_id=active_tool_session_id
             )
         scoring_groups = ScoringGroup.objects\
             .filter(
-                tool_session_id=self.request.session['active_tool_session_id']
+                tool_session_id=active_tool_session_id
             )
+
+        scoring_group_initial_player_checks_box_values = []
+        for group in scoring_groups:
+            for player in players:
+                if player in group.players.all():
+                    scoring_group_initial_player_checks_box_values.append(player)
+
         context['players'] = players
         context['player_form'] = PlayerForm
+        context['player_score_form'] = PlayerScoreForm
         context['add_hp_tracker_form'] = HpTrackerAddForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
@@ -159,13 +165,14 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['resource_production_modifier_change_form'] = \
             ResourceProductionModifierChangeForm
         context['scoring_group_form'] = ScoringGroupForm
+        context['scoring_group_add_players_form'] = \
+            ScoringGroupAddPlayersForm(
+                initial={
+                    'players': scoring_group_initial_player_checks_box_values
+                         })
         context['scoring_groups'] = scoring_groups
         context['scoring_category_create_form'] = \
             ScoringCategoryCreateForm
-        # context['scoring_category_name_change_form'] = \
-        #     ScoringCategoryNameChangeForm
-        # context['scoring_category_points_form'] = \
-        #     ScoringCategoryPointsForm
 
         return context
 
@@ -428,7 +435,7 @@ class ResourceGroupCreate(LoginRequiredMixin, View):
 
 
 class ResourceGroupUpdate(LoginRequiredMixin, View):
-    """Change a DieGroup title"""
+    """Change a ResourceGroup title"""
 
     def post(self, request, resource_group_uuid):
         return create_or_update_obj_and_serialize(
@@ -441,7 +448,7 @@ class ResourceGroupUpdate(LoginRequiredMixin, View):
 
 
 class ResourceGroupDelete(LoginRequiredMixin, View):
-    """Delete a DieGroup Object"""
+    """Delete a ResourceGroup Object"""
 
     def post(self, request, resource_group_uuid):
         return delete_model_object(
@@ -552,6 +559,23 @@ class ScoringGroupDelete(LoginRequiredMixin, View):
         )
 
 
+class ScoringGroupAddPlayers(LoginRequiredMixin, View):
+    """associate selected Players with a ScoringGroup Object"""
+
+    def post(self, request, scoring_group_uuid, *args, **kwargs):
+        form = ScoringGroupAddPlayersForm(
+            request.POST,
+            instance=ScoringGroup.objects.get(id=scoring_group_uuid)
+        )
+        if form.is_valid():
+            form.save()
+            return reload_current_url(self.request)
+
+        else:
+            messages.error(request, f'form invalid: {form.errors}')
+            return redirect('user_home')
+
+
 class ScoringCategoryCreate(LoginRequiredMixin, View):
     """Create a ScoringCategorySimple object and associate it with the group
     that invoked the create request"""
@@ -583,27 +607,14 @@ class ScoringCategoryDelete(LoginRequiredMixin, View):
             return redirect('user_home')
 
 
-# class ScoringCategoryNameChange(LoginRequiredMixin, View):
-#     """Change a ScoringCategorySimple object's name field """
-#
-#     def post(self, request, category_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ScoringCategoryNameChangeForm,
-#             model=ScoringCategory,
-#             obj_uuid=category_uuid,
-#             group_model=ScoringGroup,
-#         )
-#
-#
-# class ScoringCategoryPointsUpdate(LoginRequiredMixin, View):
-#     """Change a ScoringCategorySimple object's points field """
-#
-#     def post(self, request, category_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ScoringCategoryPointsForm,
-#             model=ScoringCategory,
-#             obj_uuid=category_uuid,
-#             group_model=ScoringGroup,
-#         )
+class PlayerScoreUpdate(LoginRequiredMixin, View):
+    """Update a Player score value"""
+
+    def post(self, request, player_uuid):
+        return create_or_update_obj_and_serialize(
+            request=self.request,
+            form=PlayerScoreForm,
+            model=Player,
+            obj_uuid=player_uuid,
+            group_model=None,
+        )

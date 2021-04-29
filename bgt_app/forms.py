@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import (
+    UserProfile,
     ToolSession,
     HpTracker,
     DieGroup,
@@ -44,7 +45,6 @@ class PlayerForm(forms.ModelForm):
             },
         ),
     )
-
     color = forms.ChoiceField(
         required=True,
         choices=Player.player_color_choices,
@@ -54,6 +54,20 @@ class PlayerForm(forms.ModelForm):
             },
         ),
     )
+
+
+class PlayerScoreForm(forms.ModelForm):
+    """change a Player score value"""
+    class Meta:
+        model = Player
+        fields = ['score']
+
+    score = forms.FloatField(
+        required=False,
+        widget=forms.NumberInput(
+            attrs={}
+        ),
+    ),
 
 
 class HpTrackerAddForm(forms.ModelForm):
@@ -283,6 +297,30 @@ class ScoringGroupForm(forms.ModelForm):
     )
 
 
+class CustomMMCFAddPlayers(forms.ModelMultipleChoiceField):
+    """customize the label for the ScoringGroupAddPlayersForm
+    This is not strictly necessary but is here for future customization"""
+    def label_from_instance(self, obj):
+        return f'{obj.name}'
+
+
+class ScoringGroupAddPlayersForm(forms.ModelForm):
+    """associate players with a scoring group"""
+
+    class Meta:
+        model = ScoringGroup
+        fields = ['players']
+
+    players = CustomMMCFAddPlayers(
+        required=False,
+        queryset=Player.objects.all(),
+        widget=forms.CheckboxSelectMultiple(
+            attrs={
+            }
+        ),
+    )
+
+
 class ScoringCategoryCreateForm(forms.ModelForm):
     """Create a ScoringCategory object """
     class Meta:
@@ -331,34 +369,3 @@ class ScoringCategoryCreateForm(forms.ModelForm):
             },
         ),
     )
-
-# class addPlayerToScoringGroupForm(forms.ModelForm):
-#     """associate players with a scoring group"""
-#     class Meta:
-#         model = ScoringCategory
-#         fields = ['scoring_groups']
-#
-#     scoring_groups = forms.(
-#         required=True,
-#         widget=forms.CheckboxInput(
-#             attrs={
-#                 'placeholder': 'cards, coins, etc.',
-#                 'maxlength': '40',
-#                 'autocomplete': 'off',
-#             },
-#         ),
-#     )
-
-# class CustomMMCF(forms.ModelMultipleChoiceField):
-#     def label_from_instance(self, producer):
-#         return f"{producer.first_name} {producer.last_name}"
-#
-#     producers = CustomMMCF(
-#         required=False,
-#         queryset=User.objects.filter(groups__name__exact="producers"),
-#         widget=forms.CheckboxSelectMultiple(
-#             attrs={
-#                 "class": "course_form_checkbox producer_checkbox",
-#             }
-#         ),
-#     )

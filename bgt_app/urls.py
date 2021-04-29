@@ -6,6 +6,7 @@ from .views import (
     UserHome,
     ToolSessionDetail,
     PlayerCreate,
+    PlayerScoreUpdate,
     AddHpTracker,
     HpTrackerUpdate,
     HpTrackerDelete,
@@ -27,6 +28,7 @@ from .views import (
     ScoringGroupCreate,
     ScoringGroupUpdate,
     ScoringGroupDelete,
+    ScoringGroupAddPlayers,
     ScoringCategoryCreate,
     ScoringCategoryDelete,
     # ScoringCategoryNameChange,
@@ -110,6 +112,10 @@ urlpatterns = [
     path('scoring-group-delete/<scoring_group_uuid>',
          ScoringGroupDelete.as_view(), name='scoring_group_delete'),
 
+    path('scoring-group-add-players/<scoring_group_uuid>',
+         ScoringGroupAddPlayers.as_view(),
+         name='scoring_group_add_players'),
+
     path('scoring-category-create/<scoring_group_uuid>',
          ScoringCategoryCreate.as_view(),
          name='scoring_category_create'),
@@ -117,6 +123,10 @@ urlpatterns = [
     path('scoring-category-delete/<category_uuid>',
          ScoringCategoryDelete.as_view(),
          name='scoring_category_delete'),
+
+    path('player-score-update/<player_uuid>',
+         PlayerScoreUpdate.as_view(),
+         name='player_score_update'),
 
     # path('scoring-category-name-change/<category_uuid>',
     #      ScoringCategoryNameChange.as_view(),

@@ -42,6 +42,42 @@ class ToolSession(models.Model):
         return f"{self.session_name}"
 
 
+class Player(models.Model):
+    class Meta:
+        verbose_name = "Player"
+        verbose_name_plural = "Players"
+
+    player_color_choices = [
+        ('black', 'black'),
+        ('white', 'white'),
+        ('green', 'green'),
+        ('blue', 'blue'),
+        ('yellow', 'yellow'),
+        ('purple', 'purple'),
+        ('orange', 'orange'),
+        ('red', 'red'),
+        ('brown', 'brown'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=40)
+    color = models.CharField(max_length=10, choices=player_color_choices)
+    tool_session = models.ForeignKey(ToolSession,
+                                     related_name='players',
+                                     on_delete=models.CASCADE,
+                                     null=True
+                                     )
+    score = models.FloatField(
+        null=True,
+        validators=[
+            MinValueValidator(limit_value=-1000),
+            MaxValueValidator(limit_value=1000)],
+    )
+
+    def __str__(self):
+        return f'{self.name}'
+
+
 class HpTracker(models.Model):
     class Meta:
         verbose_name = "HP Tracker"
@@ -155,6 +191,12 @@ class ScoringGroup(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+    players = models.ManyToManyField(
+        Player,
+        related_name='scoring_groups',
+        blank=True,
+        default=None,
+    )
 
     def __str__(self):
         return f"{self.title}"
@@ -196,46 +238,6 @@ class ScoringCategory(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
-
-    def __str__(self):
-        return f'{self.name}'
-
-
-class Player(models.Model):
-    class Meta:
-        verbose_name = "Player"
-        verbose_name_plural = "Players"
-
-    player_color_choices = [
-        ('black', 'black'),
-        ('white', 'white'),
-        ('green', 'green'),
-        ('blue', 'blue'),
-        ('yellow', 'yellow'),
-        ('purple', 'purple'),
-        ('orange', 'orange'),
-        ('red', 'red'),
-        ('brown', 'brown'),
-    ]
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=40)
-    color = models.CharField(max_length=10, choices=player_color_choices)
-    tool_session = models.ForeignKey(ToolSession,
-                                     related_name='players',
-                                     on_delete=models.CASCADE,
-                                     null=True
-                                     )
-    score = models.SmallIntegerField(
-        null=True,
-        validators=[
-            MinValueValidator(limit_value=-1000),
-            MaxValueValidator(limit_value=1000)],
-    )
-    scoring_groups = models.ManyToManyField(ScoringGroup,
-                                            related_name='players',
-                                            null=True
-                                            )
 
     def __str__(self):
         return f'{self.name}'

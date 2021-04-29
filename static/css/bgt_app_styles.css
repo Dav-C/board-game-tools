@@ -4,38 +4,31 @@ html {
     font-size: 62.5%;
     box-sizing: border-box;
 }
-
 body {
     margin: 0;
     padding: 0;
     font-family: 'Open Sans', sans-serif;
     overflow-x: hidden;
 }
-
 a {
     text-decoration: none;
     color: inherit;
 }
-
 ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
-
 .disable-double-tap-to-zoom {
     touch-action: none;
 }
-
 .display-inline {
     display: inline;
 }
-
 .absolute-hidden {
     position: absolute;
     visibility: hidden;
 }
-
 .large-text {
     margin-top: 2rem;
     font-size: 1.75rem;
@@ -44,16 +37,13 @@ ul {
     padding: 1rem;
     border-radius: .5rem;
 }
-
 .form-title-text {
     font-size: 2rem;
     font-weight: 600;
 }
-
 .no_scroll {
     overflow-y: hidden;
 }
-
 .text-input-large {
     text-align: center;
     padding: .75rem;
@@ -65,7 +55,6 @@ ul {
     0 -1px 1px #FFF, 0 1px 0 #FFF;
     width: 90%;
 }
-
 .arrow-down {
   width: 0;
   height: 0;
@@ -73,7 +62,6 @@ ul {
   border-right: 4rem solid transparent;
   border-top: 2.5rem solid #FFFFFF;
 }
-
 .arrow-up {
   width: 0;
   height: 0;
@@ -81,7 +69,6 @@ ul {
   border-right: 4rem solid transparent;
   border-bottom: 2.5rem solid #FFFFFF;
 }
-
 .blue-btn{
     vertical-align: top;
     border-radius: .25rem;
@@ -1365,15 +1352,19 @@ ul {
     border: ridge .5rem white;
 }
 
+.scoring-group-add-player-row {
+    display: flex;
+    align-items: center;
+    width: 80%;
+    margin: auto;
+}
+
 .scoring-group-add-player-checkbox {
-    transform: scale(1.75);
+    transform: scale(1.7);
 }
 .scoring-group-add-player-name {
     font-size: 2rem;
-    margin: .5rem;
-}
-.scoring-group-add-player-name label {
-    padding-left: 1rem;
+    margin: .5rem 0 .5rem 2.5rem;
 }
 .scoring-group-categories-wrapper {
     display: flex;
@@ -1382,7 +1373,6 @@ ul {
     width: 100%;
     margin: 1rem 0;
 }
-
 .create-scoring-category-input-wrapper {
     width: 100%;
     display: flex;
@@ -1427,26 +1417,39 @@ ul {
     padding: .25rem .1rem;
     border: ridge .5rem white;
 }
+
 .scoring-category-box-row {
-    margin: .75rem 0;
+    align-self: center;
     display: flex;
     align-items: center;
     flex-direction: row;
-    width: 100%;
-    padding: .1rem .25rem .1rem .25rem;
+    width: 95%;
+    padding: .1rem .5rem .1rem .5rem;
     justify-content: flex-start;
 }
 
+.scoring-category-box-title {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.title-row {
+    align-self: center;
+    width: 90%;
+    padding: 0 1.5rem;
+    justify-content: space-between;
+}
+
 .scoring-category-text {
-    font-size: 1.4rem;
-    font-weight: 550;
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .scoring-category-text-input-values {
     background-color: #777777;
     color: #FFFFFF;
     padding: .5rem .75rem;
-    border-radius: .25rem;
+    border-radius: .75rem;
     margin: 0 .5rem;
 }
 
@@ -1603,6 +1606,65 @@ ul {
     margin: .5rem;
 }
 
+.scoring-group-scores-wrapper {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scoring-calc-row {
+    width: 95%;
+    display: flex;
+    margin: .5rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: .2rem;
+}
+
+.player-name-row {
+    padding: .5rem;
+    width: 92%;
+    justify-content: space-around;
+    border: ridge .5rem white;
+}
+
+.score-calc-player-score-form {
+    display: flex;
+    justify-content: center;
+    width: 35%;
+}
+
+.scoring-calc-name-text {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.score-calc-score-value-box {
+    text-align: center;
+    width: 90%;
+    font-size: 2rem;
+    box-shadow: rgba(50, 50, 93, 0.25) 0 30px 60px -12px inset,
+                rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
+    padding: .5rem;
+    border-radius: .25rem;
+    background-color: mintcream;
+}
+
+.score-calc-input-area-wrapper {
+    width: 95%;
+}
+
+.score-calc-category-name-text {
+    font-size: 1.75rem;
+}
+
+.score-calc-input-box {
+    text-align: center;
+    font-size: 1.75rem;
+    width: 35%;
+}
 /* Prevent Chrome from changing autofill text size to small */
 input:-webkit-autofill::first-line {font-size: 2rem}
 
@@ -1624,4 +1686,8 @@ input::-webkit-inner-spin-button {
 }
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.flex-end {
+    justify-content: flex-end;
 }
