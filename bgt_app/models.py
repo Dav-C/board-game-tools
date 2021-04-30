@@ -1,4 +1,5 @@
 import uuid
+import datetime
 from autoslug import AutoSlugField
 from django.urls import reverse
 from django.db import models
@@ -62,6 +63,7 @@ class Player(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
     color = models.CharField(max_length=10, choices=player_color_choices)
+    player_order = models.SmallIntegerField(null=True)
     tool_session = models.ForeignKey(ToolSession,
                                      related_name='players',
                                      on_delete=models.CASCADE,
@@ -176,6 +178,25 @@ class Resource(models.Model):
 
     def __str__(self):
         return f'Resource: {self.name}'
+
+
+class GameTimer(models.Model):
+    class Meta:
+        verbose_name = "Game Timer"
+        verbose_name_plural = "Game Timers"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=40)
+    saved_duration = models.DurationField(default=datetime.timedelta)
+    tool_session = models.ForeignKey(
+        ToolSession,
+        related_name='game_timers',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f'{self.title} - {self.saved_duration}'
 
 
 class ScoringGroup(models.Model):

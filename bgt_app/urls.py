@@ -6,7 +6,9 @@ from .views import (
     UserHome,
     ToolSessionDetail,
     PlayerCreate,
+    PlayerDelete,
     PlayerScoreUpdate,
+    PlayerRandomizeOrder,
     AddHpTracker,
     HpTrackerUpdate,
     HpTrackerDelete,
@@ -25,14 +27,13 @@ from .views import (
     ResourceNameChange,
     ResourceQtyChange,
     ResourceProductionModifierChange,
+    GameTimerCreate,
     ScoringGroupCreate,
     ScoringGroupUpdate,
     ScoringGroupDelete,
     ScoringGroupAddPlayers,
     ScoringCategoryCreate,
     ScoringCategoryDelete,
-    # ScoringCategoryNameChange,
-    # ScoringCategoryPointsUpdate,
 )
 
 urlpatterns = [
@@ -47,6 +48,12 @@ urlpatterns = [
 
     path('player-create/',
          PlayerCreate.as_view(), name='player_create'),
+
+    path('player-delete/<player_uuid>',
+         PlayerDelete.as_view(), name='player_delete'),
+
+    path('player-randomize-order/',
+         PlayerRandomizeOrder.as_view(), name='player_randomize_order'),
 
     path('add-hp-tracker/',
          AddHpTracker.as_view(), name='add_hp_tracker'),
@@ -102,6 +109,9 @@ urlpatterns = [
     path('resource-production-modifier-change/<resource_uuid>',
          ResourceProductionModifierChange.as_view(),
          name='resource_production_modifier_change'),
+
+    path('game-timer-create/',
+         GameTimerCreate.as_view(), name='game_timer_create'),
 
     path('scoring-group-create/',
          ScoringGroupCreate.as_view(), name='scoring_group_create'),

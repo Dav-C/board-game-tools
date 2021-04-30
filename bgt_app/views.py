@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, choice
 import json
 import rapidjson
 from django.conf import settings
@@ -44,6 +44,7 @@ from .forms import (
     ResourceNameChangeForm,
     ResourceQuantityChangeForm,
     ResourceProductionModifierChangeForm,
+    GameTimerCreateForm,
     ScoringGroupForm,
     ScoringGroupAddPlayersForm,
     ScoringCategoryCreateForm,
@@ -59,7 +60,8 @@ from .models import (
     DieStandard,
     HpTracker,
     ToolSession,
-    UserProfile
+    UserProfile,
+    GameTimer
 )
 
 
@@ -124,7 +126,8 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         self.request.session['active_tool_session_id'] = str(self.object.id)
         active_tool_session_id = self.request.session['active_tool_session_id']
         players = Player.objects\
-            .filter(tool_session_id=active_tool_session_id)
+            .filter(tool_session_id=active_tool_session_id)\
+            .order_by('player_order')
         hp_trackers = self.object.hp_tracker.all()
         die_groups = DieGroup.objects\
             .filter(
@@ -164,6 +167,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['resource_qty_change_form'] = ResourceQuantityChangeForm
         context['resource_production_modifier_change_form'] = \
             ResourceProductionModifierChangeForm
+        context['game_timer_create_form'] = GameTimerCreateForm
         context['scoring_group_form'] = ScoringGroupForm
         context['scoring_group_add_players_form'] = \
             ScoringGroupAddPlayersForm(
@@ -238,6 +242,23 @@ def create_or_update_obj_and_serialize(
             return JsonResponse({'error': form.errors.as_json()}, status=400)
 
 
+def reload_current_url(request):
+    """this is used as a return on some views to safely reload the page after
+    completing a GET or POST, (after deleting an object for example)"""
+
+    redirect_url = request.GET.get('next')
+    print(request)
+    url_is_safe = is_safe_url(
+        url=redirect_url,
+        allowed_hosts=settings.ALLOWED_HOSTS,
+        require_https=request.is_secure(),
+    )
+    if url_is_safe and redirect_url:
+        return redirect(redirect_url)
+    else:
+        return redirect('user_home')
+
+
 def delete_model_object(request, model, uuid):
     """delete a model object and reload the page.  This is used to remove
     tools from their respective pages"""
@@ -250,22 +271,6 @@ def delete_model_object(request, model, uuid):
     return redirect('user_home')
 
 
-def reload_current_url(request):
-    """this is used as a return on some views to safely reload the page after
-    completing a GET or POST, (after deleting an object for example)"""
-
-    redirect_url = request.GET.get('next')
-    url_is_safe = is_safe_url(
-        url=redirect_url,
-        allowed_hosts=settings.ALLOWED_HOSTS,
-        require_https=request.is_secure(),
-    )
-    if url_is_safe and redirect_url:
-        return redirect(redirect_url)
-    else:
-        return redirect('user_home')
-
-
 class PlayerCreate(LoginRequiredMixin, View):
     """create a Player object and associate it with the active tool session
     that the current user has open, post is ajax"""
@@ -275,6 +280,37 @@ class PlayerCreate(LoginRequiredMixin, View):
             form=PlayerForm,
             request=self.request,
         )
+
+
+class PlayerDelete(LoginRequiredMixin, View):
+    """delete a Player object"""
+
+    def post(self, request, player_uuid):
+        player_to_delete = get_object_or_404(Player, id=player_uuid)
+        if player_to_delete.tool_session.session_owner.user.id == request.user.id:
+            player_to_delete.delete()
+            return reload_current_url(request)
+        else:
+            messages.error(request, "Insufficient Permission")
+        return redirect('user_home')
+
+
+class PlayerRandomizeOrder(LoginRequiredMixin, View):
+    """Randomize the values stored in the Player.player_order fields
+    based on the number of players there are playing the game"""
+    def get(self, request):
+        active_tool_session_id = self.request.session['active_tool_session_id']
+        players = Player.objects\
+            .filter(tool_session_id=active_tool_session_id)
+        player_count = players.count()
+        order_list = [*range(1, player_count+1)]
+        for player in players:
+            player_order = choice(order_list)
+            order_list.remove(player_order)
+            player.player_order = player_order
+            player.save()
+
+        return reload_current_url(request)
 
 
 class AddHpTracker(LoginRequiredMixin, View):
@@ -511,7 +547,7 @@ class ResourceQtyChange(LoginRequiredMixin, View):
 
 
 class ResourceProductionModifierChange(LoginRequiredMixin, View):
-    """Change a Resource quantity or production modifier """
+    """Change a Resource quantity or production modifier"""
 
     def post(self, request, resource_uuid):
         return create_or_update_obj_and_serialize(
@@ -520,6 +556,16 @@ class ResourceProductionModifierChange(LoginRequiredMixin, View):
             model=Resource,
             obj_uuid=resource_uuid,
             group_model=ResourceGroup,
+        )
+
+
+class GameTimerCreate(LoginRequiredMixin, View):
+    """Create a GameTimer Object"""
+
+    def post(self, request):
+        return save_new_tool_and_associate_with_session(
+            form=GameTimerCreateForm,
+            request=self.request,
         )
 
 
@@ -581,6 +627,13 @@ class ScoringCategoryCreate(LoginRequiredMixin, View):
     that invoked the create request"""
 
     def post(self, request, scoring_group_uuid, *args, **kwargs):
+        # erase player scores
+        active_tool_session_id = self.request.session['active_tool_session_id']
+        players = Player.objects\
+            .filter(tool_session_id=active_tool_session_id)
+        for player in players:
+            player.score = None
+            player.save()
         return create_or_update_obj_and_serialize(
             request=self.request,
             form=ScoringCategoryCreateForm,
@@ -601,6 +654,14 @@ class ScoringCategoryDelete(LoginRequiredMixin, View):
                 .group.tool_session\
                 .session_owner.user.id == request.user.id:
             category_to_delete.delete()
+            # erase player scores
+            active_tool_session_id = self.request.session[
+                'active_tool_session_id']
+            players = Player.objects \
+                .filter(tool_session_id=active_tool_session_id)
+            for player in players:
+                player.score = None
+                player.save()
             return reload_current_url(request)
         else:
             messages.error(request, "Insufficient Permission")

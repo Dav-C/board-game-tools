@@ -703,7 +703,6 @@ ul {
 .select-active-tool-btn-row{
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
 }
 
 .select-active-tool-button {
@@ -760,6 +759,56 @@ ul {
 .scoring-groups {
     justify-content: flex-start;
     margin-top: 4rem;
+}
+
+/*PLAYERS*/
+
+.players-box-wrapper {
+    background-color: mintcream;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem 0 1rem 0;
+    min-width: 30rem;
+    max-width: 45rem;
+    width: 95%;
+    border-radius: .25rem;
+    box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px,
+                rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
+                rgba(255, 255, 255, 0.08) 0 1px 0 inset;
+}
+
+.players-control-box {
+    display: flex;
+    margin: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+    width: 90%;
+}
+
+.player-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border: ridge .5rem white;
+    width: 85%;
+}
+.player-name-text {
+    font-size: 2rem;
+    font-weight: 600;
+}
+.player-order-box {
+    width: 20%;
+    border: 1px solid mintcream;
+    text-align: center;
+    font-size: 2rem;
+    box-shadow: rgba(50, 50, 93, 0.25) 0 30px 60px -12px inset,
+                rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
+    padding: .5rem;
+    border-radius: .25rem;
 }
 
 /*HP TRACKERS*/
@@ -1626,8 +1675,31 @@ ul {
 .player-name-row {
     padding: .5rem;
     width: 92%;
-    justify-content: space-around;
     border: ridge .5rem white;
+    background: #555555;
+    color: mintcream;
+}
+
+.score-calc-input-area-open-btn {
+    width: 4rem;
+    height: 4rem;
+    border: 2px solid mintcream;
+    color: mintcream;
+    background: transparent;
+    font-size: 3rem;
+    border-radius: 1rem;
+    padding: 0;
+}
+
+.score-calc-input-area-close-btn {
+    width: 4rem;
+    height: 4rem;
+    border: 2px solid mintcream;
+    color: mintcream;
+    background: transparent;
+    font-size: 3rem;
+    border-radius: 1rem;
+    padding: 0;
 }
 
 .score-calc-player-score-form {
@@ -1642,6 +1714,7 @@ ul {
 }
 
 .score-calc-score-value-box {
+    border: 1px solid mintcream;
     text-align: center;
     width: 90%;
     font-size: 2rem;
@@ -1649,7 +1722,6 @@ ul {
                 rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
     padding: .5rem;
     border-radius: .25rem;
-    background-color: mintcream;
 }
 
 .score-calc-input-area-wrapper {

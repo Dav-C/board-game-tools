@@ -11,6 +11,7 @@ from .models import (
     ScoringGroup,
     ScoringCategory,
     Player,
+    GameTimer,
 )
 
 
@@ -276,6 +277,24 @@ class ResourceProductionModifierChangeForm(forms.ModelForm):
                 'autocomplete': 'off',
             },
         ),
+    )
+
+
+class GameTimerCreateForm(forms.ModelForm):
+    """Create GameTimer Objects"""
+    class Meta:
+        model = GameTimer
+        fields = ['title']
+
+    title = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'timer title',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        )
     )
 
 

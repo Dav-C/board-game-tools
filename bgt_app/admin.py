@@ -10,6 +10,7 @@ from .models import (
     ScoringGroup,
     ScoringCategory,
     Player,
+    GameTimer,
 )
 
 admin.site.register(UserProfile)
@@ -22,4 +23,5 @@ admin.site.register(Resource)
 admin.site.register(ScoringGroup)
 admin.site.register(ScoringCategory)
 admin.site.register(Player)
+admin.site.register(GameTimer)
 

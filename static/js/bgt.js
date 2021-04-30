@@ -125,6 +125,17 @@ $('#createResourceGroupFormCancelBtn').click(function() {
     $('#createResourceGroupFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
     closeMenuCover();
 });
+$('#createGameTimerOpenFormBtn').click(function() {
+    'use strict';
+    $('#createGameTimerForm').trigger('reset');
+    $('#createGameTimerFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
+    openMenuCover();
+});
+$('#createGameTimerFormCancelBtn').click(function() {
+    'use strict';
+    $('#createGameTimerFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
+    closeMenuCover();
+});
 $('#createScoringGroupOpenFormBtn').click(function() {
     'use strict';
     $('#createScoringGroupForm').trigger('reset');
@@ -1095,6 +1106,29 @@ scoringControl = {
             window.location.reload(true);
             closeToolPageCover();
         },
+        open_player_score_input_area: function(this_value) {
+            let data_id = '#' + $(this_value).attr('data-id');
+            let input_area_wrapper = $(data_id + '-scoreCalcInputAreaWrapper');
+            let all_input_areas = $('.score-calc-input-area-wrapper');
+            let all_open_buttons = $('.score-calc-input-area-open-btn');
+            let all_close_buttons = $('.score-calc-input-area-close-btn');
+            let close_btn = $(this_value).parent().find('.score-calc-input-area-close-btn');
+            all_close_buttons.addClass('absolute-hidden');
+            all_open_buttons.removeClass('absolute-hidden');
+            all_input_areas.addClass('absolute-hidden')
+            input_area_wrapper.removeClass('absolute-hidden');
+            $(this_value).addClass('absolute-hidden');
+            close_btn.removeClass('absolute-hidden');
+        },
+        close_player_score_input_area: function(this_value) {
+            let data_id = '#' + $(this_value).attr('data-id');
+            let all_input_areas = $('.score-calc-input-area-wrapper');
+            let all_open_buttons = $('.score-calc-input-area-open-btn');
+            let all_close_buttons = $('.score-calc-input-area-close-btn');
+            all_close_buttons.addClass('absolute-hidden');
+            all_open_buttons.removeClass('absolute-hidden');
+            all_input_areas.addClass('absolute-hidden')
+        }
     }
 }
 
@@ -1204,6 +1238,16 @@ $('.create-custom-object-form.scoring-category').submit(function(e) {
             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
+});
+
+// open a player's scoring input area, this will also close any other open
+// scoring input areas
+$('.score-calc-input-area-open-btn').click(function() {
+   scoringControl.scoring_funcs.open_player_score_input_area($(this))
+});
+//  close all player scoring input areas
+$('.score-calc-input-area-close-btn').click(function() {
+   scoringControl.scoring_funcs.close_player_score_input_area($(this))
 });
 
 // calculate a player's score
