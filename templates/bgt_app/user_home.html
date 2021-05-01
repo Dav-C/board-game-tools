@@ -14,10 +14,10 @@
 {% endfor %}
 <div id=UserHomeWrapper>
 <div class="user-home-header">
-    <button id="OpenCreateToolSessionModalBtn">+</button>
+    <button id="OpenCreateToolSessionModalBtn" class="open-create-tool-session-modal-btn">+</button>
+    <a href="{% url 'logout' %}" class="logout-link">logout</a>
 </div>
 <div class="user-home-body">
-
 {#Form for adding new tool sessions#}
     <div id="CreateToolSessionFormWrapper">
         <form action=""
@@ -26,8 +26,8 @@
             {% csrf_token %}
             {{ form.session_name|add_class:"text-input-large" }}
             <br />
-            <button id="CreateToolSessionFormSubmitBtn" type="submit" class="blue-btn">Add Session</button>
-            <button id="CreateToolSessionFormCancelBtn" class="red-btn">Cancel</button>
+            <button id="CreateToolSessionFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add Session</button>
+            <button id="CreateToolSessionFormCancelBtn" class="red-btn create-form-btn">Cancel</button>
         </form>
     </div>
 {% if user.is_authenticated %}

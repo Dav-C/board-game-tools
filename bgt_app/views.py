@@ -11,7 +11,7 @@ from django.views.generic import (
     DeleteView
 )
 from django.db.models import Sum
-
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
@@ -31,6 +31,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic.edit import FormMixin
 
 from .forms import (
+    CreateUserForm,
     ToolSessionForm,
     PlayerForm,
     PlayerScoreForm,
@@ -63,6 +64,26 @@ from .models import (
     UserProfile,
     GameTimer
 )
+
+
+class CreateUser(View):
+    def get(self, request):
+        context = {'create_user_form': CreateUserForm}
+        return render(request, 'bgt_app/create_user.html', context)
+
+    def post(self, request):
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('user_home')
+        else:
+            return render(request, 'bgt_app/create_user.html',
+                          {'create_user_form': form})
 
 
 class Login(LoginView):

@@ -142,6 +142,10 @@ ul {
     transform: translate(-50%, -50%);
 }
 
+.login-page-messages {
+    display: inline;
+}
+
 .message-box {
     text-align: center;
     border-radius: .5rem;
@@ -355,9 +359,9 @@ ul {
 
 /*Login Page*/
 
-#LoginPageWrapper{
+.login-page-wrapper {
     display: grid;
-    grid-template-rows: 10vh 80vh 10vh;
+    grid-template-rows: 10vh 90vh;
 
 	background: linear-gradient(-60deg, #4800ff, #ff6200, #0072ff, #00ff8c);
 	background-size: 400% 400%;
@@ -405,10 +409,13 @@ ul {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
 }
 
-#LoginForm {
+.login-form-wrapper {
+    margin: auto;
+}
+
+.login-form {
     background-color: #FFFFFF;
     opacity: 80%;
     display:flex;
@@ -417,6 +424,7 @@ ul {
     border-radius: .25rem;
     box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0,
                 rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+    padding: 0 0 1rem 0;
 }
 
 .login-form-input {
@@ -427,6 +435,10 @@ ul {
     width:80%;
     padding: .5rem 0 .5rem 0;
     margin: 3rem;
+}
+
+.create-user-input {
+    margin: 1.5rem 3rem;
 }
 
 .login-form-btn {
@@ -451,6 +463,51 @@ ul {
     text-decoration: none;
 }
 
+.create-user-link {
+    font-size: 1.75rem;
+}
+
+.create-user-form-wrapper {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    max-width: 50rem;
+    width: 100%;
+}
+
+.create-new-user-form-title {
+    font-size: 2rem;
+    margin: 1.5rem;
+}
+
+.create-user-form {
+    background-color: #FFFFFF;
+    width: 90%;
+    opacity: 80%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: .25rem;
+    box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0,
+                rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
+    padding: 0 0 1rem 0;
+}
+
+.create-user-form-errors-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+}
+
+.create-user-form-field-error {
+    font-size: 1.5rem;
+    background-color: #c00000;
+    color: #FFFFFF;
+    margin: .25rem;
+    padding: .5rem;
+    border-radius: .25rem;
+}
+
 /*User Home Page*/
 
 #UserHomeWrapper {
@@ -471,6 +528,13 @@ ul {
     padding: .25rem;
 }
 
+.logout-link {
+    font-size: 2rem;
+    margin: 0 0 0 2rem;
+    color: mintcream;
+
+}
+
 .user-home-body {
     display:flex;
     flex-direction: column;
@@ -478,7 +542,7 @@ ul {
 }
 
 .tool-session-link-box {
-    background-color: #FFFFFF;
+    background-color: mintcream;
     display:flex;
     flex-direction: column;
     align-items: center;
@@ -505,11 +569,11 @@ ul {
                 rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
 }
 
-#OpenCreateToolSessionModalBtn {
+.open-create-tool-session-modal-btn {
     display: inline-flex;
     align-items: center;
     justify-content: space-around;
-    color: #FFFFFF;
+    color: mintcream;
     background-color: transparent;
     border: 2px solid #FFFFFF;
     border-radius: .25rem;
@@ -533,7 +597,7 @@ ul {
     padding: 4rem 1rem;
     width: 90%;
     border-radius: .25rem;
-    background-color: #e2e2e2;
+    background-color: mintcream;
     box-shadow: rgb(38, 57, 77) 0 20px 30px -10px;
     opacity: 0;
     transition: opacity 0.3s;

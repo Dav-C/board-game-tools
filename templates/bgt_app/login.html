@@ -4,20 +4,35 @@
 
 {% block page_content %}
 
-<div id="LoginPageWrapper">
-
+<div id="LoginPageWrapper" class="login-page-wrapper">
     <div class="login-header">
         <span class="login-header-text">Board Game Tools</span>
     </div>
-
     <div class="login-body">
-        <div id="LoginFormWrapper">
-            <form method="post" action="{% url 'login' %}" id="LoginForm">
+        <div class="message-wrapper login-page-messages">
+            {% for message in messages %}
+                {% if message.tag == error %}
+                    <div class="message-box error fade_out">{{ message }}</div>
+                {% else %}
+                    <div class="message-box info fade_out">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div id="LoginFormWrapper" class="login-form-wrapper">
+            <form action="{% url 'login' %}" method="post" id=loginForm class="login-form">
                 {% csrf_token %}
-                <input type="input" class="login-form-input" name="username" id="inputEmail" placeholder="Username" required >
-                <input type="password" class="login-form-input" name="password" id="inputPass" placeholder="Password" required>
-                <button type="submit" class="login-form-btn"style="opacity: 1 !important;">Login</button>
+                <input type="input" class="login-form-input" name="username"
+                       id="inputEmail" placeholder="Username" required >
+                <input type="password" class="login-form-input" name="password"
+                       id="inputPass" placeholder="Password" required>
+                <button type="submit" class="login-form-btn"
+                        style="opacity: 1 !important;">Login
+                </button>
                 <input type="hidden" name="next" value="{{ next }}">
+                <br />
+                <span class="create-user-link">
+                    <a href="{% url 'create_user' %}">create account</a>
+                </span>
             </form>
         </div>
     </div>

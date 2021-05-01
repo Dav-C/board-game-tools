@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    CreateUser,
     Login,
     Logout,
     UserHome,
@@ -37,6 +38,8 @@ from .views import (
 )
 
 urlpatterns = [
+    path('create-user/', CreateUser.as_view(), name='create_user'),
+
     path('login/', Login.as_view(), name='login'),
 
     path('logout/', Logout.as_view(), name='logout'),
