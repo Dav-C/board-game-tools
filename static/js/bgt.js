@@ -184,6 +184,12 @@ $("#openResourceGroupsBtn").click(function () {
     setActiveTool('#resourceGroupsViewWrapper.tool-body');
 });
 
+// Set Game Times to the active tool
+$("#openGameTimersBtn").click(function () {
+    'use strict';
+    setActiveTool('#gameTimersViewWrapper.tool-body');
+});
+
 // Set the Scoring Groups to the active tool
 $("#openScoringGroupsBtn").click(function () {
     'use strict';
@@ -244,6 +250,11 @@ $("#createResourceGroupForm").submit(newToolsFormSubmit(
     '#createResourceGroupForm',
     '#createResourceGroupFormWrapper',
     '#openResourceGroupsBtn'
+));
+$("#createGameTimerForm").submit(newToolsFormSubmit(
+    '#createGameTimerForm',
+    '#createGameTimerFormWrapper',
+    '#openGameTimersBtn'
 ));
 $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#createScoringGroupForm',
@@ -1309,6 +1320,89 @@ $('.score-calc-player-score-form').submit(function(e) {
             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     });
+});
+
+// --------------- GAME TIMER CONTROL ---------------
+
+gameTimerControl = {
+    game_timer_funcs: {
+
+    }
+}
+
+// reveal editing options for a Game Timer
+$('.game-timer-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let game_timer_title_box = $("#" + data_id + "-gameTimerTitle");
+    let game_timer_title_input = $("#" + data_id + '-gameTimerTitleInput');
+    let confirm_game_timer_title_change_btn = $("#" + data_id + '-confirmGameTimerTitleChangeBtn');
+    let cancel_game_timer_title_change_btn = $("#" + data_id + '-cancelGameTimerTitleChangeBtn');
+    let game_timer_control_box_btn = $('.game-timer-control-box-btn');
+    let game_timer_delete_btn = $("#" + data_id + '-gameTimerDeleteBtn');
+
+
+    function revealGameTimerTitleChangeBtns() {
+        game_timer_title_box.css({'display': 'none'});
+        game_timer_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        game_timer_control_box_btn.css({'display': 'none'});
+        confirm_game_timer_title_change_btn.css({'display': 'inline'});
+        cancel_game_timer_title_change_btn.css({'display': 'inline'});
+        game_timer_delete_btn.css({'display': 'inline'});
+    }
+
+    function hideGameTimerTitleChangeBtns() {
+        game_timer_title_box.css({'display': 'inline'});
+        game_timer_title_input.css({'display': 'none'});
+        game_timer_control_box_btn.css({'display': 'inline'});
+        confirm_game_timer_title_change_btn.css({'display': 'none'});
+        cancel_game_timer_title_change_btn.css({'display': 'none'});
+        game_timer_delete_btn.css({'display': 'none'});
+    }
+
+        revealGameTimerTitleChangeBtns();
+    game_timer_title_input.children('input').val(game_timer_title_box.text().trim());
+    game_timer_title_input.children('input').focus();
+
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_game_timer_title_change_btn.click(function() {
+        hideGameTimerTitleChangeBtns();
+        });
+});
+
+// update a game timer title
+$('.game-timer-form').submit(function(e) {
+    'use strict';
+    // preventing from page reload and default actions
+    e.preventDefault();
+    let data_id = '#' + $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // reset the title box and display the value
+            $(data_id + '-gameTimerTitle').css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
+            $(data_id + '-gameTimerTitleInput').css({'display': 'none'});
+            $('.game-timer-control-box-btn').css({'display': 'inline'});
+            $(data_id + '-confirmGameTimerTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-cancelGameTimerTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-gameTimerDeleteBtn').css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    })
 });
 
 console.log('this application has been brought to you by David Cates.');

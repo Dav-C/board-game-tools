@@ -16,7 +16,9 @@
         <div id="ToolSelectionMenuCover"></div>
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <a href="{% url 'user_home' %}">Go Back</a>
+            <button class="add-tool-button">
+                <a href="{% url 'user_home' %}">Sessions</a>
+            </button>
             <button id="createPlayerOpenFormBtn" class="add-tool-button">+ Player</button>
             <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">+ Hp Tracker</button>
             <button id="AddDieGroupOpenFormBtn" class="add-tool-button">+ Dice</button>
@@ -49,7 +51,7 @@
                 </div>
                 <br />
                 <button id="createPlayerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="createPlayerFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
+                <button id="createPlayerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
             </form>
         </div>
 
@@ -69,7 +71,7 @@
                 {{ add_hp_tracker_form.hp_value|add_class:'text-input-large' }}
                 <br />
                 <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
+                <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
             </form>
         </div>
 {# create die group form #}
@@ -88,7 +90,7 @@
                 {{ die_group_form.hp_value|add_class:'text-input-large' }}
                 <br />
                 <button id="AddDieGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
+                <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
             </form>
         </div>
 
@@ -106,14 +108,14 @@
                 {{ resource_group_form.title|add_class:'text-input-large' }}
                 <br />
                 <button id="createResourceGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
+                <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
             </form>
         </div>
 
 {# create game timer form #}
         <div id="createGameTimerFormWrapper" class="add-new-tool-form-wrapper">
             <div class="form-title-box">
-                <span class="form-title-text">create new player</span>
+                <span class="form-title-text">create game timer</span>
             </div>
                 <br />
             <form method="POST" id="createGameTimerForm"
@@ -123,8 +125,8 @@
                 <br />
                 {{ game_timer_create_form.title|add_class:'text-input-large' }}
                 <br />
-                <button id="createPlayerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="createPlayerFormCancelBtn" type="button" class="red-btn create-form-btn">Cancel</button>
+                <button id="createGameTimerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
+                <button id="createGameTimerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
             </form>
         </div>
 
@@ -142,7 +144,7 @@
                 {{ scoring_group_form.title|add_class:'text-input-large' }}
                 <br />
                 <button id="createScoringGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn create-form-btn">Add</button>
-                <button id="createScoringGroupFormCancelBtn" type="button" class="red-btn create-form-btn create-form-btn">Cancel</button>
+                <button id="createScoringGroupFormCancelBtn" type="button" class="red-btn create-form-btn create-form-btn">Done</button>
             </form>
         </div>
     </div>
@@ -155,6 +157,9 @@
         </div>
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
+            <button id="OpenUserSettings" class="select-active-tool-button
+                {% if players %}button-visible{% endif %}">Settings
+            </button>
             <button id="OpenPlayersBtn" class="select-active-tool-button
                 {% if players %}button-visible{% endif %}">Players
             </button>
@@ -162,7 +167,7 @@
                 {% if hp_trackers %}button-visible{% endif %}">HP Trackers
             </button>
             <button id="OpenDieGroupsBtn" class="select-active-tool-button
-                {% if die_groups %}button-visible{% endif %}">Die Groups
+                {% if die_groups %}button-visible{% endif %}">Dice
             </button>
         </div>
 {# row of buttons for selecting active tools tools #}
@@ -170,13 +175,14 @@
             <button id="openResourceGroupsBtn" class="select-active-tool-button
                 {% if resource_groups %}button-visible{% endif %}">Resources
             </button>
-            <button id="openScoringGroupsBtn" class="select-active-tool-button
-                {% if scoring_groups %}button-visible{% endif %}">Scoring
-            </button>
             <button id="openGameTimersBtn" class="select-active-tool-button
-                {% if game_timers %}button-visible{% endif %}">GameTimers</button>
+                {% if game_timers %}button-visible{% endif %}">GameTimers
+            </button>
             <button id="openDrawBagsBtn" class="select-active-tool-button
                 {% if draw_bags %}button-visible{% endif %}">Draw Bags
+            </button>
+            <button id="openScoringGroupsBtn" class="select-active-tool-button
+                {% if scoring_groups %}button-visible{% endif %}">Scoring
             </button>
         </div>
     </div>
@@ -211,6 +217,8 @@
 {% include 'bgt_app/die_groups.html' %}
 
 {% include 'bgt_app/resource_groups.html' %}
+
+{% include 'bgt_app/game_timers.html' %}
 
 {% include 'bgt_app/scoring_groups.html' %}
     </div>

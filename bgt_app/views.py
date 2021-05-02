@@ -160,6 +160,10 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
             .filter(
                 tool_session_id=active_tool_session_id
             )
+        game_timers = GameTimer.objects\
+            .filter(
+                tool_session_id=active_tool_session_id
+            )
         scoring_groups = ScoringGroup.objects\
             .filter(
                 tool_session_id=active_tool_session_id
@@ -189,6 +193,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['resource_production_modifier_change_form'] = \
             ResourceProductionModifierChangeForm
         context['game_timer_create_form'] = GameTimerCreateForm
+        context['game_timers'] = game_timers
         context['scoring_group_form'] = ScoringGroupForm
         context['scoring_group_add_players_form'] = \
             ScoringGroupAddPlayersForm(
@@ -268,7 +273,6 @@ def reload_current_url(request):
     completing a GET or POST, (after deleting an object for example)"""
 
     redirect_url = request.GET.get('next')
-    print(request)
     url_is_safe = is_safe_url(
         url=redirect_url,
         allowed_hosts=settings.ALLOWED_HOSTS,
@@ -587,6 +591,30 @@ class GameTimerCreate(LoginRequiredMixin, View):
         return save_new_tool_and_associate_with_session(
             form=GameTimerCreateForm,
             request=self.request,
+        )
+
+
+class GameTimerDelete(LoginRequiredMixin, View):
+    """Delete a ScoringGroup Object"""
+
+    def post(self, request, game_timer_uuid):
+        return delete_model_object(
+            request=self.request,
+            model=GameTimer,
+            uuid=game_timer_uuid
+        )
+
+
+class GameTimerTitleUpdate(LoginRequiredMixin, View):
+    """Update the title of a GameTimer object"""
+
+    def post(self, request, game_timer_uuid):
+        return create_or_update_obj_and_serialize(
+            request=self.request,
+            form=GameTimerCreateForm,
+            model=GameTimer,
+            obj_uuid=game_timer_uuid,
+            group_model=None
         )
 
 

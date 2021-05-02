@@ -1,0 +1,65 @@
+{% load static %}
+{% load widget_tweaks %}
+
+{#Hp Trackers#}
+<div id="gameTimersViewWrapper" class="tool-body">
+    {% for game_timer in game_timers %}
+        <div class="game-timer-box">
+            <form action="{% url 'game_timer_title_update' game_timer.id%}"
+                  method="POST"
+                  id="{{ game_timer.id }}-gameTimerForm"
+                  data-id="{{ game_timer.id }}"
+                  class="game-timer-form">
+                {% csrf_token %}
+                <div class="tool-title-box">
+                    <div id="{{ game_timer.id }}-gameTimerTitle"
+                         class="tool-title game-timer-title">
+                        {{ game_timer.title }}
+                    </div>
+                    <div id="{{ game_timer.id }}-gameTimerTitleInput"
+                         class="tool-title no-display">
+                        {{ game_timer_create_form.title|add_class:"tool-title-input"}}
+                    </div>
+                </div>
+            </form>
+{# game timer control box #}
+            <div class="game-timer-control-box" data-id="{{ game_timer.id }}">
+                <button type="button"
+                        id="{{ game_timer.id }}-gameTimerStopBtn"
+                        class="blue-btn game-timer-control-box-btn">stop
+
+                </button>
+                <button type="button"
+                        id="{{ game_timer.id }}-gameTimerStopBtn"
+                        class="blue-btn game-timer-control-box-btn">start
+
+                </button>
+                <button type="button"
+                        id="{{ game_timer.id }}-cancelGameTimerTitleChangeBtn"
+                        class="cancel-change-btn">cancel
+                </button>
+                <button type="submit"
+                        id="{{ game_timer.id }}-confirmGameTimerTitleChangeBtn"
+                        class="confirm-change-btn" form="{{ game_timer.id }}-gameTimerForm">ok
+                </button>
+            </div>
+            <hr style="width: 80%;">
+{# delete game timer form #}
+            <form id="{{ game_timer.id }}-deleteToolForm"
+                  class="delete-tool-form"
+                  action="{% url 'game_timer_delete' game_timer.id %}?next={{ request.get_full_path }}"
+                  method="POST">
+                {% csrf_token %}
+                <button id="{{ game_timer.id }}-gameTimerDeleteBtn"
+                        class="delete-btn-large">delete this game timer
+                </button>
+            </form>
+{#game timer duration#}
+            <div>
+                <span class="game-timer-duration">{{ game_timer.saved_duration }}</span>
+            </div>
+        </div>
+    {% empty %}
+        <span class="large-text"><i>no game timers</i></span>
+    {% endfor %}
+</div>

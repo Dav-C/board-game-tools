@@ -29,6 +29,8 @@ from .views import (
     ResourceQtyChange,
     ResourceProductionModifierChange,
     GameTimerCreate,
+    GameTimerDelete,
+    GameTimerTitleUpdate,
     ScoringGroupCreate,
     ScoringGroupUpdate,
     ScoringGroupDelete,
@@ -115,6 +117,12 @@ urlpatterns = [
 
     path('game-timer-create/',
          GameTimerCreate.as_view(), name='game_timer_create'),
+
+    path('game-timer-delete/<game_timer_uuid>',
+         GameTimerDelete.as_view(), name='game_timer_delete'),
+
+    path('game-timer-title-update/<game_timer_uuid>',
+         GameTimerTitleUpdate.as_view(), name='game_timer_title_update'),
 
     path('scoring-group-create/',
          ScoringGroupCreate.as_view(), name='scoring_group_create'),
