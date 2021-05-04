@@ -46,6 +46,7 @@ from .forms import (
     ResourceQuantityChangeForm,
     ResourceProductionModifierChangeForm,
     GameTimerCreateForm,
+    GameTimerDurationUpdateForm,
     ScoringGroupForm,
     ScoringGroupAddPlayersForm,
     ScoringCategoryCreateForm,
@@ -193,6 +194,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['resource_production_modifier_change_form'] = \
             ResourceProductionModifierChangeForm
         context['game_timer_create_form'] = GameTimerCreateForm
+        context['game_timer_duration_update_form'] = GameTimerDurationUpdateForm
         context['game_timers'] = game_timers
         context['scoring_group_form'] = ScoringGroupForm
         context['scoring_group_add_players_form'] = \
@@ -612,6 +614,19 @@ class GameTimerTitleUpdate(LoginRequiredMixin, View):
         return create_or_update_obj_and_serialize(
             request=self.request,
             form=GameTimerCreateForm,
+            model=GameTimer,
+            obj_uuid=game_timer_uuid,
+            group_model=None
+        )
+
+
+class GameTimerDurationUpdate(LoginRequiredMixin, View):
+    """update the saved_duration field of a GameTimer object"""
+
+    def post(self, request, game_timer_uuid):
+        return create_or_update_obj_and_serialize(
+            request=self.request,
+            form=GameTimerDurationUpdateForm,
             model=GameTimer,
             obj_uuid=game_timer_uuid,
             group_model=None

@@ -34,6 +34,7 @@ class ToolSessionForm(forms.ModelForm):
     session_name = forms.CharField(
         widget=forms.TextInput(
             attrs={
+                'placeholder': 'session name',
                 'autocomplete': 'off',
             },
         ),
@@ -304,6 +305,20 @@ class GameTimerCreateForm(forms.ModelForm):
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
+        )
+    )
+
+
+class GameTimerDurationUpdateForm(forms.ModelForm):
+    """Update the saved_duration field of a GameTimer"""
+    class Meta:
+        model = GameTimer
+        fields = ['saved_duration']
+
+    saved_duration = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={},
         )
     )
 

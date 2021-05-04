@@ -311,7 +311,7 @@ function timeoutControl(element) {
     let title_box = $(data_id + "-HpTrackerTitle");
 
     // After a 2 second delay submit the form and reset the change value to 0
-    hpTrackerTimeoutHandler= setTimeout(function () {
+    hpTrackerTimeoutHandler = setTimeout(function () {
         $(data_id + '-HpValueInput input').val(hp_add_subtract_value);
         $(data_id + '-HpTrackerTitleInput input').val(title_box.text());
         $(data_id + '-HpChangeValueForm').submit();
@@ -685,7 +685,7 @@ resourceControl = {
         reveal_resource_title_change_and_delete_btn: function(data_id_value) {
             let data_id = '#' + data_id_value;
             $(data_id + '-resourceName').css({'display':'none'});
-            $(data_id + '-resourceNameInputWrapper').removeClass('absolute-hidden').children('input').focus();;
+            $(data_id + '-resourceNameInputWrapper').removeClass('absolute-hidden').children('input').focus();
             $(data_id + '-resourceDeleteButton').css({'display':'inline'});
             $(data_id + '-resourceImageBox').css({'display':'none'});
             $(data_id + '-confirmChangeBtn').css({'display':'inline'});
@@ -1324,9 +1324,97 @@ $('.score-calc-player-score-form').submit(function(e) {
 
 // --------------- GAME TIMER CONTROL ---------------
 
+let timer_running = false;
+let run_timer;
+
 gameTimerControl = {
     game_timer_funcs: {
+        game_timer_start_stop: function(data_id_value, timer_run = 'not_running') {
+            // let data_id = $(this_value).attr('data-id')
+            let duration_window = $('#' + data_id_value + '-gameTimerDuration');
+            let duration = duration_window.text().replaceAll(':', '');
+            let timer_running = timer_run;
+            let hour;
+            let minute;
+            let second;
+            if (duration.trim().length === 5) {
+                hour = parseInt(duration.substring(0, 1));
+                minute = parseInt(duration.substring(1, 3));
+                second = parseInt(duration.substring(3, 5));
+            } else if (duration.trim().length === 6) {
+                hour = parseInt(duration.substring(0, 2));
+                minute = parseInt(duration.substring(2, 4));
+                second = parseInt(duration.substring(4, 6));
+            }
+            let minute_display;
+            let second_display;
+            let duration_update_form = $('#' + data_id_value + '-gameTimerDurationUpdateForm');
 
+            function get_and_update_duration_update_form(data_id_value, duration_value) {
+                let form = $('#' + data_id_value + '-gameTimerDurationUpdateForm');
+                let input = $(form).children().children('input');
+                input.val(duration_value);
+                console.log(duration_value)
+            }
+
+            function game_timer_run(hr, min, sec) {
+                get_and_update_duration_update_form(data_id_value, duration_window.text())
+                if (sec <= 58) {
+                    second = sec + 1;
+                } else if (sec === 59) {
+                    if (min === 59) {
+                        hour = hr + 1;
+                        minute = 0;
+                    } else {
+                        minute = min + 1;
+                    }
+                    second = 0;
+                    duration_update_form.submit();
+                }
+                if (second <= 9) {
+                    second_display = '0' + second;
+                } else {
+                    second_display = second;
+                }
+                if (minute <= 9) {
+                    minute_display = '0' + minute;
+                } else {
+                    minute_display = minute;
+                }
+                duration_window.empty().text(
+                    hour + ':' + minute_display + ':' + second_display
+                );
+                get_and_update_duration_update_form(data_id_value, duration_window.text())
+                localStorage.setItem('game_timer_value', duration_window.text());
+            }
+
+            function game_timer_start() {
+                localStorage.setItem('game_timer_status', 'running');
+                localStorage.setItem('game_timer_id', data_id_value);
+                run_timer = setInterval(function () {
+                    game_timer_run(hour, minute, second)
+                }, 1000);
+            }
+            function game_timer_stop() {
+                localStorage.setItem('game_timer_status', 'not_running');
+                clearInterval(run_timer);
+            }
+            if (timer_running === 'not_running') {
+                game_timer_stop();
+            }
+            else if (timer_running === 'running') {
+                game_timer_start();
+            }
+        },
+        reset_game_timer: function(data_id_value) {
+            let duration_window = $('#' + data_id_value + '-gameTimerDuration');
+                duration_window.empty().text('0:00:00');
+        },
+        get_and_update_duration_update_form: function(data_id_value, duration_value) {
+            let form = $('#' + data_id_value + '-gameTimerDurationUpdateForm');
+            let input = $(form).children().children('input');
+            input.val(duration_value);
+        },
     }
 }
 
@@ -1403,6 +1491,76 @@ $('.game-timer-form').submit(function(e) {
             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     })
+});
+
+// check for running timers and start them on page load
+if (localStorage.getItem('game_timer_status') === 'running') {
+    let data_id = localStorage.getItem('game_timer_id');
+    let duration_window = $('#' + data_id + '-gameTimerDuration');
+    duration_window.text(localStorage.getItem('game_timer_value'));
+    gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
+}
+// // detect window unloads and save the timer duration
+// $(window).on('beforeunload', function() {
+//     console.log('unload')
+//     if (timer_running === true) {
+//         timer_running = false;
+//         let data_id = localStorage.getItem('game_timer_id');
+//         let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
+//         let input = $(form).children().children('input');
+//         console.log(input);
+//         input.val(localStorage.getItem('game_timer_value'));
+//         form.submit()
+//         gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
+//     }
+// });
+// start a game timer and add it to the array of running timers
+$('.game-timer-control-box-btn.start').click(function() {
+    let data_id = $(this).attr('data-id');
+    if (timer_running === false) {
+        timer_running = true;
+        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
+    }
+});
+// stop a game timer and remove it from the array of running timers
+$('.game-timer-control-box-btn.stop').click(function() {
+    if (timer_running === true) {
+        timer_running = false;
+        let data_id = $(this).attr('data-id');
+        let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
+        form.submit()
+        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
+    }
+});
+// reset a game timer back to 0
+$('.game-timer-control-box-btn.reset').click(function() {
+    let data_id = $(this).attr('data-id');
+    let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
+    let input = $(form).children().children('input');
+    gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
+    gameTimerControl.game_timer_funcs.reset_game_timer(data_id);
+    input.val('0:00:00');
+    form.submit();
+});
+
+// push current game timer duration to database
+$('.game-timer-duration-update-form').submit(function(e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = '#' + $(this).attr('data-id');
+    let serialized_data = $(this).serialize();
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serialized_data,
+        success: function (response) {
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    });
 });
 
 console.log('this application has been brought to you by David Cates.');

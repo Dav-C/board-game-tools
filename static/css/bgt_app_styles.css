@@ -588,6 +588,7 @@ ul {
 }
 
 #CreateToolSessionFormWrapper {
+    border: 1px solid black;
     position: fixed;
     top: 20%;
     display: flex;
@@ -595,6 +596,7 @@ ul {
     align-items: center;
     justify-content: center;
     padding: 4rem 1rem;
+    max-width: 50rem;
     width: 90%;
     border-radius: .25rem;
     background-color: mintcream;
@@ -1430,6 +1432,12 @@ ul {
     margin: .5rem 0 1rem 0;
     width: 90%;
     height: 100%;
+}
+
+.game-timer-control-box-btn {
+    padding: .25rem;
+    font-size: 3rem;
+    width: 30%;
 }
 
 .game-timer-duration {
