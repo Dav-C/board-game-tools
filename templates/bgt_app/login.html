@@ -11,11 +11,7 @@
     <div class="login-body">
         <div class="message-wrapper login-page-messages">
             {% for message in messages %}
-                {% if message.tag == error %}
-                    <div class="message-box error fade_out">{{ message }}</div>
-                {% else %}
-                    <div class="message-box info fade_out">{{ message }}</div>
-                {% endif %}
+                <div class="message-box success fade_out">{{ message }}</div>
             {% endfor %}
         </div>
         <div id="LoginFormWrapper" class="login-form-wrapper">

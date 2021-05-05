@@ -62,13 +62,13 @@
             </div>
                 <br />
             <form method="POST" id="AddHpTrackerForm"
-                  action="{% url 'add_hp_tracker' %}"
+                  action="{% url 'hp_tracker_create' %}"
                   class="add-new-tool-form">
                 {% csrf_token %}
                 <br />
-                {{ add_hp_tracker_form.title|add_class:'text-input-large' }}
+                {{ hp_tracker_create_form.title|add_class:'text-input-large' }}
                 <br />
-                {{ add_hp_tracker_form.hp_value|add_class:'text-input-large' }}
+                {{ hp_tracker_create_form.hp_value|add_class:'text-input-large' }}
                 <br />
                 <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
                 <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
@@ -81,7 +81,7 @@
             </div>
                 <br />
             <form method="POST" id="AddDieGroupForm"
-                  action="{% url 'add_die_group' %}"
+                  action="{% url 'die_group_create' %}"
                   class="add-new-tool-form">
                 {% csrf_token %}
                 <br />

@@ -82,7 +82,7 @@ class PlayerScoreForm(forms.ModelForm):
     ),
 
 
-class HpTrackerAddForm(forms.ModelForm):
+class HpTrackerCreateForm(forms.ModelForm):
     """Create new HpTracker objects"""
     class Meta:
         model = HpTracker

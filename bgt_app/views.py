@@ -35,7 +35,7 @@ from .forms import (
     ToolSessionForm,
     PlayerForm,
     PlayerScoreForm,
-    HpTrackerAddForm,
+    HpTrackerCreateForm,
     HpTrackerChangeValueForm,
     DieGroupForm,
     DieGroupUpdateForm,
@@ -179,13 +179,13 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['players'] = players
         context['player_form'] = PlayerForm
         context['player_score_form'] = PlayerScoreForm
-        context['add_hp_tracker_form'] = HpTrackerAddForm
+        context['hp_tracker_create_form'] = HpTrackerCreateForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
         context['die_group_form'] = DieGroupForm
         context['die_group_update_form'] = DieGroupUpdateForm
         context['die_groups'] = die_groups
-        context['add_die_standard_form'] = DieStandardForm
+        context['die_standard_form'] = DieStandardForm
         context['resource_group_form'] = ResourceGroupForm
         context['resource_groups'] = resource_groups
         context['resource_create_form'] = ResourceCreateForm
@@ -230,6 +230,20 @@ def save_new_tool_and_associate_with_session(form, request):
             {'form_instance': serialized_form_instance}, status=200)
     else:
         return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+def object_count(request, model):
+    active_tool_session_id = request.session['active_tool_session_id']
+    num_of_objects = model.objects\
+        .filter(tool_session_id=active_tool_session_id).count()
+    return num_of_objects
+
+
+def group_nested_object_count(request, model, group_uuid):
+    active_tool_session_id = request.session['active_tool_session_id']
+    num_of_objects = model.objects\
+        .filter(group_id=group_uuid).count()
+    return num_of_objects
 
 
 def create_or_update_obj_and_serialize(
@@ -303,10 +317,15 @@ class PlayerCreate(LoginRequiredMixin, View):
     that the current user has open, post is ajax"""
 
     def post(self, request, *args, **kwargs):
-        return save_new_tool_and_associate_with_session(
-            form=PlayerForm,
-            request=self.request,
-        )
+        if object_count(self.request, Player) <= 14:
+            return save_new_tool_and_associate_with_session(
+                form=PlayerForm,
+                request=self.request,
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 15 players per session"
+            }, status=401)
 
 
 class PlayerDelete(LoginRequiredMixin, View):
@@ -340,15 +359,20 @@ class PlayerRandomizeOrder(LoginRequiredMixin, View):
         return reload_current_url(request)
 
 
-class AddHpTracker(LoginRequiredMixin, View):
+class HpTrackerCreate(LoginRequiredMixin, View):
     """Add an HpTracker to the database and associate it
     with the active tool session that the current user has open, post is ajax"""
 
     def post(self, request, *args, **kwargs):
-        return save_new_tool_and_associate_with_session(
-            form=HpTrackerAddForm,
-            request=self.request,
-        )
+        if object_count(self.request, HpTracker) <= 14:
+            return save_new_tool_and_associate_with_session(
+                form=HpTrackerCreateForm,
+                request=self.request,
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 15 hp trackers per session"
+            }, status=401)
 
 
 class HpTrackerUpdate(LoginRequiredMixin, View):
@@ -373,17 +397,22 @@ class HpTrackerDelete(LoginRequiredMixin, View):
         )
 
 
-class AddDieGroup(LoginRequiredMixin, View):
+class DieGroupCreate(LoginRequiredMixin, View):
     """Add a DieGroup object to the database and associate it with the active
     tool session that the current user has open, post is ajax
     Die Groups hold sets of dice so they can more easily be separated for
     gameplay purposes and processed (rolled) as a group."""
 
     def post(self, request, *args, **kwargs):
-        return save_new_tool_and_associate_with_session(
-            form=DieGroupForm,
-            request=self.request
-        )
+        if object_count(self.request, DieGroup) <= 9:
+            return save_new_tool_and_associate_with_session(
+                form=DieGroupForm,
+                request=self.request
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 10 die collections per session"
+            }, status=401)
 
 
 class DieGroupUpdate(LoginRequiredMixin, View):
@@ -421,18 +450,26 @@ class DieStandardDelete(LoginRequiredMixin, View):
         return redirect('user_home')
 
 
-class AddDieStandard(LoginRequiredMixin, View):
+class DieStandardCreate(LoginRequiredMixin, View):
     """Add a DieStandard object and associate it with the group that invoked the
     add request"""
 
     def post(self, request, die_group_uuid, *args, **kwargs):
-        return create_or_update_obj_and_serialize(
-            request=self.request,
-            form=DieStandardForm,
-            model=DieStandard,
-            obj_uuid=die_group_uuid,
-            group_model=DieGroup,
-        )
+        if group_nested_object_count(
+                request=self.request,
+                model=DieStandard,
+                group_uuid=die_group_uuid) <= 19:
+            return create_or_update_obj_and_serialize(
+                request=self.request,
+                form=DieStandardForm,
+                model=DieStandard,
+                obj_uuid=die_group_uuid,
+                group_model=DieGroup,
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 20 dice per die collection"
+            }, status=401)
 
 
 class RollDieGroup(LoginRequiredMixin, View):
@@ -491,10 +528,15 @@ class ResourceGroupCreate(LoginRequiredMixin, View):
     Resource Groups hold sets of resources"""
 
     def post(self, request, *args, **kwargs):
-        return save_new_tool_and_associate_with_session(
+        if object_count(self.request, ResourceGroup) <= 9:
+            return save_new_tool_and_associate_with_session(
                 form=ResourceGroupForm,
                 request=self.request
-        )
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 10 resource groups per session"
+            }, status=401)
 
 
 class ResourceGroupUpdate(LoginRequiredMixin, View):
@@ -526,13 +568,21 @@ class ResourceCreate(LoginRequiredMixin, View):
     the create request"""
 
     def post(self, request, resource_group_uuid, *args, **kwargs):
-        return create_or_update_obj_and_serialize(
-            request=self.request,
-            form=ResourceCreateForm,
-            model=Resource,
-            obj_uuid=resource_group_uuid,
-            group_model=ResourceGroup,
+        if group_nested_object_count(
+                request=self.request,
+                model=Resource,
+                group_uuid=resource_group_uuid,) <= 19:
+            return create_or_update_obj_and_serialize(
+                request=self.request,
+                form=ResourceCreateForm,
+                model=Resource,
+                obj_uuid=resource_group_uuid,
+                group_model=ResourceGroup,
             )
+        else:
+            return JsonResponse({
+                'error': "maximum 20 resource types per resource group"
+            }, status=401)
 
 
 class ResourceDelete(LoginRequiredMixin, View):
@@ -589,15 +639,20 @@ class ResourceProductionModifierChange(LoginRequiredMixin, View):
 class GameTimerCreate(LoginRequiredMixin, View):
     """Create a GameTimer Object"""
 
-    def post(self, request):
-        return save_new_tool_and_associate_with_session(
-            form=GameTimerCreateForm,
-            request=self.request,
-        )
+    def post(self, request, *args, **kwargs):
+        if object_count(self.request, GameTimer) == 0:
+            return save_new_tool_and_associate_with_session(
+                form=GameTimerCreateForm,
+                request=self.request
+            )
+        else:
+            return JsonResponse({
+                'error': "only 1 timer per session is supported"
+            }, status=401)
 
 
 class GameTimerDelete(LoginRequiredMixin, View):
-    """Delete a ScoringGroup Object"""
+    """Delete a GameTimer Object"""
 
     def post(self, request, game_timer_uuid):
         return delete_model_object(
@@ -639,10 +694,15 @@ class ScoringGroupCreate(LoginRequiredMixin, View):
     Resource Groups hold sets of resources"""
 
     def post(self, request, *args, **kwargs):
-        return save_new_tool_and_associate_with_session(
-                    form=ScoringGroupForm,
-                    request=self.request
-                )
+        if object_count(self.request, ScoringGroup) == 0:
+            return save_new_tool_and_associate_with_session(
+                form=ScoringGroupForm,
+                request=self.request
+            )
+        else:
+            return JsonResponse({
+                'error': "only 1 scoring calculator per session is supported"
+            }, status=401)
 
 
 class ScoringGroupUpdate(LoginRequiredMixin, View):
@@ -691,20 +751,28 @@ class ScoringCategoryCreate(LoginRequiredMixin, View):
     that invoked the create request"""
 
     def post(self, request, scoring_group_uuid, *args, **kwargs):
-        # erase player scores
-        active_tool_session_id = self.request.session['active_tool_session_id']
-        players = Player.objects\
-            .filter(tool_session_id=active_tool_session_id)
-        for player in players:
-            player.score = None
-            player.save()
-        return create_or_update_obj_and_serialize(
-            request=self.request,
-            form=ScoringCategoryCreateForm,
-            model=ScoringCategory,
-            obj_uuid=scoring_group_uuid,
-            group_model=ScoringGroup,
-        )
+        if group_nested_object_count(
+                request=self.request,
+                model=ScoringCategory,
+                group_uuid=scoring_group_uuid,) <= 19:
+            # erase player scores
+            active_tool_session_id = self.request.session['active_tool_session_id']
+            players = Player.objects\
+                .filter(tool_session_id=active_tool_session_id)
+            for player in players:
+                player.score = None
+                player.save()
+            return create_or_update_obj_and_serialize(
+                request=self.request,
+                form=ScoringCategoryCreateForm,
+                model=ScoringCategory,
+                obj_uuid=scoring_group_uuid,
+                group_model=ScoringGroup,
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 20 scoring categories per scoring calculator"
+            }, status=401)
 
 
 class ScoringCategoryDelete(LoginRequiredMixin, View):

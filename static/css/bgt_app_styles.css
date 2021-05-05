@@ -134,7 +134,7 @@ ul {
 
 .message-wrapper {
     position: absolute;
-    z-index: 1;
+    z-index: 3;
     display: none;
     visibility: visible;
     top: 30%;

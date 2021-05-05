@@ -4,22 +4,28 @@
 {# players #}
 <div id="playerPageSuccessMessageWrapper" class="message-wrapper"></div>
 <div id="playersViewWrapper" class="tool-body">
-    <div class="players-box-wrapper">
-        <div class="players-control-box">
-            <a href="{% url 'player_randomize_order' %}?next={{ request.get_full_path }}">
-                <button class="blue-btn">Randomize</button>
-            </a>
-        </div>
-        {% for player in players %}
-            <div class="player-box">
-                <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;{{ player.name }}</span>
-                <form method="POST"
-                      action="{% url 'player_delete' player.id %}?next={{ request.get_full_path }}"
-                      id="{{ scoring_category.id }}-deletePlayerForm">
-                    {% csrf_token %}
-                    <button class="red-btn small">delete</button>
-                </form>
+    {% if players %}
+        <div class="players-box-wrapper">
+            <div class="players-control-box">
+                {% if players %}
+                    <a href="{% url 'player_randomize_order' %}?next={{ request.get_full_path }}">
+                        <button class="blue-btn">Randomize</button>
+                    </a>
+                {% endif %}
             </div>
-        {% endfor %}
-    </div>
+            {% for player in players %}
+                <div class="player-box">
+                    <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;{{ player.name }}</span>
+                    <form method="POST"
+                          action="{% url 'player_delete' player.id %}?next={{ request.get_full_path }}"
+                          id="{{ scoring_category.id }}-deletePlayerForm">
+                        {% csrf_token %}
+                        <button class="red-btn small">delete</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <span class="large-text">add some players!</span>
+    {% endif %}
 </div>

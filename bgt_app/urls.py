@@ -10,14 +10,14 @@ from .views import (
     PlayerDelete,
     PlayerScoreUpdate,
     PlayerRandomizeOrder,
-    AddHpTracker,
+    HpTrackerCreate,
     HpTrackerUpdate,
     HpTrackerDelete,
-    AddDieGroup,
+    DieGroupCreate,
     DieGroupUpdate,
     DieGroupDelete,
     DieStandardDelete,
-    AddDieStandard,
+    DieStandardCreate,
     RollDieGroup,
     RollDie,
     ResourceGroupCreate,
@@ -62,7 +62,7 @@ urlpatterns = [
          PlayerRandomizeOrder.as_view(), name='player_randomize_order'),
 
     path('add-hp-tracker/',
-         AddHpTracker.as_view(), name='add_hp_tracker'),
+         HpTrackerCreate.as_view(), name='hp_tracker_create'),
 
     path('hp-tracker-update/<hp_tracker_uuid>',
          HpTrackerUpdate.as_view(), name='hp_tracker_update'),
@@ -71,7 +71,7 @@ urlpatterns = [
          HpTrackerDelete.as_view(), name='hp_tracker_delete'),
 
     path('add-die-group/',
-         AddDieGroup.as_view(), name='add_die_group'),
+         DieGroupCreate.as_view(), name='die_group_create'),
 
     path('die-group-update/<die_group_uuid>',
          DieGroupUpdate.as_view(), name='die_group_update'),
@@ -82,8 +82,8 @@ urlpatterns = [
     path('die-standard-delete/<uuid>',
          DieStandardDelete.as_view(), name='die_standard_delete'),
 
-    path('add-die-standard/<die_group_uuid>',
-         AddDieStandard.as_view(), name='add_die_standard'),
+    path('die-standard-create/<die_group_uuid>',
+         DieStandardCreate.as_view(), name='die_standard_create'),
 
     path('roll-die-group/<die_group_uuid>',
          RollDieGroup.as_view(), name='roll_die_group'),
@@ -153,11 +153,4 @@ urlpatterns = [
          PlayerScoreUpdate.as_view(),
          name='player_score_update'),
 
-    # path('scoring-category-name-change/<category_uuid>',
-    #      ScoringCategoryNameChange.as_view(),
-    #      name='scoring_category_name_change'),
-    #
-    # path('scoring-category-update/<category_uuid>',
-    #      ScoringCategoryPointsUpdate.as_view(),
-    #      name='scoring_category_points_update'),
 ]

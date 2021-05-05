@@ -45,12 +45,12 @@
                 <div class="form-title-box">
                     <span class="form-title-text">Add a custom die</span>
                 </div>
-                <form action="{% url 'add_die_standard' die_group.id %}"
+                <form action="{% url 'die_standard_create' die_group.id %}"
                       method="POST" id="{{ die_group.id }}-dieGroupAddDieStandardForm" class="create-custom-object-form die">
                 {% csrf_token %}
                 <div class="create-object-form-row">
                     <div id={{ die_group.id }}-addDieStandardNumSidesInput>
-                        {{ add_die_standard_form.num_sides|add_class:"add-die-standard-input" }}
+                        {{ die_standard_form.num_sides|add_class:"add-die-standard-input" }}
                     </div>
                     <button type="submit" class="blue-btn smaller">add die</button>
                 </div>

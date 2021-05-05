@@ -221,9 +221,10 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
             },
-            error: function (response) {
-                console.log(response["responseJSON"]["error"]);
-                messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+            error: function(response) {
+                let error_text = response.responseText
+                    .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                messageControl.display_error_message('#errorMessageWrapper', error_text);
             }
         });
     });
@@ -627,9 +628,10 @@ $('.create-custom-object-form.die').submit(function(e) {
             messageControl.display_success_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        error: function(response) {
+            let error_text = response.responseText
+                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+            messageControl.display_error_message('#errorMessageWrapper', error_text);
         }
     });
 });
@@ -651,9 +653,10 @@ $('.common-object-quick-create-btn.die-create').click(function(e) {
             messageControl.display_success_message('#dieAddedSuccessMessageWrapper', 'die added!');
             console.log('ajaxSuccess');
         },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        error: function(response) {
+            let error_text = response.responseText
+                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+            messageControl.display_error_message('#errorMessageWrapper', error_text);
         }
     });
 });
@@ -878,14 +881,15 @@ $('.common-object-quick-create-btn.resource-create').click(function(e) {
             messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
             console.log('ajaxSuccess');
         },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        error: function(response) {
+            let error_text = response.responseText
+                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+            messageControl.display_error_message('#errorMessageWrapper', error_text);
         }
     });
 });
 
-// ajax for adding a resource via the #resourceGroupCreateResourceForm
+// ajax for adding a resource
 $('.create-custom-object-form.resource').submit(function(e) {
     'use strict';
     e.preventDefault();
@@ -898,9 +902,10 @@ $('.create-custom-object-form.resource').submit(function(e) {
             messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
             console.log('ajaxSuccess');
         },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        error: function(response) {
+            let error_text = response.responseText
+                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+            messageControl.display_error_message('#errorMessageWrapper', error_text);
         }
     });
 });
@@ -1244,9 +1249,10 @@ $('.create-custom-object-form.scoring-category').submit(function(e) {
             messageControl.display_success_message('#scoringPageSuccessMessageWrapper', 'category added!');
             console.log('ajaxSuccess');
         },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        error: function(response) {
+            let error_text = response.responseText
+                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+            messageControl.display_error_message('#errorMessageWrapper', error_text);
         }
     });
 });
@@ -1354,7 +1360,6 @@ gameTimerControl = {
                 let form = $('#' + data_id_value + '-gameTimerDurationUpdateForm');
                 let input = $(form).children().children('input');
                 input.val(duration_value);
-                console.log(duration_value)
             }
 
             function game_timer_run(hr, min, sec) {
@@ -1408,12 +1413,11 @@ gameTimerControl = {
         },
         reset_game_timer: function(data_id_value) {
             let duration_window = $('#' + data_id_value + '-gameTimerDuration');
-                duration_window.empty().text('0:00:00');
-        },
-        get_and_update_duration_update_form: function(data_id_value, duration_value) {
             let form = $('#' + data_id_value + '-gameTimerDurationUpdateForm');
             let input = $(form).children().children('input');
-            input.val(duration_value);
+            input.val('0:00:00');
+            form.submit();
+            duration_window.empty().text('0:00:00');
         },
     }
 }
@@ -1493,27 +1497,39 @@ $('.game-timer-form').submit(function(e) {
     })
 });
 
-// check for running timers and start them on page load
-if (localStorage.getItem('game_timer_status') === 'running') {
-    let data_id = localStorage.getItem('game_timer_id');
-    let duration_window = $('#' + data_id + '-gameTimerDuration');
-    duration_window.text(localStorage.getItem('game_timer_value'));
-    gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
+// detect window unloads, stop the game timer and save the timer duration
+$(window).on('beforeunload', function() {
+    console.log('unload trigger')
+    if (localStorage.getItem('game_timer_status') === 'running') {
+        timer_running = false;
+        let data_id = localStorage.getItem('game_timer_id');
+        let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
+        let input = $(form).children().children('input');
+        input.val(localStorage.getItem('game_timer_value'));
+        form.submit()
+        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
+        // set the timer status to continue running only if the user is refreshing
+        // the tool-session page.  Otherwise the timer will stop running, with the
+        // assumption the came from the login page, or home page etc.
+        if (document.referrer.includes('tool-session')) {
+            localStorage.setItem('game_timer_status', 'running');
+        }
+    }
+});
+
+// if a game timer was running before a page reload, set the correct duration
+// value and start the timer
+if (window.location.href.includes('tool-session')) {
+    // check for running timers and start them on page load
+    if (localStorage.getItem('game_timer_status') === 'running') {
+        timer_running = true;
+        let data_id = localStorage.getItem('game_timer_id');
+        let duration_window = $('#' + data_id + '-gameTimerDuration');
+        duration_window.text(localStorage.getItem('game_timer_value'));
+        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
+    }
 }
-// // detect window unloads and save the timer duration
-// $(window).on('beforeunload', function() {
-//     console.log('unload')
-//     if (timer_running === true) {
-//         timer_running = false;
-//         let data_id = localStorage.getItem('game_timer_id');
-//         let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
-//         let input = $(form).children().children('input');
-//         console.log(input);
-//         input.val(localStorage.getItem('game_timer_value'));
-//         form.submit()
-//         gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
-//     }
-// });
+
 // start a game timer and add it to the array of running timers
 $('.game-timer-control-box-btn.start').click(function() {
     let data_id = $(this).attr('data-id');
@@ -1534,13 +1550,10 @@ $('.game-timer-control-box-btn.stop').click(function() {
 });
 // reset a game timer back to 0
 $('.game-timer-control-box-btn.reset').click(function() {
+    timer_running = false;
     let data_id = $(this).attr('data-id');
-    let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
-    let input = $(form).children().children('input');
-    gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
     gameTimerControl.game_timer_funcs.reset_game_timer(data_id);
-    input.val('0:00:00');
-    form.submit();
+    gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
 });
 
 // push current game timer duration to database
