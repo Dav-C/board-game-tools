@@ -174,6 +174,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         for group in scoring_groups:
             for player in players:
                 if player in group.players.all():
+                    print(player.name)
                     scoring_group_initial_player_checks_box_values.append(player)
 
         context['players'] = players
@@ -199,6 +200,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['scoring_group_form'] = ScoringGroupForm
         context['scoring_group_add_players_form'] = \
             ScoringGroupAddPlayersForm(
+                active_tool_session_id=active_tool_session_id,
                 initial={
                     'players': scoring_group_initial_player_checks_box_values
                          })
@@ -735,13 +737,15 @@ class ScoringGroupAddPlayers(LoginRequiredMixin, View):
     def post(self, request, scoring_group_uuid, *args, **kwargs):
         form = ScoringGroupAddPlayersForm(
             request.POST,
-            instance=ScoringGroup.objects.get(id=scoring_group_uuid)
+            active_tool_session_id=self.request.session['active_tool_session_id'],
+            instance=ScoringGroup.objects.get(id=scoring_group_uuid),
         )
         if form.is_valid():
             form.save()
             return reload_current_url(self.request)
 
         else:
+            print(form.errors)
             messages.error(request, f'form invalid: {form.errors}')
             return redirect('user_home')
 

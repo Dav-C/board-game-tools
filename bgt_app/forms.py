@@ -355,14 +355,17 @@ class ScoringGroupAddPlayersForm(forms.ModelForm):
         model = ScoringGroup
         fields = ['players']
 
-    players = CustomMMCFAddPlayers(
-        required=False,
-        queryset=Player.objects.all(),
-        widget=forms.CheckboxSelectMultiple(
-            attrs={
-            }
-        ),
-    )
+    def __init__(self, *args, **kwargs):
+        self.active_tool_session_id = kwargs.pop("active_tool_session_id")
+        super(ScoringGroupAddPlayersForm, self).__init__(*args, **kwargs)
+        self.fields['players'] = \
+            CustomMMCFAddPlayers(
+                required=False,
+                widget=forms.CheckboxSelectMultiple(),
+                queryset=Player.objects.filter(
+                    tool_session_id=self.active_tool_session_id
+                )
+            )
 
 
 class ScoringCategoryCreateForm(forms.ModelForm):
