@@ -76,9 +76,9 @@
                                  alt="item-image"
                                  class="draw-bag-item-img-small">
                         {% endif %}
-                        {% if draw_bag_item.drawn %}
+                        {% if draw_bag_item.drawn == True %}
                             <span class="draw-bag-status-text">Drawn</span>
-                        {% elif not draw_bag_item.drawn %}
+                        {% elif draw_bag_item.drawn == False %}
                             <span class="draw-bag-status-text">In Bag</span>
                         {% endif %}
                     </div>
@@ -88,9 +88,9 @@
             {% endfor %}
         </div>
 {# display only drawn items #}
-        <div id="{{ scoring_group.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper  absolute-hidden">
+        <div id="{{ draw_bag.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
-                {% if draw_bag_item.drawn %}
+                {% if draw_bag_item.drawn == True %}
                     <div class="draw-bag-item-box">
                         <div class="draw-bag-item-box-row">
                             <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
@@ -102,11 +102,7 @@
                                  alt="item-image"
                                  class="draw-bag-item-img-small">
                         {% endif %}
-                        {% if draw_bag_item.drawn %}
-                            <span class="draw-bag-status-text">Drawn</span>
-                        {% elif not draw_bag_item.drawn %}
-                            <span class="draw-bag-status-text">In Bag</span>
-                        {% endif %}
+                        <span class="draw-bag-status-text">Drawn</span>
                     </div>
                 </div>
                 {% endif %}
@@ -115,9 +111,9 @@
             {% endfor %}
         </div>
 {# display only items still in the bag #}
-        <div id="{{ scoring_group.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper">
+        <div id="{{ scoring_group.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper absolute-hidden">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
-                {% if not draw_bag_item.drawn %}
+                {% if not draw_bag_item.drawn == False %}
                     <div class="draw-bag-item-box">
                         <div class="draw-bag-item-box-row title-row">
                             <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
@@ -129,11 +125,7 @@
                                  alt="item-image"
                                  class="draw-bag-item-img-small">
                         {% endif %}
-                        {% if draw_bag_item.drawn %}
-                            <span class="draw-bag-status-text">Drawn</span>
-                        {% elif not draw_bag_item.drawn %}
-                            <span class="draw-bag-status-text">In Bag</span>
-                        {% endif %}
+                        <span class="draw-bag-status-text">In Bag</span>
                     </div>
                 </div>
                 {% endif %}

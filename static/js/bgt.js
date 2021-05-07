@@ -1603,7 +1603,15 @@ $('.game-timer-duration-update-form').submit(function(e) {
 // --------------- DRAW BAG CONTROL ---------------
 
 drawBagControl = {
-    draw_bag_funcs: {}
+    draw_bag_funcs: {
+        change_open_sub_group: function(sub_group_wrapper, this_value) {
+            let data_id = $(this_value).parent().attr('data-id');
+            $('#' + data_id + '-drawBagItemsWrapper').addClass('absolute-hidden');
+            $('#' + data_id + '-drawBagDrawnItemsWrapper').addClass('absolute-hidden');
+            $('#' + data_id + '-drawBagItemsInBagWrapper').addClass('absolute-hidden');
+            $(sub_group_wrapper).removeClass('absolute-hidden');
+        },
+    }
 }
 
 // reveal editing options for a draw bag box
@@ -1676,6 +1684,11 @@ $('.draw-bag-form').submit(function(e) {
             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
         }
     })
+});
+
+$('.draw-bag-control-box-btn').click(function() {
+    let sub_group_wrapper = $(this).attr('data-id');
+    drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
 
 
