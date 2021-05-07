@@ -38,6 +38,9 @@ from .views import (
     ScoringGroupAddPlayers,
     ScoringCategoryCreate,
     ScoringCategoryDelete,
+    DrawBagCreate,
+    DrawBagDelete,
+    DrawBagUpdate,
 )
 
 urlpatterns = [
@@ -152,5 +155,14 @@ urlpatterns = [
     path('player-score-update/<player_uuid>',
          PlayerScoreUpdate.as_view(),
          name='player_score_update'),
+
+    path('draw-bag-create/',
+         DrawBagCreate.as_view(), name='draw_bag_create'),
+
+    path('draw-bag-delete/<draw_bag_uuid>',
+         DrawBagDelete.as_view(), name='draw_bag_delete'),
+
+    path('draw-title-update/<draw_bag_uuid>',
+         DrawBagUpdate.as_view(), name='draw_bag_title_update'),
 
 ]

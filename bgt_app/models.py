@@ -271,3 +271,52 @@ class ScoringCategory(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'userid_{0}_{1}/{2}'.format(
+        instance.group.tool_session.session_owner.user.id,
+        instance.group.tool_session.session_owner.user.username,
+        filename
+    )
+
+
+class DrawBag(models.Model):
+    class Meta:
+        verbose_name = "Draw Bag"
+        verbose_name_plural = "Draw Bags"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=40)
+    tool_session = models.ForeignKey(
+        ToolSession,
+        related_name='draw_bag',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f"{self.title}"
+
+
+class DrawBagItem(models.Model):
+    class Meta:
+        verbose_name = "Draw Bag Item"
+        verbose_name_plural = "Draw Bag Items"
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=40)
+    drawn = models.BooleanField(default=False)
+    image = models.ImageField(upload_to=user_directory_path,
+                              height_field=None,
+                              width_field=None,
+                              blank=True)
+    group = models.ForeignKey(
+        DrawBag,
+        related_name='draw_bag_items',
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    def __str__(self):
+        return f"{self.name}"

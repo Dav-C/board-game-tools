@@ -1,28 +1,21 @@
 from random import randint, choice
-import json
 import rapidjson
 from django.conf import settings
 from django.views.generic import (
     View,
     ListView,
-    CreateView,
     DetailView,
-    UpdateView,
-    DeleteView
 )
 from django.db.models import Sum
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
-    PermissionRequiredMixin,
 )
 from django.utils.http import is_safe_url
 from django.shortcuts import (
     render,
     redirect,
-    reverse,
     get_object_or_404,
-    HttpResponseRedirect
 )
 from django.contrib import messages
 from django.core import serializers
@@ -50,6 +43,7 @@ from .forms import (
     ScoringGroupForm,
     ScoringGroupAddPlayersForm,
     ScoringCategoryCreateForm,
+    DrawBagForm,
 )
 
 from .models import (
@@ -63,7 +57,9 @@ from .models import (
     HpTracker,
     ToolSession,
     UserProfile,
-    GameTimer
+    GameTimer,
+    DrawBag,
+    DrawBagItem,
 )
 
 
@@ -170,11 +166,20 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
                 tool_session_id=active_tool_session_id
             )
 
+        draw_bags = DrawBag.objects \
+            .filter(
+                tool_session_id=active_tool_session_id
+        )
+
+        # for bag in draw_bags:
+        #     for item in bag.draw_bag_items.all():
+        #         print(item.image.path)
+        #         print(item.image.url)
+
         scoring_group_initial_player_checks_box_values = []
         for group in scoring_groups:
             for player in players:
                 if player in group.players.all():
-                    print(player.name)
                     scoring_group_initial_player_checks_box_values.append(player)
 
         context['players'] = players
@@ -207,6 +212,8 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['scoring_groups'] = scoring_groups
         context['scoring_category_create_form'] = \
             ScoringCategoryCreateForm
+        context['draw_bags'] = draw_bags
+        context['draw_bag_form'] = DrawBagForm
 
         return context
 
@@ -242,7 +249,6 @@ def object_count(request, model):
 
 
 def group_nested_object_count(request, model, group_uuid):
-    active_tool_session_id = request.session['active_tool_session_id']
     num_of_objects = model.objects\
         .filter(group_id=group_uuid).count()
     return num_of_objects
@@ -250,7 +256,6 @@ def group_nested_object_count(request, model, group_uuid):
 
 def create_or_update_obj_and_serialize(
         request, form, model, obj_uuid, group_model):
-    update_existing_object = False
     try:
         object_to_save = model.objects.get(id=obj_uuid)
         form = form(
@@ -713,7 +718,7 @@ class ScoringGroupUpdate(LoginRequiredMixin, View):
     def post(self, request, scoring_group_uuid, *args, **kwargs):
         return create_or_update_obj_and_serialize(
             request=self.request,
-            form=ResourceGroupForm,
+            form=ScoringGroupForm,
             model=ScoringGroup,
             obj_uuid=scoring_group_uuid,
             group_model=ScoringGroup,
@@ -814,4 +819,45 @@ class PlayerScoreUpdate(LoginRequiredMixin, View):
             model=Player,
             obj_uuid=player_uuid,
             group_model=None,
+        )
+
+
+class DrawBagCreate(LoginRequiredMixin, View):
+    """Add a DrawBag to the database and associate it with the active tool
+    session that the current user has open, post is ajax
+    Resource Groups hold sets of resources"""
+
+    def post(self, request, *args, **kwargs):
+        if object_count(self.request, DrawBag) <= 5:
+            return save_new_tool_and_associate_with_session(
+                form=DrawBagForm,
+                request=self.request
+            )
+        else:
+            return JsonResponse({
+                'error': "maximum 5 draw bags per session"
+            }, status=401)
+
+
+class DrawBagDelete(LoginRequiredMixin, View):
+    """Delete a ScoringGroup Object"""
+
+    def post(self, request, draw_bag_uuid):
+        return delete_model_object(
+            request=self.request,
+            model=DrawBag,
+            uuid=draw_bag_uuid
+        )
+
+
+class DrawBagUpdate(LoginRequiredMixin, View):
+    """Change a DrawBag title"""
+
+    def post(self, request, draw_bag_uuid, *args, **kwargs):
+        return create_or_update_obj_and_serialize(
+            request=self.request,
+            form=DrawBagForm,
+            model=DrawBag,
+            obj_uuid=draw_bag_uuid,
+            group_model=DrawBag,
         )

@@ -5,7 +5,6 @@ if (localStorage.getItem('activeTool')) {
 }
 
 // control messages that popup after certain actions (such as creating a tool)
-
 let messageControl = {
     display_success_message: function(message_wrapper, message) {
         'use strict';
@@ -136,6 +135,17 @@ $('#createGameTimerFormCancelBtn').click(function() {
     $('#createGameTimerFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
     closeMenuCover();
 });
+$('#createDrawBagOpenFormBtn').click(function() {
+    'use strict';
+    $('#createDrawBagForm').trigger('reset');
+    $('#createDrawBagFormWrapper').css({'visibility': 'visible', 'opacity': '1'});
+    openMenuCover();
+});
+$('#createDrawBagFormCancelBtn').click(function() {
+    'use strict';
+    $('#createDrawBagFormWrapper').css({'visibility': 'hidden', 'opacity': '0'});
+    closeMenuCover();
+});
 $('#createScoringGroupOpenFormBtn').click(function() {
     'use strict';
     $('#createScoringGroupForm').trigger('reset');
@@ -188,6 +198,12 @@ $("#openResourceGroupsBtn").click(function () {
 $("#openGameTimersBtn").click(function () {
     'use strict';
     setActiveTool('#gameTimersViewWrapper.tool-body');
+});
+
+// Set the Draw Bags to the active tool
+$("#openDrawBagsBtn").click(function () {
+    'use strict';
+    setActiveTool('#drawBagsViewWrapper.tool-body');
 });
 
 // Set the Scoring Groups to the active tool
@@ -257,6 +273,13 @@ $("#createGameTimerForm").submit(newToolsFormSubmit(
     '#createGameTimerFormWrapper',
     '#openGameTimersBtn'
 ));
+
+$("#createDrawBagForm").submit(newToolsFormSubmit(
+    '#createDrawBagForm',
+    '#createDrawBagFormWrapper',
+    '#openDrawBagsBtn'
+));
+
 $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#createScoringGroupForm',
     '#createScoringGroupFormWrapper',
@@ -1180,11 +1203,11 @@ $('.scoring-group-title').click(function() {
     }
 
         revealScoringGroupTitleChangeBtns();
-    scoring_group_title_input.children('input').val(scoring_group_title_box.text().trim());
-    scoring_group_title_input.children('input').focus();
+        scoring_group_title_input.children('input').val(scoring_group_title_box.text().trim());
+        scoring_group_title_input.children('input').focus();
 
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_scoring_group_title_change_btn.click(function() {
+        // reveal title, hide input and re-enable buttons if user clicks cancel
+        cancel_scoring_group_title_change_btn.click(function() {
         hideScoringGroupTitleChangeBtns();
         });
 });
@@ -1576,4 +1599,88 @@ $('.game-timer-duration-update-form').submit(function(e) {
     });
 });
 
+
+// --------------- DRAW BAG CONTROL ---------------
+
+gameTimerControl = {
+    game_timer_funcs: {}
+}
+
+// reveal editing options for a draw bag box
+$('.draw-bag-title').click(function() {
+    'use strict';
+    let selector = $(this).closest('form');
+    let data_id = selector.attr("data-id");
+    let draw_bag_title_box = $("#" + data_id + "-drawBagTitle");
+    let draw_bag_title_input = $("#" + data_id + '-drawBagTitleInput');
+    let confirm_draw_bag_title_change_btn = $("#" + data_id + '-confirmDrawBagTitleChangeBtn ');
+    let cancel_draw_bag_title_change_btn = $("#" + data_id + '-cancelDrawBagTitleChangeBtn');
+    let draw_bag_control_box_btn = $('.draw-bag-control-box-btn');
+    let draw_bag_delete_btn = $("#" + data_id + '-drawBagDeleteBtn');
+
+
+    function revealDrawBagTitleChangeBtns() {
+        draw_bag_title_box.css({'display': 'none'});
+        draw_bag_title_input.css({'display': 'inline', 'background-color': '#555555'});
+        draw_bag_control_box_btn.css({'display': 'none'});
+        confirm_draw_bag_title_change_btn.css({'display': 'inline'});
+        cancel_draw_bag_title_change_btn.css({'display': 'inline'});
+        draw_bag_delete_btn.css({'display': 'inline'});
+    }
+
+    function hideDrawBagTitleChangeBtns() {
+        draw_bag_title_box.css({'display': 'inline'});
+        draw_bag_title_input.css({'display': 'none'});
+        draw_bag_control_box_btn.css({'display': 'inline'});
+        confirm_draw_bag_title_change_btn.css({'display': 'none'});
+        cancel_draw_bag_title_change_btn.css({'display': 'none'});
+        draw_bag_delete_btn.css({'display': 'none'});
+    }
+
+        revealDrawBagTitleChangeBtns();
+        draw_bag_title_input.children('input').val(draw_bag_title_box.text().trim());
+        draw_bag_title_input.children('input').focus();
+
+        // reveal title, hide input and re-enable buttons if user clicks cancel
+        cancel_draw_bag_title_change_btn.click(function() {
+        hideDrawBagTitleChangeBtns();
+        });
+});
+
+// update a draw bag title and hide editing controls
+$('.draw-bag-form').submit(function(e) {
+    'use strict';
+    // preventing from page reload and default actions
+    e.preventDefault();
+    let data_id = '#' + $(this).attr("data-id");
+    // serialize the form data.
+    let serializedData = $(this).serialize();
+    // make POST ajax call
+    $.ajax({
+        type: 'POST',
+        url: $(this).attr('action'),
+        data: serializedData,
+        success: function (response) {
+            let form_instance = JSON.parse(response['form_instance']);
+            let fields = form_instance[0]['fields'];
+            // reset the title box and display the value
+            $(data_id + '-drawBagTitle').css({'display': 'inline'})
+                                                .empty()
+                                                .prepend(fields.title);
+            $(data_id + '-drawBagTitleInput').css({'display': 'none'});
+            $('.draw-bag-control-box-btn').css({'display': 'inline'});
+            $(data_id + '-confirmDrawBagTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-cancelDrawBagTitleChangeBtn').css({'display': 'none'});
+            $(data_id + '-drawBagDeleteBtn').css({'display': 'none'});
+            console.log('ajaxSuccess');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+        }
+    })
+});
+
+
+// --------------- END OF FILE ---------------
 console.log('this application has been brought to you by David Cates.');

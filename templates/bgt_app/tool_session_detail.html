@@ -27,7 +27,7 @@
         <div class="add-tools-btn-row">
             <button id="createResourceGroupOpenFormBtn" class="add-tool-button">+ Resources</button>
             <button id="createGameTimerOpenFormBtn" class="add-tool-button">+ Game Timer</button>
-            <button id="AddDrawBagOpenFormBtn" class="add-tool-button">+ Draw Bag</button>
+            <button id="createDrawBagOpenFormBtn" class="add-tool-button">+ Draw Bag</button>
             <button id="createScoringGroupOpenFormBtn" class="add-tool-button">+ Scoring Calc</button>
         </div>
 
@@ -130,6 +130,30 @@
             </form>
         </div>
 
+{# create draw bag form #}
+        <div id="createDrawBagFormWrapper" class="add-new-tool-form-wrapper">
+            <div class="form-title-box">
+                <span class="form-title-text">create draw bag</span>
+            </div>
+                <br />
+            <form method="POST" id="createDrawBagForm"
+                  action="{% url 'draw_bag_create' %}"
+                  class="add-new-tool-form">
+                {% csrf_token %}
+                <br />
+                {{ draw_bag_form.title|add_class:'text-input-large' }}
+                <br />
+                <button type="submit"
+                        id="createDrawBagFormSubmitBtn"
+                        class="blue-btn create-form-btn create-form-btn">Add
+                </button>
+                <button type="button"
+                        id="createDrawBagFormCancelBtn"
+                        class="red-btn create-form-btn create-form-btn">Done
+                </button>
+            </form>
+        </div>
+
 {# create scoring group form #}
         <div id="createScoringGroupFormWrapper" class="add-new-tool-form-wrapper">
             <div class="form-title-box">
@@ -143,8 +167,14 @@
                 <br />
                 {{ scoring_group_form.title|add_class:'text-input-large' }}
                 <br />
-                <button id="createScoringGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn create-form-btn">Add</button>
-                <button id="createScoringGroupFormCancelBtn" type="button" class="red-btn create-form-btn create-form-btn">Done</button>
+                <button type="submit"
+                        id="createScoringGroupFormSubmitBtn"
+                        class="blue-btn create-form-btn create-form-btn">Add
+                </button>
+                <button type="button"
+                        id="createScoringGroupFormCancelBtn"
+                        class="red-btn create-form-btn create-form-btn">Done
+                </button>
             </form>
         </div>
     </div>
@@ -219,6 +249,8 @@
 {% include 'bgt_app/resource_groups.html' %}
 
 {% include 'bgt_app/game_timers.html' %}
+
+{% include 'bgt_app/draw_bags.html' %}
 
 {% include 'bgt_app/scoring_groups.html' %}
     </div>

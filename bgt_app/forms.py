@@ -14,6 +14,8 @@ from .models import (
     ScoringCategory,
     Player,
     GameTimer,
+    DrawBag,
+    DrawBagItem,
 )
 
 
@@ -415,4 +417,22 @@ class ScoringCategoryCreateForm(forms.ModelForm):
                 'autocomplete': 'off',
             },
         ),
+    )
+
+
+class DrawBagForm(forms.ModelForm):
+    """Create GameTimer Objects"""
+    class Meta:
+        model = DrawBag
+        fields = ['title']
+
+    title = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'draw bag title',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        )
     )
