@@ -304,12 +304,16 @@ class DrawBagItem(models.Model):
     class Meta:
         verbose_name = "Draw Bag Item"
         verbose_name_plural = "Draw Bag Items"
+        ordering = ["-drawn_datetime"]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
     drawn = models.BooleanField(default=False)
+    drawn_datetime = models.DateTimeField(null=True, blank=True)
     image = models.ImageField(upload_to=user_directory_path,
                               height_field=None,
                               width_field=None,
+                              null=True,
                               blank=True)
     group = models.ForeignKey(
         DrawBag,
@@ -317,6 +321,15 @@ class DrawBagItem(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+
+    def save(self, *args, **kwargs):
+        # update the drawn_datetime when drawn is set to True
+        # delete the drawn_datetime when drawn is set to False
+        if self.drawn and self.drawn_datetime is None:
+            self.drawn_datetime = datetime.datetime.now()
+        elif not self.drawn and self.drawn_datetime is not None:
+            self.drawn_datetime = None
+        super(DrawBagItem, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name}"

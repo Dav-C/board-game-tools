@@ -1553,7 +1553,7 @@ if (window.location.href.includes('tool-session')) {
     }
 }
 
-// start a game timer and add it to the array of running timers
+// start a game timer and set timer_running to true
 $('.game-timer-control-box-btn.start').click(function() {
     let data_id = $(this).attr('data-id');
     if (timer_running === false) {
@@ -1561,7 +1561,7 @@ $('.game-timer-control-box-btn.start').click(function() {
         gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
     }
 });
-// stop a game timer and remove it from the array of running timers
+// stop a game timer and set timer_running to false
 $('.game-timer-control-box-btn.stop').click(function() {
     if (timer_running === true) {
         timer_running = false;
@@ -1602,8 +1602,8 @@ $('.game-timer-duration-update-form').submit(function(e) {
 
 // --------------- DRAW BAG CONTROL ---------------
 
-gameTimerControl = {
-    game_timer_funcs: {}
+drawBagControl = {
+    draw_bag_funcs: {}
 }
 
 // reveal editing options for a draw bag box
@@ -1618,7 +1618,6 @@ $('.draw-bag-title').click(function() {
     let draw_bag_control_box_btn = $('.draw-bag-control-box-btn');
     let draw_bag_delete_btn = $("#" + data_id + '-drawBagDeleteBtn');
 
-
     function revealDrawBagTitleChangeBtns() {
         draw_bag_title_box.css({'display': 'none'});
         draw_bag_title_input.css({'display': 'inline', 'background-color': '#555555'});
@@ -1627,7 +1626,6 @@ $('.draw-bag-title').click(function() {
         cancel_draw_bag_title_change_btn.css({'display': 'inline'});
         draw_bag_delete_btn.css({'display': 'inline'});
     }
-
     function hideDrawBagTitleChangeBtns() {
         draw_bag_title_box.css({'display': 'inline'});
         draw_bag_title_input.css({'display': 'none'});
@@ -1636,15 +1634,14 @@ $('.draw-bag-title').click(function() {
         cancel_draw_bag_title_change_btn.css({'display': 'none'});
         draw_bag_delete_btn.css({'display': 'none'});
     }
+    revealDrawBagTitleChangeBtns();
+    draw_bag_title_input.children('input').val(draw_bag_title_box.text().trim());
+    draw_bag_title_input.children('input').focus();
 
-        revealDrawBagTitleChangeBtns();
-        draw_bag_title_input.children('input').val(draw_bag_title_box.text().trim());
-        draw_bag_title_input.children('input').focus();
-
-        // reveal title, hide input and re-enable buttons if user clicks cancel
-        cancel_draw_bag_title_change_btn.click(function() {
-        hideDrawBagTitleChangeBtns();
-        });
+    // reveal title, hide input and re-enable buttons if user clicks cancel
+    cancel_draw_bag_title_change_btn.click(function() {
+    hideDrawBagTitleChangeBtns();
+    });
 });
 
 // update a draw bag title and hide editing controls

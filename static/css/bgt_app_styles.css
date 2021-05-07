@@ -1922,7 +1922,38 @@ ul {
     width: 100%;
     margin: 1rem 0;
 }
+.draw-bag-item-box {
+    border: ridge .5rem white;
+    width: 90%;
+    padding: .5rem;
+}
+.draw-bag-item-box-title {
+    font-size: 2rem;
+    font-weight: 600;
+}
 
+.draw-bag-item-box-row {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 95%;
+    padding: 0 1.5rem;
+    justify-content: space-between;
+}
+
+.draw-bag-status-text {
+    font-size: 1.75rem;
+    border-radius: .5rem;
+    padding: 1rem;
+    background-color: #708090FF;
+    color: mintcream;
+}
+
+.draw-bag-item-img-small {
+    width: 25%;
+    border-radius: 1rem;
+}
 
 /* Prevent Chrome from changing autofill text size to small */
 input:-webkit-autofill::first-line {font-size: 2rem}

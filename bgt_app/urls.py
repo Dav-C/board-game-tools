@@ -41,6 +41,7 @@ from .views import (
     DrawBagCreate,
     DrawBagDelete,
     DrawBagUpdate,
+    DrawBagItemDelete,
 )
 
 urlpatterns = [
@@ -162,7 +163,10 @@ urlpatterns = [
     path('draw-bag-delete/<draw_bag_uuid>',
          DrawBagDelete.as_view(), name='draw_bag_delete'),
 
-    path('draw-title-update/<draw_bag_uuid>',
+    path('draw-bag-title-update/<draw_bag_uuid>',
          DrawBagUpdate.as_view(), name='draw_bag_title_update'),
+
+    path('draw-bag-item-delete/<draw_bag_item_uuid>',
+         DrawBagItemDelete.as_view(), name='draw_bag_item_delete'),
 
 ]

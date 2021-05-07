@@ -53,51 +53,96 @@
                 </button>
             </form>
 {# display all items #}
-        <div id="{{ draw_bag.id }}-drawBagItemsWrapper" class="draw-bag-items-wrapper">
+        <div id="{{ draw_bag.id }}-drawBagItemsWrapper" class="draw-bag-items-wrapper  absolute-hidden">
             <button data-id="{{ draw_bag.id }}"
                     class="draw-bag-add-item-open-form-btn">+ draw bag item
             </button>
             <br />
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
-                <div class="draw-bag-box">
-                    <div class="draw-bag-box-row title-row">
-                        <span class="draw-bag-box-title">{{ draw_bag_item.name }}</span>
+                <div class="draw-bag-item-box">
+                    <div class="draw-bag-item-box-row">
+                        <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
                         <form method="POST"
-{#                              action="{% url 'draw_bag_item_delete' scoring_category.id %}?next={{ request.get_full_path }}"#}
+                              action="{% url 'draw_bag_item_delete' draw_bag_item.id %}?next={{ request.get_full_path }}"
                               id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm">
                             {% csrf_token %}
                             <button class="red-btn small">delete</button>
                         </form>
+                    </div>
+                    <hr style="width: 100%;">
+                    <div class="draw-bag-item-box-row">
+                        {% if draw_bag_item.image %}
+                            <img src="{{ draw_bag_item.image.url }}"
+                                 alt="item-image"
+                                 class="draw-bag-item-img-small">
+                        {% endif %}
+                        {% if draw_bag_item.drawn %}
+                            <span class="draw-bag-status-text">Drawn</span>
+                        {% elif not draw_bag_item.drawn %}
+                            <span class="draw-bag-status-text">In Bag</span>
+                        {% endif %}
                     </div>
                 </div>
             {% empty %}
                 <span class="large-text"><i>add some items to the bag</i></span>
             {% endfor %}
         </div>
+{# display only drawn items #}
+        <div id="{{ scoring_group.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper  absolute-hidden">
+            {% for draw_bag_item in draw_bag.draw_bag_items.all %}
+                {% if draw_bag_item.drawn %}
+                    <div class="draw-bag-item-box">
+                        <div class="draw-bag-item-box-row">
+                            <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
+                        </div>
+                    <hr style="width: 100%;">
+                    <div class="draw-bag-item-box-row">
+                        {% if draw_bag_item.image %}
+                            <img src="{{ draw_bag_item.image.url }}"
+                                 alt="item-image"
+                                 class="draw-bag-item-img-small">
+                        {% endif %}
+                        {% if draw_bag_item.drawn %}
+                            <span class="draw-bag-status-text">Drawn</span>
+                        {% elif not draw_bag_item.drawn %}
+                            <span class="draw-bag-status-text">In Bag</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% empty %}
+                <span class="large-text"><i>nothing drawn yet</i></span>
+            {% endfor %}
         </div>
-{# add players to scoring group #}
-{#        <div id="{{ scoring_group.id }}-scoringGroupPlayersWrapper" class="scoring-group-players-wrapper absolute-hidden">#}
-{#        {% if players %}#}
-{#            <div class="scoring-group-add-players-box">#}
-{#                <form action="{% url 'scoring_group_add_players' scoring_group.id %}?next={{ request.get_full_path }}"#}
-{#                      method="POST">#}
-{#                {% csrf_token %}#}
-{#                    {% for player in scoring_group_add_players_form.players %}#}
-{#                        <div class="scoring-group-add-player-row">#}
-{#                            <label for="{{ player.id_for_label }}"></label>#}
-{#                            <div class="scoring-group-add-player-checkbox">{{ player.tag }}</div>#}
-{#                            <div class="scoring-group-add-player-name">{{ player.choice_label }}</div>#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                <div class="scoring-group-add-player-row flex-end">#}
-{#                    <button class="blue-btn">save</button>#}
-{#                </div>#}
-{#                </form>#}
-{#            </div>#}
-{#        {% else %}#}
-{#            <span class="large-text"><i>create players first</i></span>#}
-{#        {% endif %}#}
-{#        </div>#}
+{# display only items still in the bag #}
+        <div id="{{ scoring_group.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper">
+            {% for draw_bag_item in draw_bag.draw_bag_items.all %}
+                {% if not draw_bag_item.drawn %}
+                    <div class="draw-bag-item-box">
+                        <div class="draw-bag-item-box-row title-row">
+                            <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
+                        </div>
+                    <hr style="width: 100%;">
+                    <div class="draw-bag-item-box-row">
+                        {% if draw_bag_item.image %}
+                            <img src="{{ draw_bag_item.image.url }}"
+                                 alt="item-image"
+                                 class="draw-bag-item-img-small">
+                        {% endif %}
+                        {% if draw_bag_item.drawn %}
+                            <span class="draw-bag-status-text">Drawn</span>
+                        {% elif not draw_bag_item.drawn %}
+                            <span class="draw-bag-status-text">In Bag</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% empty %}
+                <span class="large-text"><i>nothing drawn yet</i></span>
+            {% endfor %}
+        </div>
+    </div>
+
 {# create new scoring categories #}
 {#            <div id="{{ scoring_group.id }}-scoringCategoryCreateFormWrapper" class="create-new-object-form-wrapper">#}
 {#                <div class="form-title-box">#}

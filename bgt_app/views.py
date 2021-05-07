@@ -861,3 +861,20 @@ class DrawBagUpdate(LoginRequiredMixin, View):
             obj_uuid=draw_bag_uuid,
             group_model=DrawBag,
         )
+
+
+class DrawBagItemDelete(LoginRequiredMixin, View):
+    """Delete a DrawBagItem"""
+
+    def post(self, request, draw_bag_item_uuid):
+        draw_bag_item_to_delete = get_object_or_404(
+            DrawBagItem, id=draw_bag_item_uuid
+        )
+        if draw_bag_item_to_delete\
+                .group.tool_session\
+                .session_owner.user.id == request.user.id:
+            draw_bag_item_to_delete.delete()
+            return reload_current_url(request)
+        else:
+            messages.error(request, "Insufficient Permission")
+            return redirect('user_home')
