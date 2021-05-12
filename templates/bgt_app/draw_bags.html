@@ -3,7 +3,7 @@
 
 {# draw bags and draw bag items #}
 <div id="drawBagPageSuccessMessageWrapper" class="message-wrapper"></div>
-<div id="drawBagsViewWrapper" class="tool-body">
+<div id="drawBagsViewWrapper" class="tool-body flex-start">
     {% for draw_bag in draw_bags %}
         <div class="draw-bag-box">
             <form method="POST" action="{% url 'draw_bag_title_update' draw_bag.id %}"
@@ -75,12 +75,30 @@
                             <img src="{{ draw_bag_item.image.url }}"
                                  alt="item-image"
                                  class="draw-bag-item-img-small">
+                        {% else %}
+                            <span class="draw-bag-status-text" style="opacity: .5;">no image</span>
                         {% endif %}
-                        {% if draw_bag_item.drawn == True %}
-                            <span class="draw-bag-status-text">Drawn</span>
-                        {% elif draw_bag_item.drawn == False %}
-                            <span class="draw-bag-status-text">In Bag</span>
-                        {% endif %}
+                        <div class="draw-bag-item-box-row-btn-wrapper">
+                            {% if draw_bag_item.drawn == True %}
+                                <span class="draw-bag-status-text">Drawn</span>
+                                <form method="GET"
+                                      action="{% url 'draw_bag_item_return' draw_bag_item.id %}"
+                                      id="{{ draw_bag_item.id }}-drawBagItemReturnForm"
+                                      class="draw-bag-item-return-form"
+                                      data-id="{{ draw_bag_item.id }}">
+                                    <button class="draw-bag-item-action-btn">put back</button>
+                                </form>
+                            {% elif draw_bag_item.drawn == False %}
+                                <span class="draw-bag-status-text">In Bag</span>
+                                <form method="GET"
+                                      action="{% url 'draw_bag_item_draw' draw_bag_item.id %}"
+                                      id="{{ draw_bag_item.id }}-drawBagItemDrawForm"
+                                      class="draw-bag-item-draw-form"
+                                      data-id="{{ draw_bag_item.id }}">
+                                    <button class="draw-bag-item-action-btn">remove</button>
+                                </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             {% empty %}
@@ -89,6 +107,26 @@
         </div>
 {# display only drawn items #}
         <div id="{{ draw_bag.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper">
+            <div class="draw-bag-draw-control-row">
+                <div class="draw-bag-img-wrapper">
+                    <img src="" alt="image of draw bag" class="">
+                </div>
+                <form method="get"
+                      action="{% url 'draw_bag_draw_random_item' draw_bag.id%}"
+                      id="{{ draw_bag.id }}-drawBagDrawItemForm"
+                      class="draw-bag-draw-item-form"
+                      data-id="{{ draw_bag.id }}">
+                    <button class="blue-btn">draw</button>
+                </form>
+                <form method="GET"
+                      action="{% url 'draw_bag_reset' draw_bag.id %}"
+                      id="{{ draw_bag.id }}-drawBagResetForm"
+                      class="draw-bag-reset-form"
+                      data-id="{{ draw_bag.id }}">
+                    <button class="blue-btn">reset</button>
+                </form>
+            </div>
+            <hr style="width: 90%;">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
                 {% if draw_bag_item.drawn == True %}
                     <div class="draw-bag-item-box">
@@ -101,19 +139,30 @@
                             <img src="{{ draw_bag_item.image.url }}"
                                  alt="item-image"
                                  class="draw-bag-item-img-small">
+                        {% else %}
+                            <span class="draw-bag-status-text" style="opacity: .5;">no image</span>
                         {% endif %}
-                        <span class="draw-bag-status-text">Drawn</span>
+                        <div class="draw-bag-item-box-row-btn-wrapper">
+                            <span class="draw-bag-status-text">drawn</span>
+                            <form method="GET"
+                                  action="{% url 'draw_bag_item_return' draw_bag_item.id %}"
+                                  id="{{ draw_bag_item.id }}-drawBagItemReturnForm"
+                                  class="draw-bag-item-return-form"
+                                  data-id="{{ draw_bag_item.id }}">
+                                <button class="draw-bag-item-action-btn">put back</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
             {% empty %}
-                <span class="large-text"><i>nothing drawn yet</i></span>
+                <span class="large-text"><i>add some items to the bag</i></span>
             {% endfor %}
         </div>
 {# display only items still in the bag #}
-        <div id="{{ scoring_group.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper absolute-hidden">
+        <div id="{{ draw_bag.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper absolute-hidden">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
-                {% if not draw_bag_item.drawn == False %}
+                {% if draw_bag_item.drawn == False %}
                     <div class="draw-bag-item-box">
                         <div class="draw-bag-item-box-row title-row">
                             <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
@@ -124,118 +173,52 @@
                             <img src="{{ draw_bag_item.image.url }}"
                                  alt="item-image"
                                  class="draw-bag-item-img-small">
+                        {% else %}
+                            <span class="draw-bag-status-text" style="opacity: .5;">no image</span>
                         {% endif %}
-                        <span class="draw-bag-status-text">In Bag</span>
+                        <div class="draw-bag-item-box-row-btn-wrapper">
+                            <span class="draw-bag-status-text">in bag</span>
+                            <form method="GET"
+                                  action="{% url 'draw_bag_item_draw' draw_bag_item.id %}"
+                                  id="{{ draw_bag_item.id }}-drawBagItemDrawForm"
+                                  class="draw-bag-item-draw-form"
+                                  data-id="{{ draw_bag_item.id }}">
+                                <button class="draw-bag-item-action-btn">remove</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
             {% empty %}
-                <span class="large-text"><i>nothing drawn yet</i></span>
+                <span class="large-text"><i>add some items to the bag</i></span>
             {% endfor %}
         </div>
-    </div>
-
-{# create new scoring categories #}
-{#            <div id="{{ scoring_group.id }}-scoringCategoryCreateFormWrapper" class="create-new-object-form-wrapper">#}
-{#                <div class="form-title-box">#}
-{#                    <span class="form-title-text">create scoring category</span>#}
-{#                </div>#}
-{#                <br />#}
-{#                <form id="{{ scoring_group.id }}-scoringCategoryCreateForm"#}
-{#                      class="{{ scoring_group.id }} create-custom-object-form scoring-category"#}
-{#                      action="{% url 'scoring_category_create' scoring_group.id %}"#}
-{#                      method="POST">#}
-{#                    {% csrf_token %}#}
-{#                    <div class="create-object-form-row">#}
-{#                        <div id={{ scoring_group.id }}-createScoringCategoryCategoryNameField#}
-{#                             class="create-scoring-category-input-wrapper">#}
-{#                            {{ scoring_category_create_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}#}
-{#                            <span class="create-scoring-category-field-text">points</span>#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div class="create-object-form-row">#}
-{#                        <div id={{ scoring_group.id }}-createScoringCategoryTypeField#}
-{#                             class="create-scoring-category-input-wrapper">#}
-{#                            <span class="create-scoring-category-field-text">for every</span>#}
-{#                            {{ scoring_category_create_form.items_per_group|add_class:"create-scoring-category-input" }}#}
-{#                        </div>#}
-{#                    </div>#}
-{#                    <div class="create-object-form-row">#}
-{#                        <div id={{ scoring_group.id }}-createScoringCategoryRoundingField#}
-{#                             class="create-scoring-category-input-wrapper">#}
-{#                            {{ scoring_category_create_form.name|add_class:"create-scoring-category-input" }}#}
-{#                        </div>#}
-{#                    </div>#}
-{#                <br />#}
-{#                    <div class="create-object-form-row">#}
-{#                        <span class="create-scoring-category-field-text">rounding</span>#}
-{#                        {{ scoring_category_create_form.rounding|add_class:"create-scoring-category-input" }}#}
-{#                    </div>#}
-{#                    <br>#}
-{#                    <div class="create-object-form-row">#}
-{#                        <button type="submit" class="blue-btn smaller">create</button>#}
-{#                    </div>#}
-{#                </form>#}
-{#                <button class="blue-btn smaller create-custom-object-form-done-btn scoring_category"#}
-{#                        data-id="{{ scoring_group.id }}">done#}
-{#                </button>#}
+{# create new draw bag items #}
+{#        <div id="{{ draw_bag.id }}-drawBagItemCreateFormWrapper" class="create-new-object-form-wrapper">#}
+{#            <div class="form-title-box">#}
+{#                <span class="form-title-text">create draw bag item</span>#}
 {#            </div>#}
-
-{# scores #}
-{#        <div id="{{ scoring_group.id }}-scoringGroupScoresWrapper" class="scoring-group-scores-wrapper  absolute-hidden">#}
-{#            {% for player in scoring_group.players.all %}#}
-{#                <div class="scoring-calc-row player-name-row">#}
-{#                    <button data-id="{{ player.id }}" class="score-calc-input-area-open-btn">&plus;</button>#}
-{#                    <button class="score-calc-input-area-close-btn absolute-hidden">&minus;</button>#}
-{#                    <div class="scoring-calc-name-text">{{ player.name }}</div>#}
-{#                    <form action="{% url 'player_score_update' player.id %}"#}
-{#                          data-id="{{ player.id }}"#}
-{#                          id="{{ player.id }}-scoreCalcPlayerScoreForm"#}
-{#                          class="score-calc-player-score-form">#}
-{#                        {% csrf_token %}#}
-{#                        {% if player.score == None %}#}
-{#                            <div id="{{ player.id }}-scoreCalcScoreValueBox"#}
-{#                                 class="score-calc-score-value-box">no score#}
-{#                            </div>#}
-{#                        {% else %}#}
-{#                            <div id="{{ player.id }}-scoreCalcScoreValueBox"#}
-{#                                 class="score-calc-score-value-box">{{ player.score|floatformat }}#}
-{#                            </div>#}
-{#                        {% endif %}#}
-{#                        <div class="absolute-hidden">{{ player_score_form.score }}</div>#}
-{#                    </form>#}
+{#            <br />#}
+{#            <form id="{{ draw_bag.id }}-scoringCategoryCreateForm"#}
+{#                  class="{{ draw_bag.id }} create-custom-object-form scoring-category"#}
+{#                  action="{% url 'scoring_category_create' scoring_group.id %}"#}
+{#                  method="POST">#}
+{#                {% csrf_token %}#}
+{#                <div class="create-object-form-row">#}
+{#                    <div id={{ draw_bag.id }}-createScoringCategoryCategoryNameField#}
+{#                         class="create-scoring-category-input-wrapper">#}
+{#                        {{ scoring_category_create_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}#}
+{#                        <span class="create-scoring-category-field-text">points</span>#}
+{#                    </div>#}
 {#                </div>#}
-{#                <div id="{{ player.id }}-scoreCalcInputAreaWrapper" class="score-calc-input-area-wrapper absolute-hidden">#}
-{#                    <form action=""#}
-{#                          data-id="{{ player.id }}"#}
-{#                          id="{{ player.id }}-scoreCalcForm"#}
-{#                          class="score-calc-form">#}
-{#                        {% for scoring_category in scoring_group.scoring_categories.all %}#}
-{#                            <div class="scoring-calc-row">#}
-{#                                <div class="score-calc-category-name-text">{{ scoring_category.name }}</div>#}
-{#                            <input type="number"#}
-{#                                   step="0.01"#}
-{#                                   name="score-calc-number-input"#}
-{#                                   data-points="{{ scoring_category.points_gained_or_lost }}"#}
-{#                                   data-group="{{ scoring_category.items_per_group }}"#}
-{#                                   data-rounding="{{ scoring_category.rounding }}"#}
-{#                                   placeholder="0"#}
-{#                                   class="score-calc-input-box">#}
-{#                            </div>#}
-{#                            <hr style="width: 100%;">#}
-{#                        {% endfor %}#}
-{#                        {% if scoring_group.scoring_categories.all %}#}
-{#                            <div class="scoring-calc-row flex-end">#}
-{#                                <button>score it!</button>#}
-{#                            </div>#}
-{#                        {% else %}#}
-{#                            <div class="scoring-calc-row">#}
-{#                                <span class="large-text"><i>add some scoring categories</i></span>#}
-{#                            </div>#}
-{#                        {% endif %}#}
-{#                    </form>#}
+{#                <br>#}
+{#                <div class="create-object-form-row">#}
+{#                    <button type="submit" class="blue-btn smaller">create</button>#}
 {#                </div>#}
-{#            {% endfor %}#}
+{#            </form>#}
+{#            <button class="blue-btn smaller create-custom-object-form-done-btn draw_bag_item"#}
+{#                    data-id="{{ draw_bag.id }}">done#}
+{#            </button>#}
 {#        </div>#}
 {#    </div>#}
     {% empty %}

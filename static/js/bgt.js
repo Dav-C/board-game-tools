@@ -1611,11 +1611,37 @@ drawBagControl = {
             $('#' + data_id + '-drawBagItemsInBagWrapper').addClass('absolute-hidden');
             $(sub_group_wrapper).removeClass('absolute-hidden');
         },
+        update_bag: function(form) {
+            $.ajax({
+                type: 'GET',
+                url: $(form).attr('action'),
+                success: function (response) {
+                    try {
+                        let drawn_item_id = JSON.parse(response.item);
+                        $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *');
+                    }
+                    catch(error) {
+                        console.log(error.name)
+                        if(error.name === 'SyntaxError') {
+                            let message = response.message
+                            messageControl.display_success_message('#errorMessageWrapper', message);
+                            $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *');
+                        }
+                    }
+                    console.log('ajaxSuccess');
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                }
+            });
+        }
     }
 }
 
 // reveal editing options for a draw bag box
-$('.draw-bag-title').click(function() {
+$("#drawBagsViewWrapper").on('click', '.draw-bag-title', function() {
     'use strict';
     let selector = $(this).closest('form');
     let data_id = selector.attr("data-id");
@@ -1653,7 +1679,7 @@ $('.draw-bag-title').click(function() {
 });
 
 // update a draw bag title and hide editing controls
-$('.draw-bag-form').submit(function(e) {
+$("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function(e) {
     'use strict';
     // preventing from page reload and default actions
     e.preventDefault();
@@ -1686,11 +1712,43 @@ $('.draw-bag-form').submit(function(e) {
     })
 });
 
-$('.draw-bag-control-box-btn').click(function() {
+// change the active view window
+$("#drawBagsViewWrapper").on('click', '.draw-bag-control-box-btn', function() {
     let sub_group_wrapper = $(this).attr('data-id');
     drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
 
+// draw an item from a draw bag and update the page with the results
+$("#drawBagsViewWrapper").on('submit', '.draw-bag-draw-item-form', function (e) {
+    e.preventDefault(e);
+    let data_id = $(this).attr('data-id')
+    let form = $('#' + data_id + '-drawBagDrawItemForm');
+    drawBagControl.draw_bag_funcs.update_bag(form);
+});
+
+// return a specific item to the bag and update the page with the results
+$("#drawBagsViewWrapper").on('submit', '.draw-bag-item-return-form', function (e) {
+    e.preventDefault(e);
+    let data_id = $(this).attr('data-id')
+    let form = $('#' + data_id + '-drawBagItemReturnForm');
+    drawBagControl.draw_bag_funcs.update_bag(form);
+});
+
+// draw a specific item from the bag and update the page with the results
+$("#drawBagsViewWrapper").on('submit', '.draw-bag-item-draw-form', function (e) {
+    e.preventDefault(e);
+    let data_id = $(this).attr('data-id')
+    let form = $('#' + data_id + '-drawBagItemDrawForm');
+    drawBagControl.draw_bag_funcs.update_bag(form);
+});
+
+// reset a draw bag by setting the drawn field on all items to False
+$("#drawBagsViewWrapper").on('submit', '.draw-bag-reset-form', function (e) {
+    e.preventDefault(e);
+    let data_id = $(this).attr('data-id')
+    let form = $('#' + data_id + '-drawBagResetForm');
+    drawBagControl.draw_bag_funcs.update_bag(form);
+});
 
 // --------------- END OF FILE ---------------
 console.log('this application has been brought to you by David Cates.');

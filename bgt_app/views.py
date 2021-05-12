@@ -1,4 +1,4 @@
-from random import randint, choice
+from random import randint, choice, sample
 import rapidjson
 from django.conf import settings
 from django.views.generic import (
@@ -878,3 +878,91 @@ class DrawBagItemDelete(LoginRequiredMixin, View):
         else:
             messages.error(request, "Insufficient Permission")
             return redirect('user_home')
+
+
+class DrawBagDrawRandomItem(LoginRequiredMixin, View):
+    """Draw a random item from a DrawBag"""
+
+    def get(self, request, draw_bag_uuid):
+        draw_bag_items = list(
+            DrawBagItem.objects.filter(
+                group__id=draw_bag_uuid, drawn=False)
+        )
+        if draw_bag_items:
+            try:
+                random_selection = sample(draw_bag_items, 1).pop(0)
+                random_selection.drawn = True
+                random_selection.save()
+                serialized_item = serializers.serialize(
+                    'json', [random_selection]
+                )
+                return JsonResponse({
+                    'item': serialized_item
+                }, status=200)
+            except ValueError:
+                return JsonResponse({
+                    'error': "there was a problem drawing an item"
+                }, status=500)
+        else:
+            return JsonResponse({
+                'message': "the bag is empty!"
+            }, status=200)
+
+
+class DrawBagItemReturn(LoginRequiredMixin, View):
+    """Return a specific item to a draw bag"""
+
+    def get(self, request, draw_bag_item_uuid):
+        try:
+            draw_bag_item = DrawBagItem.objects.get(id=draw_bag_item_uuid)
+            draw_bag_item.drawn = False
+            draw_bag_item.save()
+            return JsonResponse({
+                'message': "item returned to the bag"
+            }, status=200)
+        except DrawBagItem.DoesNotExist:
+            return JsonResponse(
+                {'error': "that item does not exist"}, status=404
+            )
+
+
+class DrawBagItemDraw(LoginRequiredMixin, View):
+    """draw a specific item from a draw bag"""
+
+    def get(self, request, draw_bag_item_uuid):
+        try:
+            draw_bag_item = DrawBagItem.objects.get(id=draw_bag_item_uuid)
+            draw_bag_item.drawn = True
+            draw_bag_item.save()
+            return JsonResponse({
+                'message': "item removed from the bag"
+            }, status=200)
+        except DrawBagItem.DoesNotExist:
+            return JsonResponse(
+                {'error': "that item does not exist"}, status=404
+            )
+
+
+class DrawBagReset(LoginRequiredMixin, View):
+    """Put all the items back in the bag"""
+
+    def get(self, request, draw_bag_uuid):
+        draw_bag_items = DrawBagItem.objects.filter(
+                group__id=draw_bag_uuid, drawn=True
+        )
+        if draw_bag_items:
+            for draw_bag_item in draw_bag_items:
+                draw_bag_item.drawn = False
+                draw_bag_item.save()
+            return JsonResponse({
+                'message': 'draw bag reset'
+            }, status=200)
+        else:
+            return JsonResponse({
+                'message': 'nothing to put in the bag'
+            }, status=200)
+
+
+
+
+

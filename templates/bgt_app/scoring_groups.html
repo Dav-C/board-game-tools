@@ -3,7 +3,7 @@
 
 {# scoring groups and scoring categories #}
 <div id="scoringPageSuccessMessageWrapper" class="message-wrapper"></div>
-<div id="scoringGroupsViewWrapper" class="tool-body scoring-groups">
+<div id="scoringGroupsViewWrapper" class="tool-body flex-start">
     {% for scoring_group in scoring_groups %}
         <div class="scoring-group-box">
             <form method="POST" action="{% url 'scoring_group_update' scoring_group.id %}"

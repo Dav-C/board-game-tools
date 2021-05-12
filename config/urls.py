@@ -8,7 +8,6 @@ from django.conf.urls.static import static
 from bgt_app import urls as bgt_app_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     path('', include(bgt_app_urls)),
-]
-# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

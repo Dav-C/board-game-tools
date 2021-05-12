@@ -706,7 +706,7 @@ ul {
     justify-content: space-evenly;
 }
 .add-tool-button {
-    font-size: 1rem;
+    font-size: 1.25rem;
     word-wrap: break-word;
     outline: none;
     width: 20%;
@@ -774,7 +774,7 @@ ul {
 }
 
 .select-active-tool-button {
-    font-size: 1rem;
+    font-size: 1.25rem;
     word-wrap: break-word;
     display: none;
     outline: none;
@@ -826,7 +826,7 @@ ul {
     min-height: 90vh;
 }
 
-.scoring-groups {
+.flex-start {
     justify-content: flex-start;
     margin-top: 4rem;
 }
@@ -1888,7 +1888,7 @@ ul {
 .draw-bag-control-box-btn {
     text-align: center;
     margin: auto;
-    color: #ffffff;
+    color: mintcream;
     background-color: #0072ff;
     border: 1px solid black;
     border-radius: .25rem;
@@ -1907,6 +1907,7 @@ ul {
     align-items: center;
     width: 100%;
     margin: 1rem 0;
+    min-height: 20rem;
 }
 .draw-bag-drawn-items-wrapper {
     display: flex;
@@ -1914,6 +1915,16 @@ ul {
     align-items: center;
     width: 100%;
     margin: 1rem 0;
+    min-height: 20rem;
+}
+.draw-bag-draw-control-row {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    padding: .3rem;
+}
+.draw-bag-img-wrapper {
+    width: 50%
 }
 .draw-bag-items-in-bag-wrapper {
     display: flex;
@@ -1921,6 +1932,7 @@ ul {
     align-items: center;
     width: 100%;
     margin: 1rem 0;
+    min-height: 20rem;
 }
 .draw-bag-item-box {
     border: ridge .5rem white;
@@ -1942,12 +1954,26 @@ ul {
     justify-content: space-between;
 }
 
+.draw-bag-item-box-row-btn-wrapper {
+    display: flex;
+}
+
 .draw-bag-status-text {
     font-size: 1.75rem;
     border-radius: .5rem;
     padding: 1rem;
     background-color: #708090FF;
     color: mintcream;
+    margin: 0 .5rem;
+}
+
+.draw-bag-item-action-btn {
+    font-size: 1.75rem;
+    border-radius: .5rem;
+    padding: 1rem;
+    background-color: #0072ff;
+    color: mintcream;
+    margin: 0 .5rem;
 }
 
 .draw-bag-item-img-small {

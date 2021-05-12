@@ -41,6 +41,10 @@ from .views import (
     DrawBagDelete,
     DrawBagUpdate,
     DrawBagItemDelete,
+    DrawBagDrawRandomItem,
+    DrawBagItemReturn,
+    DrawBagItemDraw,
+    DrawBagReset,
 )
 
 urlpatterns = [
@@ -168,4 +172,15 @@ urlpatterns = [
     path('draw-bag-item-delete/<draw_bag_item_uuid>',
          DrawBagItemDelete.as_view(), name='draw_bag_item_delete'),
 
+    path('draw-bag-draw-random-item/<draw_bag_uuid>',
+         DrawBagDrawRandomItem.as_view(), name='draw_bag_draw_random_item'),
+
+    path('draw-bag-item-return/<draw_bag_item_uuid>',
+         DrawBagItemReturn.as_view(), name='draw_bag_item_return'),
+
+    path('draw-bag-item-draw/<draw_bag_item_uuid>',
+         DrawBagItemDraw.as_view(), name='draw_bag_item_draw'),
+
+    path('draw-bag-reset/<draw_bag_uuid>',
+         DrawBagReset.as_view(), name='draw_bag_reset'),
 ]
