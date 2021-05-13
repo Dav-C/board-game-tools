@@ -52,55 +52,91 @@
                         class="delete-btn-large">delete this draw bag
                 </button>
             </form>
+{# create new draw bag items#}
+        <div id="{{ draw_bag.id }}-drawBagItemCreateFormWrapper" class="create-new-object-form-wrapper">
+            <div class="form-title-box">
+                <span class="form-title-text">create draw bag item</span>
+            </div>
+            <br />
+            <form method="POST"
+                  id="{{ draw_bag.id }}-drawBagItemCreateForm"
+                  action="{% url 'draw_bag_item_create' draw_bag.id %}"
+                  enctype='multipart/form-data'
+                  class="{{ draw_bag.id }} create-custom-object-form draw-bag-item">
+                {% csrf_token %}
+
+                <div class="create-object-form-row">
+                    <div id={{ draw_bag.id }}-drawBagItemCreateFormNameField
+                         class="">
+                        {{ draw_bag_item_create_form.name }}
+                    </div>
+                </div>
+                <div class="create-object-form-row">
+                    <div id={{ draw_bag.id }}-drawBagItemCreateFormImageField
+                         class="">
+                        {{ draw_bag_item_create_form.image }}
+                    </div>
+                </div>
+                <br>
+                <div class="create-object-form-row">
+                    <button type="submit" class="blue-btn smaller">create</button>
+                </div>
+            </form>
+            <button class="blue-btn smaller create-custom-object-form-done-btn draw_bag_item"
+                    data-id="{{ draw_bag.id }}">done
+            </button>
+        </div>
 {# display all items #}
         <div id="{{ draw_bag.id }}-drawBagItemsWrapper" class="draw-bag-items-wrapper  absolute-hidden">
             <button data-id="{{ draw_bag.id }}"
                     class="draw-bag-add-item-open-form-btn">+ draw bag item
             </button>
             <br />
-            {% for draw_bag_item in draw_bag.draw_bag_items.all %}
-                <div class="draw-bag-item-box">
-                    <div class="draw-bag-item-box-row">
-                        <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
-                        <form method="POST"
-                              action="{% url 'draw_bag_item_delete' draw_bag_item.id %}?next={{ request.get_full_path }}"
-                              id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm">
-                            {% csrf_token %}
-                            <button class="red-btn small">delete</button>
-                        </form>
-                    </div>
-                    <hr style="width: 100%;">
-                    <div class="draw-bag-item-box-row">
-                        {% if draw_bag_item.image %}
-                            <img src="{{ draw_bag_item.image.url }}"
-                                 alt="item-image"
-                                 class="draw-bag-item-img-small">
-                        {% else %}
-                            <span class="draw-bag-status-text" style="opacity: .5;">no image</span>
-                        {% endif %}
-                        <div class="draw-bag-item-box-row-btn-wrapper">
-                            {% if draw_bag_item.drawn == True %}
-                                <span class="draw-bag-status-text">Drawn</span>
-                                <form method="GET"
-                                      action="{% url 'draw_bag_item_return' draw_bag_item.id %}"
-                                      id="{{ draw_bag_item.id }}-drawBagItemReturnForm"
-                                      class="draw-bag-item-return-form"
-                                      data-id="{{ draw_bag_item.id }}">
-                                    <button class="draw-bag-item-action-btn">put back</button>
-                                </form>
-                            {% elif draw_bag_item.drawn == False %}
-                                <span class="draw-bag-status-text">In Bag</span>
-                                <form method="GET"
-                                      action="{% url 'draw_bag_item_draw' draw_bag_item.id %}"
-                                      id="{{ draw_bag_item.id }}-drawBagItemDrawForm"
-                                      class="draw-bag-item-draw-form"
-                                      data-id="{{ draw_bag_item.id }}">
-                                    <button class="draw-bag-item-action-btn">remove</button>
-                                </form>
+            {% for draw_bag_item in draw_bag_items_sorted_by_name %}
+                {% if draw_bag_item.group.id == draw_bag.id %}
+                    <div class="draw-bag-item-box">
+                        <div class="draw-bag-item-box-row">
+                            <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
+                            <form method="POST"
+                                  action="{% url 'draw_bag_item_delete' draw_bag_item.id %}?next={{ request.get_full_path }}"
+                                  id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm">
+                                {% csrf_token %}
+                                <button class="red-btn small">delete</button>
+                            </form>
+                        </div>
+                        <hr style="width: 100%;">
+                        <div class="draw-bag-item-box-row">
+                            {% if draw_bag_item.image %}
+                                <img src="{{ draw_bag_item.image.url }}"
+                                     alt="item-image"
+                                     class="draw-bag-item-img-small">
+                            {% else %}
+                                <span class="draw-bag-status-text img-placeholder" >no image</span>
                             {% endif %}
+                            <div class="draw-bag-item-box-row-btn-wrapper">
+                                {% if draw_bag_item.drawn == True %}
+                                    <span class="draw-bag-status-text">Drawn</span>
+                                    <form method="GET"
+                                          action="{% url 'draw_bag_item_return' draw_bag_item.id %}"
+                                          id="{{ draw_bag_item.id }}-drawBagItemReturnForm"
+                                          class="draw-bag-item-return-form"
+                                          data-id="{{ draw_bag_item.id }}">
+                                        <button class="draw-bag-item-action-btn">put back</button>
+                                    </form>
+                                {% elif draw_bag_item.drawn == False %}
+                                    <span class="draw-bag-status-text">In Bag</span>
+                                    <form method="GET"
+                                          action="{% url 'draw_bag_item_draw' draw_bag_item.id %}"
+                                          id="{{ draw_bag_item.id }}-drawBagItemDrawForm"
+                                          class="draw-bag-item-draw-form"
+                                          data-id="{{ draw_bag_item.id }}">
+                                        <button class="draw-bag-item-action-btn">remove</button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             {% empty %}
                 <span class="large-text"><i>add some items to the bag</i></span>
             {% endfor %}
@@ -161,6 +197,19 @@
         </div>
 {# display only items still in the bag #}
         <div id="{{ draw_bag.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper absolute-hidden">
+            <div class="draw-bag-draw-control-row">
+                <div class="draw-bag-img-wrapper">
+                    <img src="" alt="image of draw bag" class="">
+                </div>
+                <form method="GET"
+                      action="{% url 'draw_bag_reset' draw_bag.id %}"
+                      id="{{ draw_bag.id }}-drawBagResetForm"
+                      class="draw-bag-reset-form"
+                      data-id="{{ draw_bag.id }}">
+                    <button class="blue-btn">reset</button>
+                </form>
+            </div>
+            <hr style="width: 90%;">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
                 {% if draw_bag_item.drawn == False %}
                     <div class="draw-bag-item-box">
@@ -193,34 +242,7 @@
                 <span class="large-text"><i>add some items to the bag</i></span>
             {% endfor %}
         </div>
-{# create new draw bag items #}
-{#        <div id="{{ draw_bag.id }}-drawBagItemCreateFormWrapper" class="create-new-object-form-wrapper">#}
-{#            <div class="form-title-box">#}
-{#                <span class="form-title-text">create draw bag item</span>#}
-{#            </div>#}
-{#            <br />#}
-{#            <form id="{{ draw_bag.id }}-scoringCategoryCreateForm"#}
-{#                  class="{{ draw_bag.id }} create-custom-object-form scoring-category"#}
-{#                  action="{% url 'scoring_category_create' scoring_group.id %}"#}
-{#                  method="POST">#}
-{#                {% csrf_token %}#}
-{#                <div class="create-object-form-row">#}
-{#                    <div id={{ draw_bag.id }}-createScoringCategoryCategoryNameField#}
-{#                         class="create-scoring-category-input-wrapper">#}
-{#                        {{ scoring_category_create_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}#}
-{#                        <span class="create-scoring-category-field-text">points</span>#}
-{#                    </div>#}
-{#                </div>#}
-{#                <br>#}
-{#                <div class="create-object-form-row">#}
-{#                    <button type="submit" class="blue-btn smaller">create</button>#}
-{#                </div>#}
-{#            </form>#}
-{#            <button class="blue-btn smaller create-custom-object-form-done-btn draw_bag_item"#}
-{#                    data-id="{{ draw_bag.id }}">done#}
-{#            </button>#}
-{#        </div>#}
-{#    </div>#}
+    </div>
     {% empty %}
         <span class="large-text"><i>no draw bags yet</i></span>
     {% endfor %}

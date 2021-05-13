@@ -44,6 +44,7 @@ from .forms import (
     ScoringGroupAddPlayersForm,
     ScoringCategoryCreateForm,
     DrawBagForm,
+    DrawBagItemCreateForm
 )
 
 from .models import (
@@ -171,6 +172,10 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
                 tool_session_id=active_tool_session_id
         )
 
+        draw_bag_items_sorted_by_name = DrawBagItem.objects\
+            .filter(group__tool_session_id=active_tool_session_id)\
+            .order_by('name')
+
         # for bag in draw_bags:
         #     for item in bag.draw_bag_items.all():
         #         print(item.image.path)
@@ -213,7 +218,9 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['scoring_category_create_form'] = \
             ScoringCategoryCreateForm
         context['draw_bags'] = draw_bags
+        context['draw_bag_items_sorted_by_name'] = draw_bag_items_sorted_by_name
         context['draw_bag_form'] = DrawBagForm
+        context['draw_bag_item_create_form'] = DrawBagItemCreateForm
 
         return context
 
@@ -963,6 +970,26 @@ class DrawBagReset(LoginRequiredMixin, View):
             }, status=200)
 
 
+class DrawBagItemCreate(FloatingPointError, View):
+    """create DrawBagItem Objects"""
+
+    def post(self, request, draw_bag_uuid):
+        form = DrawBagItemCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            print('valid')
+            form_instance = form.save(commit=False)
+            form_instance.group = \
+                DrawBag.objects.get(
+                    id=draw_bag_uuid
+                )
+            form_instance.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()},
+                                status=400)
 
 
 

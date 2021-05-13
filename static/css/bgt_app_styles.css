@@ -1967,6 +1967,10 @@ ul {
     margin: 0 .5rem;
 }
 
+.img-placeholder {
+    background: rgba(112, 128, 144, 0.5);
+}
+
 .draw-bag-item-action-btn {
     font-size: 1.75rem;
     border-radius: .5rem;

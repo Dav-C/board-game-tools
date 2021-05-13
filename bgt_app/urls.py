@@ -45,6 +45,7 @@ from .views import (
     DrawBagItemReturn,
     DrawBagItemDraw,
     DrawBagReset,
+    DrawBagItemCreate,
 )
 
 urlpatterns = [
@@ -183,4 +184,7 @@ urlpatterns = [
 
     path('draw-bag-reset/<draw_bag_uuid>',
          DrawBagReset.as_view(), name='draw_bag_reset'),
+
+    path('draw-bag-item-create/<draw_bag_uuid>',
+         DrawBagItemCreate.as_view(), name='draw_bag_item_create'),
 ]

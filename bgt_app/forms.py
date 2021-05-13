@@ -307,7 +307,7 @@ class GameTimerCreateForm(forms.ModelForm):
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
-        )
+        ),
     )
 
 
@@ -434,5 +434,34 @@ class DrawBagForm(forms.ModelForm):
                 'maxlength': '40',
                 'autocomplete': 'off',
             },
-        )
+        ),
     )
+
+
+class DrawBagItemCreateForm(forms.ModelForm):
+    """Create DrawBagItem Objects"""
+    class Meta:
+        model = DrawBagItem
+        fields = ['name', 'image']
+
+    name = forms.CharField(
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'draw bag title',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+    image = forms.ImageField(
+        required=False,
+        widget=forms.FileInput(
+            attrs={
+                'placeholder': 'draw bag image',
+                'maxlength': '40',
+                'autocomplete': 'off',
+            },
+        ),
+    )
+
