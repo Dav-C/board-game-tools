@@ -21,7 +21,11 @@ Tools included:
 Install:
 
 - Clone the repo
-- install requirements.txt
+- install requirements.txt with <code>pip install -r requirements.txt</code> 
+  Use of a virtual environment is highly recommended.
+- Create the SQlite database with <code>manage.py makemigrations</code> and then
+    <code>manage.py migrate</code>.  makemigrations will likely return 
+  "no changes detected", this is expected.
 
 App usage:
 
@@ -51,7 +55,7 @@ To run the app on a mobile device:
   list in <code>config/settings.py</code>
 - start the django development server using the command <code>manage.py runserver 0.0.0.0:8000</code>
 - using your preferred device, on the same local network as the django development server, 
-  navigate to:http://<code>your ip</code>/login where 'your ip' is the ip address of the computer running 
+  navigate to http://<code>your ip</code>/login where 'your ip' is the ip address of the computer running 
   the django development server.
 
 
