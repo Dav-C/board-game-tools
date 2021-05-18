@@ -1,5 +1,6 @@
 .dbsqlite
-
+/media/*
+!/media/media_info.txt
 
 # Django #
 *.log
@@ -7,7 +8,6 @@
 *.pyc
 __pycache__
 db.sqlite3
-media
 
 # Backup files #
 *.bak
@@ -99,3 +99,4 @@ Control.ca-list
 Control.ca-bundle
 Control.system-ca-bundle
 GitHub.sublime-settings
+
