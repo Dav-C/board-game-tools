@@ -53,7 +53,9 @@
                 </button>
             </form>
 {# create new draw bag items#}
-        <div id="{{ draw_bag.id }}-drawBagItemCreateFormWrapper" class="create-new-object-form-wrapper">
+        <div data-id="{{ draw_bag.id }}"
+             id="{{ draw_bag.id }}-drawBagItemCreateFormWrapper"
+             class="create-new-object-form-wrapper">
             <div class="form-title-box">
                 <span class="form-title-text">create draw bag item</span>
             </div>
@@ -62,9 +64,9 @@
                   id="{{ draw_bag.id }}-drawBagItemCreateForm"
                   action="{% url 'draw_bag_item_create' draw_bag.id %}"
                   enctype='multipart/form-data'
+                  data-id="{{ draw_bag.id }}"
                   class="{{ draw_bag.id }} create-custom-object-form draw-bag-item">
                 {% csrf_token %}
-
                 <div class="create-object-form-row">
                     <div id={{ draw_bag.id }}-drawBagItemCreateFormNameField
                          class="">
@@ -111,7 +113,7 @@
                                      alt="item-image"
                                      class="draw-bag-item-img-small">
                             {% else %}
-                                <span class="draw-bag-status-text img-placeholder" >no image</span>
+                                <span class="draw-bag-status-text img-placeholder">no img</span>
                             {% endif %}
                             <div class="draw-bag-item-box-row-btn-wrapper">
                                 {% if draw_bag_item.drawn == True %}

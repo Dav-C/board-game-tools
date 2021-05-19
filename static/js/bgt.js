@@ -1612,6 +1612,7 @@ drawBagControl = {
             $(sub_group_wrapper).removeClass('absolute-hidden');
             localStorage.setItem('active-draw-bag-group-data-id', data_id.toString());
             localStorage.setItem('active-draw-bag-view-wrapper-id', sub_group_wrapper.toString());
+
         },
         set_active_view_wrapper: function() {
             if (localStorage.getItem('active-draw-bag-group-data-id')) {
@@ -1647,6 +1648,33 @@ drawBagControl = {
                 error: function(response) {
                     let error_text = response.responseText
                         .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                }
+            });
+        },
+        create_item_and_update_bag: function(form) {
+            let form_data = false;
+            if (window.FormData) {
+                form_data = new FormData(form[0]);
+            }
+            $.ajax({
+                processData: false,
+                contentType: false,
+                type: 'POST',
+                url: $(form).attr('action'),
+                data: form_data ? form_data : form.serialize(),
+                success: function (response) {
+                    $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
+                    drawBagControl.draw_bag_funcs.set_active_view_wrapper();
+                    closeToolPageCover();
+                    });
+                    console.log('ajaxSuccess');
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replaceAll('{','').replaceAll('}','').replaceAll(':','').replace('error','').replaceAll('"','')
+                        .replaceAll('[', '').replaceAll(']', '').replaceAll('\\', '').replaceAll('code', '')
+                        .replaceAll('message', '').replaceAll(',', '').replace('image', '');
                     messageControl.display_error_message('#errorMessageWrapper', error_text);
                 }
             });
@@ -1711,12 +1739,9 @@ $("#drawBagsViewWrapper").on('click', '.draw-bag-title', function() {
 // update a draw bag title and hide editing controls
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function(e) {
     'use strict';
-    // preventing from page reload and default actions
     e.preventDefault();
     let data_id = '#' + $(this).attr("data-id");
-    // serialize the form data.
     let serializedData = $(this).serialize();
-    // make POST ajax call
     $.ajax({
         type: 'POST',
         url: $(this).attr('action'),
@@ -1781,12 +1806,18 @@ $("#drawBagsViewWrapper").on('click', '.draw-bag-add-item-open-form-btn', functi
 // close the create new draw bag item form wrapper
 $("#drawBagsViewWrapper").on('click', '.create-custom-object-form-done-btn.draw_bag_item', function() {
     let data_id = $(this).attr('data-id');
-    let active_draw_bag_view_wrapper_id = "#" + data_id + '-drawBagItemsWrapper'
-    localStorage.setItem('active-draw-bag-group-data-id', data_id);
-    localStorage.setItem('active-draw-bag-view-wrapper-id', active_draw_bag_view_wrapper_id);
+    let sub_group_wrapper = "#" + data_id + '-drawBagItemsWrapper'
     drawBagControl.draw_bag_funcs.close_draw_bag_item_create_form_wrapper($(this));
-    drawBagControl.draw_bag_funcs.change_open_sub_group("#" + data_id + '-drawBagItemsWrapper', $(this));
+    drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 })
+// create a new draw bag item
+$("#drawBagsViewWrapper").on('submit', '.create-custom-object-form.draw-bag-item', function (e) {
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let form = $('#' + data_id + '-drawBagItemCreateForm');
+    drawBagControl.draw_bag_funcs.create_item_and_update_bag(form);
+});
+
 
 // --------------- END OF FILE ---------------
 console.log('this application has been brought to you by David Cates.');

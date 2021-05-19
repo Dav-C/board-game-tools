@@ -8,7 +8,9 @@ from django.db import models
 from django.core.validators import (
     MinValueValidator,
     MaxValueValidator,
+    validate_image_file_extension,
 )
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
 
@@ -300,6 +302,13 @@ class DrawBag(models.Model):
         return f"{self.title}"
 
 
+def validate_image_file_size(image):
+    file_size = image.file.size
+    size_limit = 5242880  # 5 MB
+    if file_size > size_limit:
+        raise ValidationError("Maximum file size is 5 MB.")
+
+
 class DrawBagItem(models.Model):
     class Meta:
         verbose_name = "Draw Bag Item"
@@ -311,6 +320,8 @@ class DrawBagItem(models.Model):
     drawn = models.BooleanField(default=False)
     drawn_datetime = models.DateTimeField(null=True, blank=True)
     image = models.ImageField(upload_to=user_directory_path,
+                              validators=[validate_image_file_extension,
+                                          validate_image_file_size],
                               height_field=None,
                               width_field=None,
                               null=True,

@@ -976,7 +976,6 @@ class DrawBagItemCreate(FloatingPointError, View):
     def post(self, request, draw_bag_uuid):
         form = DrawBagItemCreateForm(request.POST, request.FILES)
         if form.is_valid():
-            print('valid')
             form_instance = form.save(commit=False)
             form_instance.group = \
                 DrawBag.objects.get(
