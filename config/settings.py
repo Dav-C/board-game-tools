@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'bgt_app.apps.BgtAppConfig',
     # third party
     'widget_tweaks',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -82,8 +83,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'boardgametools',
+        'USER': 'boardgametools',
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': 5432,
+        'TEST': {
+            'NAME': 'boardgametoolstests'
+        }
     }
 }
 
@@ -120,10 +128,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = ''
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_REDIRECT_URL = 'user_home'
