@@ -304,9 +304,9 @@ class DrawBag(models.Model):
 
 def validate_image_file_size(image):
     file_size = image.file.size
-    size_limit = 5242880  # 5 MB
+    size_limit = 1048576  # 1 MB
     if file_size > size_limit:
-        raise ValidationError("Maximum file size is 5 MB.")
+        raise ValidationError("Maximum file size is 1 MB.")
 
 
 class DrawBagItem(models.Model):

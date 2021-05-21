@@ -1652,10 +1652,12 @@ drawBagControl = {
                 }
             });
         },
-        create_item_and_update_bag: function(form) {
+        create_item_and_update_bag: function(form, form_data_value = false) {
             let form_data = false;
-            if (window.FormData) {
+            console.log(form_data_value)
+            if (form_data_value) {
                 form_data = new FormData(form[0]);
+                form_data.append('image', form_data_value, 'uploaded_image.jpg');
             }
             $.ajax({
                 processData: false,
@@ -1810,13 +1812,85 @@ $("#drawBagsViewWrapper").on('click', '.create-custom-object-form-done-btn.draw_
     drawBagControl.draw_bag_funcs.close_draw_bag_item_create_form_wrapper($(this));
     drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 })
+
+let resized_image;
+
 // create a new draw bag item
 $("#drawBagsViewWrapper").on('submit', '.create-custom-object-form.draw-bag-item', function (e) {
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagItemCreateForm');
-    drawBagControl.draw_bag_funcs.create_item_and_update_bag(form);
+    drawBagControl.draw_bag_funcs.create_item_and_update_bag(form, resized_image);
 });
+
+
+/* Utility function to convert a canvas to a BLOB */
+let dataURLToBlob = function(dataURL) {
+    let BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        let parts = dataURL.split(',');
+        let contentType = parts[0].split(':')[1];
+        let raw = parts[1];
+
+        return new Blob([raw], {type: contentType});
+    }
+
+    let parts = dataURL.split(BASE64_MARKER);
+    let contentType = parts[0].split(':')[1];
+    let raw = window.atob(parts[1]);
+    let rawLength = raw.length;
+
+    let uInt8Array = new Uint8Array(rawLength);
+
+    for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return new Blob([uInt8Array], {type: contentType});
+}
+/* End Utility function to convert a canvas to a BLOB      */
+
+let handleDrawBagImage = function(this_value){
+    let data_id = $(this_value).attr('data-id');
+    let canvas = document.getElementById(data_id + '-imageCanvas');
+    let context = canvas.getContext('2d');
+    let image_input_field = $('#' + data_id + '-id_image')
+    console.log(image_input_field)
+    let image_upload = image_input_field[0].files[0];
+    let file_reader = new FileReader();
+    // let file_types =
+
+    file_reader.onload = function(event) {
+        let image= new Image();
+        let max_height = 350;
+        let max_width = 350;
+
+        image.onload = function(event) {
+            let width = image.width;
+            let height = image.height;
+            if (width > height) {
+                height *= max_width / width;
+                width = max_width;
+            } else {
+                if (height > max_height) {
+                    width *= max_height / height;
+                    height = max_height;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height
+            context.drawImage(image, 0, 0, width, height)
+        let canvas_data = canvas.toDataURL("image/png");
+        resized_image = dataURLToBlob(canvas_data);
+        }
+        image.src = event.target.result;
+    }
+    file_reader.readAsDataURL(image_upload);
+}
+
+
+
+
 
 
 // --------------- END OF FILE ---------------

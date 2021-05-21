@@ -1982,7 +1982,16 @@ ul {
 
 .draw-bag-item-img-small {
     width: 25%;
-    border-radius: 1rem;
+    border-radius: .5rem;
+    border: 2px outset #FFFFFF;
+}
+
+.draw-bag-upload-canvas {
+    width: 100%;
+    border: 5px groove white;
+    border-radius: .5rem;
+    padding: 0;
+    margin: 0;
 }
 
 /* Prevent Chrome from changing autofill text size to small */

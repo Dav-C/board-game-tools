@@ -60,6 +60,9 @@
                 <span class="form-title-text">create draw bag item</span>
             </div>
             <br />
+            <input type="file" name="image" placeholder="draw bag image" maxlength="40"
+                   autocomplete="off" accept="image/*" id="{{ draw_bag.id }}-id_image"
+                   data-id="{{ draw_bag.id }}" onchange="handleDrawBagImage(this);">
             <form method="POST"
                   id="{{ draw_bag.id }}-drawBagItemCreateForm"
                   action="{% url 'draw_bag_item_create' draw_bag.id %}"
@@ -76,7 +79,11 @@
                 <div class="create-object-form-row">
                     <div id={{ draw_bag.id }}-drawBagItemCreateFormImageField
                          class="">
-                        {{ draw_bag_item_create_form.image }}
+                        <input type="file" name="image" placeholder="draw bag image" maxlength="40"
+                               autocomplete="off" accept="image/*" id="{{ draw_bag.id }}-id_image"
+                               data-id="{{ draw_bag.id }}" onchange="handleDrawBagImage(this);" hidden>
+
+                        <canvas id="{{ draw_bag.id }}-imageCanvas" class="draw-bag-upload-canvas">CONTENT</canvas>
                     </div>
                 </div>
                 <br>
