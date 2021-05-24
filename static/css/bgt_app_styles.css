@@ -1901,6 +1901,14 @@ ul {
                 rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
 }
 
+.create-custom-object-form {
+    display: flex;
+    justify-content: center;
+}
+.draw-bag-item {
+    display: flex;
+    justify-content: center;
+}
 .draw-bag-items-wrapper {
     display: flex;
     flex-direction: column;
@@ -1959,9 +1967,11 @@ ul {
 }
 
 .draw-bag-status-text {
-    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
     border-radius: .5rem;
-    padding: 1rem;
+    padding: .75rem;
     background-color: #708090FF;
     color: mintcream;
     margin: 0 .5rem;
@@ -1972,9 +1982,9 @@ ul {
 }
 
 .draw-bag-item-action-btn {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     border-radius: .5rem;
-    padding: 1rem;
+    padding: .75rem;
     background-color: #0072ff;
     color: mintcream;
     margin: 0 .5rem;
@@ -1992,6 +2002,33 @@ ul {
     border-radius: .5rem;
     padding: 0;
     margin: 0;
+}
+
+.draw-bag-item-modal-wrapper {
+    padding: .5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: fixed;
+    width: 90%;
+    max-width: 45rem;
+    visibility: hidden;
+    background-color: #555555;
+    border-radius: .25rem;
+    top: 15%;
+}
+
+.draw-bag-item-modal-img {
+    max-width: 100%;
+    max-height: 100%;
+    margin: 1rem 0;
+}
+
+.draw-bag-item-modal-name-text {
+    margin: .5rem;
+    color: #FFFFFF;
+    font-size: 2rem;;
 }
 
 /* Prevent Chrome from changing autofill text size to small */

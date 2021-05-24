@@ -4,6 +4,32 @@ if (localStorage.getItem('activeTool')) {
     $(activeTool).css({'display': 'flex'});
 }
 
+/* Utility function to convert a canvas to a BLOB */
+let dataURLToBlob = function(dataURL) {
+    let BASE64_MARKER = ';base64,';
+    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        let parts = dataURL.split(',');
+        let contentType = parts[0].split(':')[1];
+        let raw = parts[1];
+
+        return new Blob([raw], {type: contentType});
+    }
+
+    let parts = dataURL.split(BASE64_MARKER);
+    let contentType = parts[0].split(':')[1];
+    let raw = window.atob(parts[1]);
+    let rawLength = raw.length;
+
+    let uInt8Array = new Uint8Array(rawLength);
+
+    for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+
+    return new Blob([uInt8Array], {type: contentType});
+}
+/* End Utility function to convert a canvas to a BLOB      */
+
 // control messages that popup after certain actions (such as creating a tool)
 let messageControl = {
     display_success_message: function(message_wrapper, message) {
@@ -1602,6 +1628,8 @@ $('.game-timer-duration-update-form').submit(function(e) {
 
 // --------------- DRAW BAG CONTROL ---------------
 
+let resized_draw_bag_upload_image;
+
 drawBagControl = {
     draw_bag_funcs: {
         change_open_sub_group: function(sub_group_wrapper, this_value) {
@@ -1624,22 +1652,54 @@ drawBagControl = {
                 $(active_draw_bag_view_wrapper_id).removeClass('absolute-hidden');
             }
         },
-        update_bag: function(form) {
-            $.ajax({
+        update_draw_bag_item_modal: function(group_id, item_name, image_path) {
+            let draw_bag_item_modal_wrapper = $('#' + group_id + '-drawBagItemModalWrapper');
+            let draw_bag_item_name = draw_bag_item_modal_wrapper.find('span:first');
+            let draw_bag_image = draw_bag_item_modal_wrapper.find('img:first');
+            let return_to_bag_btn = draw_bag_item_modal_wrapper.find('.draw-bag-item-modal-return-to-bag-btn');
+            draw_bag_item_name.text(item_name);
+            draw_bag_image.attr('src', image_path);
+        },
+        open_draw_bag_item_modal: function(group_id) {
+            let draw_bag_item_modal_wrapper = $('#' + group_id + '-drawBagItemModalWrapper');
+            draw_bag_item_modal_wrapper.css({'visibility': 'visible'});
+            openToolPageCover();
+        },
+        close_draw_bag_item_modal: function(group_id) {
+            let draw_bag_item_modal_wrapper = $('#' + group_id + '-drawBagItemModalWrapper');
+            draw_bag_item_modal_wrapper.css({'visibility': 'hidden'});
+            closeToolPageCover();
+        },
+        update_bag_and_open_modal: function(form) {
+            let data_id = $(form).attr('data-id');
+            return $.ajax({
                 type: 'GET',
                 url: $(form).attr('action'),
                 success: function (response) {
+
                     try {
-                        let drawn_item_id = JSON.parse(response.item);
-                        $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *');
+                        let drawn_item = JSON.parse(response.item);
+                        let drawn_item_id = drawn_item[0]['pk'];
+                        let drawn_item_group_id = drawn_item[0]['fields']['group'];
+                        let drawn_item_name = drawn_item[0]['fields']['name'].toString();
+                        let drawn_item_image_path = '/' + drawn_item[0]['fields']['image'];
+                        $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
+                        drawBagControl.draw_bag_funcs.update_draw_bag_item_modal(
+                            drawn_item_group_id, drawn_item_name, drawn_item_image_path)
+                        drawBagControl.draw_bag_funcs.open_draw_bag_item_modal(data_id);
+                        drawBagControl.draw_bag_funcs.set_active_view_wrapper();
+                        });
                     }
                     catch(error) {
                         console.log(error.name)
                         if(error.name === 'SyntaxError') {
-                            let message = response.message
-                            messageControl.display_success_message('#errorMessageWrapper', message);
+                            // this generates messages each time the divs are reloaded.  The volume of messages
+                            // was too high so its been disabled.  Keeping it here for future use.
+                            // let message = response.message
+                            // messageControl.display_success_message('#errorMessageWrapper', message);
                             $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
-                            drawBagControl.draw_bag_funcs.set_active_view_wrapper();
+                            drawBagControl.draw_bag_funcs.set_active_view_wrapper(data_id);
+                            messageControl.display_success_message('#drawBagPageSuccessMessageWrapper', 'the bag is empty!')
                             });
                         }
                     }
@@ -1649,19 +1709,56 @@ drawBagControl = {
                     let error_text = response.responseText
                         .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
                     messageControl.display_error_message('#errorMessageWrapper', error_text);
-                }
+                },
+            });
+        },
+        update_bag: function(form) {
+            let data_id = $(form).attr('data-id');
+            return $.ajax({
+                type: 'GET',
+                url: $(form).attr('action'),
+                success: function (response) {
+
+                    try {
+                        let drawn_item = JSON.parse(response.item);
+                        $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
+                        drawBagControl.draw_bag_funcs.set_active_view_wrapper();
+                        });
+                    }
+                    catch(error) {
+                        console.log(error.name)
+                        if(error.name === 'SyntaxError') {
+                            // this generates messages each time the divs are reloaded.  The volume of messages
+                            // was too high so its been disabled.  Keeping it here for future use.
+                            // let message = response.message
+                            // messageControl.display_success_message('#errorMessageWrapper', message);
+                            $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
+                            drawBagControl.draw_bag_funcs.set_active_view_wrapper(data_id);
+                            });
+                        }
+                    }
+                    console.log('ajaxSuccess');
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                },
             });
         },
         create_item_and_update_bag: function(form, form_data_value = false) {
             let form_data = false;
-            console.log(form_data_value)
             if (form_data_value) {
+                console.log('triggered')
                 form_data = new FormData(form[0]);
                 form_data.append('image', form_data_value, 'uploaded_image.jpg');
+                content_type = false
             }
+            // console.log(form);
+            console.log(form_data);
             $.ajax({
                 processData: false,
-                contentType: false,
+                contentType: form_data ? content_type: 'application/x-www-form-urlencoded; charset=UTF-8',
                 type: 'POST',
                 url: $(form).attr('action'),
                 data: form_data ? form_data : form.serialize(),
@@ -1696,6 +1793,45 @@ drawBagControl = {
                 drawBagControl.draw_bag_funcs.set_active_view_wrapper();
                 closeToolPageCover();
             });
+        },
+        // uploaded images are resized, drawn to a preview canvas and the canvas
+        // image is converted to blob and appended to drawBagItemCreateForm for
+        // upload
+        handleDrawBagImageUpload: function(this_value) {
+            let data_id = $(this_value).attr('data-id');
+            let canvas = document.getElementById(data_id + '-imageCanvas');
+            let context = canvas.getContext('2d');
+            let image_input_field = $('#' + data_id + '-id_image')
+            let image_upload = image_input_field[0].files[0];
+            let file_reader = new FileReader();
+            // let file_types =
+
+            file_reader.onload = function(event) {
+                let image= new Image();
+                let max_height = 350;
+                let max_width = 350;
+
+                image.onload = function(event) {
+                    let width = image.width;
+                    let height = image.height;
+                    if (width > height) {
+                        height *= max_width / width;
+                        width = max_width;
+                    } else {
+                        if (height > max_height) {
+                            width *= max_height / height;
+                            height = max_height;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height
+                    context.drawImage(image, 0, 0, width, height)
+                let canvas_data = canvas.toDataURL("image/png");
+                resized_draw_bag_upload_image = dataURLToBlob(canvas_data);
+                }
+                image.src = event.target.result;
+            }
+            file_reader.readAsDataURL(image_upload);
         },
     }
 }
@@ -1765,7 +1901,7 @@ $("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function(e) {
         error: function (response) {
             console.log(response["responseJSON"]["error"]);
             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
+        },
     })
 });
 // change the active view window
@@ -1773,12 +1909,12 @@ $("#drawBagsViewWrapper").on('click', '.draw-bag-control-box-btn', function() {
     let sub_group_wrapper = $(this).attr('data-id');
     drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
-// draw an item from a draw bag and update the page with the results
+// draw a random item from a draw bag and update the page with the results
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-draw-item-form', function (e) {
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagDrawItemForm');
-    drawBagControl.draw_bag_funcs.update_bag(form);
+    drawBagControl.draw_bag_funcs.update_bag_and_open_modal(form);
 });
 // return a specific item to the bag and update the page with the results
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-item-return-form', function (e) {
@@ -1812,86 +1948,41 @@ $("#drawBagsViewWrapper").on('click', '.create-custom-object-form-done-btn.draw_
     drawBagControl.draw_bag_funcs.close_draw_bag_item_create_form_wrapper($(this));
     drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 })
-
-let resized_image;
-
 // create a new draw bag item
 $("#drawBagsViewWrapper").on('submit', '.create-custom-object-form.draw-bag-item', function (e) {
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagItemCreateForm');
-    drawBagControl.draw_bag_funcs.create_item_and_update_bag(form, resized_image);
+    drawBagControl.draw_bag_funcs.create_item_and_update_bag(form, resized_draw_bag_upload_image);
+});
+// close the draw bag item modal when the close button is pressed
+$("#drawBagsViewWrapper").on('click', '.draw-bag-item-modal-close-btn', function (e) {
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    drawBagControl.draw_bag_funcs.close_draw_bag_item_modal(data_id);
 });
 
+// when the "return to bag" button is pressed in the image modal, the item is returned
+// to a non-drawn state and the modal is closed
+$("#drawBagsViewWrapper").on('click', '.draw-bag-item-modal-return-to-bag-btn', function (e) {
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    drawBagControl.draw_bag_funcs.close_draw_bag_item_modal(data_id);
+});
 
-/* Utility function to convert a canvas to a BLOB */
-let dataURLToBlob = function(dataURL) {
-    let BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) == -1) {
-        let parts = dataURL.split(',');
-        let contentType = parts[0].split(':')[1];
-        let raw = parts[1];
+// open the draw bag item modal when an image thumbnail is clicked
+$("#drawBagsViewWrapper").on('click', '.draw-bag-item-img-small', function (e) {
+    e.preventDefault();
+    let item_group_id = $(this).attr('data-id');
+    let item_name = $(this).closest('.draw-bag-item-box')
+                           .find('.draw-bag-item-box-title')
+                           .text();
+    let item_image_path = $(this).attr('src');
+    drawBagControl.draw_bag_funcs.update_draw_bag_item_modal(
+        item_group_id, item_name, item_image_path)
+    drawBagControl.draw_bag_funcs.open_draw_bag_item_modal(item_group_id);
 
-        return new Blob([raw], {type: contentType});
-    }
-
-    let parts = dataURL.split(BASE64_MARKER);
-    let contentType = parts[0].split(':')[1];
-    let raw = window.atob(parts[1]);
-    let rawLength = raw.length;
-
-    let uInt8Array = new Uint8Array(rawLength);
-
-    for (var i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return new Blob([uInt8Array], {type: contentType});
-}
-/* End Utility function to convert a canvas to a BLOB      */
-
-let handleDrawBagImage = function(this_value){
-    let data_id = $(this_value).attr('data-id');
-    let canvas = document.getElementById(data_id + '-imageCanvas');
-    let context = canvas.getContext('2d');
-    let image_input_field = $('#' + data_id + '-id_image')
-    console.log(image_input_field)
-    let image_upload = image_input_field[0].files[0];
-    let file_reader = new FileReader();
-    // let file_types =
-
-    file_reader.onload = function(event) {
-        let image= new Image();
-        let max_height = 350;
-        let max_width = 350;
-
-        image.onload = function(event) {
-            let width = image.width;
-            let height = image.height;
-            if (width > height) {
-                height *= max_width / width;
-                width = max_width;
-            } else {
-                if (height > max_height) {
-                    width *= max_height / height;
-                    height = max_height;
-                }
-            }
-            canvas.width = width;
-            canvas.height = height
-            context.drawImage(image, 0, 0, width, height)
-        let canvas_data = canvas.toDataURL("image/png");
-        resized_image = dataURLToBlob(canvas_data);
-        }
-        image.src = event.target.result;
-    }
-    file_reader.readAsDataURL(image_upload);
-}
-
-
-
-
-
+});
 
 // --------------- END OF FILE ---------------
 console.log('this application has been brought to you by David Cates.');
