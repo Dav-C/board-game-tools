@@ -35,11 +35,11 @@
                 </button>
                 <button type="button"
                         id="{{ scoring_group.id }}-cancelScoringGroupTitleChangeBtn"
-                        class="cancel-change-btn">cancel
+                        class="cancel-change-btn">
                 </button>
                 <button type="submit"
                         id="{{ scoring_group.id }}-confirmScoringGroupTitleChangeBtn"
-                        class="confirm-change-btn" form="{{ scoring_group.id }}-scoringGroupForm">ok
+                        class="confirm-change-btn" form="{{ scoring_group.id }}-scoringGroupForm">
                 </button>
             </div>
 {# delete scoring group form #}
@@ -49,7 +49,7 @@
                   method="POST">
                 {% csrf_token %}
                 <button id="{{ scoring_group.id }}-scoringGroupDeleteBtn"
-                        class="delete-btn-large">delete this game
+                        class="delete-btn-large">
                 </button>
             </form>
 {# add players to scoring group #}
@@ -124,7 +124,7 @@
 {# display scoring categories #}
         <div id="{{ scoring_group.id }}-scoringGroupCategoriesWrapper" class="scoring-group-categories-wrapper">
             <button data-id="{{ scoring_group.id }}"
-                    class="scoring-group-add-category-open-form-btn">+ category
+                    class="scoring-group-add-category-open-form-btn open-create-item-form-btn">
             </button>
             <br />
             {% for scoring_category in scoring_group.scoring_categories.all %}
@@ -135,7 +135,7 @@
                               action="{% url 'scoring_category_delete' scoring_category.id %}?next={{ request.get_full_path }}"
                               id="{{ scoring_category.id }}-deleteSingleScoringCategoryForm">
                             {% csrf_token %}
-                            <button class="red-btn small">delete</button>
+                            <button class="red-btn small delete-btn-small"></button>
                         </form>
                     </div>
                     <hr style="width: 100%;">

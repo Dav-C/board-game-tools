@@ -19,7 +19,7 @@
             </form>
 {# die group control box #}
             <div class="die-group-control-box">
-                <button type="button" id="{{ die_group.id }}-cancelDieGroupTitleChangeBtn" class="cancel-change-btn">cancel</button>
+                <button type="button" id="{{ die_group.id }}-cancelDieGroupTitleChangeBtn" class="cancel-change-btn"></button>
                 <form method="GET" action="{% url 'roll_die_group' die_group.id %}" class="die-group-roll-all-form">
                     <button type="submit" class="die-group-roll-all-btn">roll all</button>
                 </form>
@@ -31,13 +31,13 @@
                 {% endif %}
 
                 <button data-id="{{ die_group.id }}" class="die-group-add-die-open-form-btn">+ dice</button>
-                <button type="submit" id="{{ die_group.id }}-confirmDieGroupTitleChangeBtn" class="confirm-change-btn" form="{{ die_group.id }}-dieGroupUpdateForm">ok</button>
+                <button type="submit" id="{{ die_group.id }}-confirmDieGroupTitleChangeBtn" class="confirm-change-btn" form="{{ die_group.id }}-dieGroupUpdateForm"></button>
             </div>
 
 {# delete die group form #}
             <form action="{% url 'die_group_delete' die_group.id %}?next={{ request.get_full_path }}" method="POST" class="delete-tool-form">
                 {% csrf_token %}
-                <button id="{{ die_group.id }}-dieGroupDeleteBtn" class="delete-btn-large">delete this die group</button>
+                <button id="{{ die_group.id }}-dieGroupDeleteBtn" class="delete-btn-large"></button>
             </form>
 
 {# add new dice form #}
@@ -83,7 +83,7 @@
 {# delete single die form#}
                 <form method="POST" action="{% url 'die_standard_delete' die.id %}?next={{ request.get_full_path }}">
                 {% csrf_token %}
-                    <button class="delete-btn-small {{ die_group.id }}">&#10006;</button>
+                    <button class="delete-btn-small {{ die_group.id }}" style="display: none;"></button>
                 </form>
 {# roll single die #}
                 <a href="{% url 'roll_die' die.id %}">

@@ -46,11 +46,11 @@
                 </button>
                 <button type="button"
                         id="{{ draw_bag.id }}-cancelDrawBagTitleChangeBtn"
-                        class="cancel-change-btn">cancel
+                        class="cancel-change-btn">
                 </button>
                 <button type="submit"
                         id="{{ draw_bag.id }}-confirmDrawBagTitleChangeBtn"
-                        class="confirm-change-btn" form="{{ draw_bag.id }}-drawBagForm">ok
+                        class="confirm-change-btn" form="{{ draw_bag.id }}-drawBagForm">
                 </button>
             </div>
 {# delete draw bag form #}
@@ -60,7 +60,7 @@
                   method="POST">
                 {% csrf_token %}
                 <button id="{{ draw_bag.id }}-drawBagDeleteBtn"
-                        class="delete-btn-large">delete this draw bag
+                        class="delete-btn-large">
                 </button>
             </form>
 {# create new draw bag items#}
@@ -97,23 +97,23 @@
                         <input type="file" name="image" placeholder="draw bag image" maxlength="40"
                                autocomplete="off" accept="image/*" id="{{ draw_bag.id }}-id_image"
                                data-id="{{ draw_bag.id }}" onchange="handleDrawBagImage(this);" hidden>
-
-                        <canvas id="{{ draw_bag.id }}-imageCanvas" class="draw-bag-upload-canvas"></canvas>
+{#                        <canvas id="{{ draw_bag.id }}-previewCanvas" class="draw-bag-upload-preview-canvas"></canvas>#}
+                        <canvas id="{{ draw_bag.id }}-imageCanvas" class="draw-bag-upload-preview-canvas"></canvas>
                     </div>
                 </div>
-                <br>
                 <div class="create-object-form-row">
+                    <button class="blue-btn smaller create-custom-object-form-done-btn draw_bag_item"
+                            type="button"
+                            data-id="{{ draw_bag.id }}">done
+                    </button>
                     <button type="submit" class="blue-btn smaller">create</button>
                 </div>
             </form>
-            <button class="blue-btn smaller create-custom-object-form-done-btn draw_bag_item"
-                    data-id="{{ draw_bag.id }}">done
-            </button>
         </div>
 {# display all items #}
         <div id="{{ draw_bag.id }}-drawBagItemsWrapper" class="draw-bag-items-wrapper  absolute-hidden">
             <button data-id="{{ draw_bag.id }}"
-                    class="draw-bag-add-item-open-form-btn">+ draw bag item
+                    class="draw-bag-add-item-open-form-btn open-create-item-form-btn">
             </button>
             <br />
             {% for draw_bag_item in draw_bag_items_sorted_by_name %}
@@ -125,7 +125,7 @@
                                   action="{% url 'draw_bag_item_delete' draw_bag_item.id %}?next={{ request.get_full_path }}"
                                   id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm">
                                 {% csrf_token %}
-                                <button class="red-btn small">delete</button>
+                                <button class="red-btn small delete-btn-small">delete</button>
                             </form>
                         </div>
                         <hr style="width: 100%;">

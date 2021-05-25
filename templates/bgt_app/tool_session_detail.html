@@ -16,10 +16,10 @@
         <div id="ToolSelectionMenuCover"></div>
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <button class="add-tool-button">
-                <a href="{% url 'user_home' %}">Sessions</a>
+            <button class="add-tool-button back-to-sessions">
+                <a href="{% url 'user_home' %}"></a>
             </button>
-            <button id="createPlayerOpenFormBtn" class="add-tool-button">+ Player</button>
+            <button id="createPlayerOpenFormBtn" class="add-tool-button add-player"></button>
             <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">+ Hp Tracker</button>
             <button id="AddDieGroupOpenFormBtn" class="add-tool-button">+ Dice</button>
         </div>
@@ -187,11 +187,9 @@
         </div>
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
-            <button id="OpenUserSettings" class="select-active-tool-button
-                {% if players %}button-visible{% endif %}">Settings
-            </button>
-            <button id="OpenPlayersBtn" class="select-active-tool-button
-                {% if players %}button-visible{% endif %}">Players
+            <button id="OpenUserSettings" class="select-active-tool-button button-visible settings"></button>
+            <button id="OpenPlayersBtn" class="select-active-tool-button players
+                {% if players %}button-visible{% endif %}">
             </button>
             <button id="OpenHpTrackersBtn" class="select-active-tool-button
                 {% if hp_trackers %}button-visible{% endif %}">HP Trackers

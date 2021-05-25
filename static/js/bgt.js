@@ -1782,7 +1782,7 @@ drawBagControl = {
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-drawBagItemCreateFormWrapper');
             form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
-            $('body, html').addClass('no_scroll');
+            // $('body, html').addClass('no_scroll');
             openToolPageCover();
         },
         close_draw_bag_item_create_form_wrapper: function(this_value) {

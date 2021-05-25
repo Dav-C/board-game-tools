@@ -24,15 +24,15 @@
         <div class="resource-group-control-box">
             <button type="button"
                     id="{{ resource_group.id }}-cancelResourceGroupTitleChangeBtn"
-                    class="cancel-change-btn">cancel
+                    class="cancel-change-btn">
             </button>
             <button data-id="{{ resource_group.id }}"
-                    class="resource-group-add-resource-open-form-btn">add
+                    class="resource-group-add-resource-open-form-btn open-create-item-form-btn">
             </button>
             <button type="submit"
                     form="{{ resource_group.id }}-resourceGroupUpdateForm"
                     id="{{ resource_group.id }}-confirmResourceGroupTitleChangeBtn"
-                    class="confirm-change-btn">ok</button>
+                    class="confirm-change-btn"></button>
         </div>
 {# delete resource group form #}
         <form action="{% url 'resource_group_delete' resource_group.id %}?next={{ request.get_full_path }}"
@@ -40,7 +40,7 @@
               class="delete-tool-form">
             {% csrf_token %}
             <button id="{{ resource_group.id }}-resourceGroupDeleteBtn"
-                    class="delete-btn-large">delete this resource group
+                    class="delete-btn-large">
             </button>
         </form>
 {# add new resource form #}
@@ -127,12 +127,12 @@
                         </div>
                         <button data-id="{{ resource.id }}"
                                 id="{{ resource.id }}-confirmChangeBtn"
-                                class="confirm-change-btn resource-name-change-confirm-btn">&#10003;
+                                class="confirm-change-btn resource-name-change-confirm-btn">
                         </button>
                         <button type="button"
                                 data-id="{{ resource.id }}"
                                 id="{{ resource.id }}-cancelChangeBtn"
-                                class="cancel-change-btn resource-name-change-cancel-btn" >&#10006;
+                                class="cancel-change-btn resource-name-change-cancel-btn">
                         </button>
                     </div>
                 </form>
@@ -207,7 +207,7 @@
                 <div class="resource-box-row">
                     <button form="{{ resource.id }}-deleteSingleResourceForm"
                             id="{{ resource.id }}-resourceDeleteButton"
-                            class="delete-btn-large resource-delete-button {{ resource.id }}">delete this resource
+                            class="delete-btn-large resource-delete-button {{ resource.id }}">
                     </button>
                     <form action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}"
                           method="POST" id="{{ resource.id }}-deleteSingleResourceForm">
