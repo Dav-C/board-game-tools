@@ -15,13 +15,19 @@
             </div>
             {% for player in players %}
                 <div class="player-box">
-                    <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;{{ player.name }}</span>
-                    <form method="POST"
-                          action="{% url 'player_delete' player.id %}?next={{ request.get_full_path }}"
-                          id="{{ scoring_category.id }}-deletePlayerForm">
-                        {% csrf_token %}
-                        <button class="red-btn small">delete</button>
-                    </form>
+                    <div class="player-box-row">
+                        <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;{{ player.name }}</span>
+                    </div>
+                    <br>
+                    <div class="player-box-row">
+                        <form method="POST"
+                              action="{% url 'player_delete' player.id %}?next={{ request.get_full_path }}"
+                              id="{{ scoring_category.id }}-deletePlayerForm"
+                              style="margin-left: auto;">
+                            {% csrf_token %}
+                            <button class="red-btn small delete-btn-small"></button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>

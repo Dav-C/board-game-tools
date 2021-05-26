@@ -686,13 +686,13 @@ $('.create-custom-object-form.die').submit(function(e) {
 });
 
 // ajax for quickly adding a common die via the #dieGroupAddDieStandardForm
-$('.common-object-quick-create-btn.die-create').click(function(e) {
+$('.quick-die-create-btn').click(function(e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).parent('div').attr('data-id')
+    let data_id = $(this).parent().parent('div').attr('data-id');
     let form = $('#' + data_id + '-dieGroupAddDieStandardForm');
     let selected_die_num_sides = $(this).attr('data-num-sides').toString();
-    $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides)
+    $('#' + data_id + '-addDieStandardNumSidesInput input').val(selected_die_num_sides);
     let serialized_data = form.serialize();
     $.ajax({
         type: 'POST',

@@ -56,17 +56,23 @@
                 </div>
                 </form>
                 <div class="form-title-box">
-                    <span class="form-title-text">Quick add common dice</span>
+                    <span class="form-title-text">quick add common dice</span>
                 </div>
 {# quick add die buttons #}
                <div class="common-object-quick-add-btn-box" data-id="{{ die_group.id }}">
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="2" class="common-object-quick-create-btn die-create">Coin</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="4" class="common-object-quick-create-btn die-create">D4</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="6" class="common-object-quick-create-btn die-create">D6</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="8" class="common-object-quick-create-btn die-create">D8</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="10" class="common-object-quick-create-btn die-create">D10</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="12" class="common-object-quick-create-btn die-create">D12</button>
-                   <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="20" class="common-object-quick-create-btn die-create">D20</button>
+                   <div class="quick-add-item-row">
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="2" class="quick-die-create-btn">Coin</button>
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="4" class="quick-die-create-btn D4"></button>
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="6" class="quick-die-create-btn D6"></button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="8" class="quick-die-create-btn D8"></button>
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="10" class="quick-die-create-btn D10"></button>
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="12" class="quick-die-create-btn D12"></button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button form="{{ die_group.id }}-dieGroupAddDieStandardForm" data-num-sides="20" class="quick-die-create-btn D20"></button>
+                   </div>
                </div>
                <br />
                <br />
@@ -83,7 +89,7 @@
 {# delete single die form#}
                 <form method="POST" action="{% url 'die_standard_delete' die.id %}?next={{ request.get_full_path }}">
                 {% csrf_token %}
-                    <button class="delete-btn-small {{ die_group.id }}" style="display: none;"></button>
+                    <button class="red-btn small delete-btn-small {{ die_group.id }}" style="display: none;"></button>
                 </form>
 {# roll single die #}
                 <a href="{% url 'roll_die' die.id %}">

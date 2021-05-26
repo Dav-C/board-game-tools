@@ -372,8 +372,16 @@ ul {
 
 .common-object-quick-add-btn-box {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+    flex-direction: column;
+    width: 90%;
+    /*flex-wrap: wrap;*/
+    /*justify-content: space-around;*/
+}
+.quick-add-item-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .create-custom-object-form-done-btn {
@@ -694,13 +702,14 @@ ul {
     background-color: darkblue;
     border-radius: .5rem;
     width: 95%;
-    color: #FFFFFF;
+    color: mintcream;
     font-size: 2rem;
     padding: .5rem;
 }
 
 .tools-menu-header-text {
     margin-left: 2rem;
+    font-weight: 100;
 }
 
 #ToolSelectionMenuCover {
@@ -741,6 +750,10 @@ ul {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+    transition: transform .2s;
+}
+.add-tool-button:hover {
+    transform: scale(.8);
 }
 
 .add-player {
@@ -749,7 +762,24 @@ ul {
 .back-to-sessions {
     background-image: url('/static/images/arrow-left.svg');
 }
-
+.add-hp-tracker {
+    background-image: url('/static/images/health_plus.svg');
+}
+.add-dice {
+    background-image: url('/static/images/dice_plus.svg');
+}
+.add-resources {
+    background-image: url('/static/images/resources_plus.svg');
+}
+.add-timer {
+   background-image: url('/static/images/timer_plus.svg');
+}
+.add-drawbag {
+   background-image: url('/static/images/drawbag_plus.svg');
+}
+.add-calculator {
+   background-image: url('/static/images/calculator_plus.svg');
+}
 .add-new-tool-form-wrapper {
     padding: 3rem 0;
     top: 15%;
@@ -819,6 +849,10 @@ ul {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+    transition: transform .2s;
+}
+.select-active-tool-button:hover {
+    transform: scale(.8);
 }
 .settings {
     background-image: url('/static/images/settings.svg');
@@ -826,10 +860,27 @@ ul {
 .players {
     background-image: url('/static/images/users.svg');
 }
+.hp-trackers {
+    background-image: url('/static/images/health.svg');
+}
 .button-visible {
     display: inline;
 }
-
+.dice {
+    background-image: url('/static/images/dice.svg');
+}
+.resources {
+    background-image: url('/static/images/resources.svg');
+}
+.timers {
+   background-image: url('/static/images/timers.svg');
+}
+.drawbags {
+   background-image: url('/static/images/drawbag.svg');
+}
+.calculators {
+   background-image: url('/static/images/calculator.svg');
+}
 /*Tool Views*/
 
 #ToolSessionPageWrapper {
@@ -898,11 +949,19 @@ ul {
 
 .player-box {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
+    padding: .5rem;
     border: ridge .5rem white;
     width: 85%;
+}
+.player-box-row {
+    width: 95%;
+    padding: 0 .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }
 .player-name-text {
     font-size: 2rem;
@@ -1181,6 +1240,35 @@ ul {
     padding: .5rem 0 .5rem 0;
     box-shadow: rgba(50, 50, 93, 0.25) 0 30px 60px -12px inset,
                 rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
+}
+.quick-die-create-btn {
+    height: 6rem;
+    width: 30%;
+    margin: .25rem;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.D4 {
+    background-image: url('/static/images/dice/d4_black.svg');
+}
+.D6 {
+    background-image: url('/static/images/dice/d6_black.svg');
+}
+.D8 {
+    background-image: url('/static/images/dice/d8_black.svg');
+}
+.D10 {
+    background-image: url('/static/images/dice/d10_black.svg');
+}
+.D12 {
+    background-image: url('/static/images/dice/d12_black.svg');
+}
+.D20 {
+    background-image: url('/static/images/dice/d20_black.svg');
 }
 
 /*RESOURCE GROUPS*/

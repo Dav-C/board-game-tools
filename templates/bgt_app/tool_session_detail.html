@@ -16,19 +16,17 @@
         <div id="ToolSelectionMenuCover"></div>
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <button class="add-tool-button back-to-sessions">
-                <a href="{% url 'user_home' %}"></a>
-            </button>
+            <a href="{% url 'user_home' %}" class="add-tool-button back-to-sessions"></a>
             <button id="createPlayerOpenFormBtn" class="add-tool-button add-player"></button>
-            <button id="AddHpTrackerOpenFormBtn" class="add-tool-button">+ Hp Tracker</button>
-            <button id="AddDieGroupOpenFormBtn" class="add-tool-button">+ Dice</button>
+            <button id="AddHpTrackerOpenFormBtn" class="add-tool-button add-hp-tracker"></button>
+            <button id="AddDieGroupOpenFormBtn" class="add-tool-button add-dice"></button>
         </div>
 {# row of buttons for adding new tools #}
         <div class="add-tools-btn-row">
-            <button id="createResourceGroupOpenFormBtn" class="add-tool-button">+ Resources</button>
-            <button id="createGameTimerOpenFormBtn" class="add-tool-button">+ Game Timer</button>
-            <button id="createDrawBagOpenFormBtn" class="add-tool-button">+ Draw Bag</button>
-            <button id="createScoringGroupOpenFormBtn" class="add-tool-button">+ Scoring Calc</button>
+            <button id="createResourceGroupOpenFormBtn" class="add-tool-button add-resources"></button>
+            <button id="createGameTimerOpenFormBtn" class="add-tool-button add-timer"></button>
+            <button id="createDrawBagOpenFormBtn" class="add-tool-button add-drawbag"></button>
+            <button id="createScoringGroupOpenFormBtn" class="add-tool-button add-calculator"></button>
         </div>
 
 {# Forms for adding tools to the tool session #}
@@ -191,26 +189,26 @@
             <button id="OpenPlayersBtn" class="select-active-tool-button players
                 {% if players %}button-visible{% endif %}">
             </button>
-            <button id="OpenHpTrackersBtn" class="select-active-tool-button
-                {% if hp_trackers %}button-visible{% endif %}">HP Trackers
+            <button id="OpenHpTrackersBtn" class="select-active-tool-button hp-trackers
+                {% if hp_trackers %}button-visible{% endif %}">
             </button>
-            <button id="OpenDieGroupsBtn" class="select-active-tool-button
-                {% if die_groups %}button-visible{% endif %}">Dice
+            <button id="OpenDieGroupsBtn" class="select-active-tool-button dice
+                {% if die_groups %}button-visible{% endif %}">
             </button>
         </div>
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
-            <button id="openResourceGroupsBtn" class="select-active-tool-button
-                {% if resource_groups %}button-visible{% endif %}">Resources
+            <button id="openResourceGroupsBtn" class="select-active-tool-button resources
+                {% if resource_groups %}button-visible{% endif %}">
             </button>
-            <button id="openGameTimersBtn" class="select-active-tool-button
-                {% if game_timers %}button-visible{% endif %}">GameTimers
+            <button id="openGameTimersBtn" class="select-active-tool-button timers
+                {% if game_timers %}button-visible{% endif %}">
             </button>
-            <button id="openDrawBagsBtn" class="select-active-tool-button
-                {% if draw_bags %}button-visible{% endif %}">Draw Bags
+            <button id="openDrawBagsBtn" class="select-active-tool-button drawbags
+                {% if draw_bags %}button-visible{% endif %}">
             </button>
-            <button id="openScoringGroupsBtn" class="select-active-tool-button
-                {% if scoring_groups %}button-visible{% endif %}">Scoring
+            <button id="openScoringGroupsBtn" class="select-active-tool-button calculators
+                {% if scoring_groups %}button-visible{% endif %}">
             </button>
         </div>
     </div>

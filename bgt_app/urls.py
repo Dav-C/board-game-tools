@@ -49,13 +49,13 @@ from .views import (
 )
 
 urlpatterns = [
-    path('create-user/', CreateUser.as_view(), name='create_user'),
+    path('create-user', CreateUser.as_view(), name='create_user'),
 
-    path('login/', Login.as_view(), name='login'),
+    path('login', Login.as_view(), name='login'),
 
-    path('logout/', Logout.as_view(), name='logout'),
+    path('logout', Logout.as_view(), name='logout'),
 
-    path('home/', UserHome.as_view(), name='user_home'),
+    path('home', UserHome.as_view(), name='user_home'),
 
     path('tool-session/<str:slug>/',
          ToolSessionDetail.as_view(), name='tool_session_detail'),
