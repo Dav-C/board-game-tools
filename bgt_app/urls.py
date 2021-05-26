@@ -5,8 +5,7 @@ from .views import (
     Logout,
     UserHome,
     ToolSessionDetail,
-    PlayerCreate,
-    PlayerDelete,
+    PlayerView,
     PlayerScoreUpdate,
     PlayerRandomizeOrder,
     HpTrackerCreate,
@@ -60,11 +59,11 @@ urlpatterns = [
     path('tool-session/<str:slug>/',
          ToolSessionDetail.as_view(), name='tool_session_detail'),
 
-    path('player-create/',
-         PlayerCreate.as_view(), name='player_create'),
+    path('player/',
+         PlayerView.as_view(), name='player_create'),
 
-    path('player-delete/<player_uuid>',
-         PlayerDelete.as_view(), name='player_delete'),
+    path('player/<player_uuid>',
+         PlayerView.as_view(), name='player_delete'),
 
     path('player-randomize-order/',
          PlayerRandomizeOrder.as_view(), name='player_randomize_order'),

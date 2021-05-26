@@ -1,5 +1,6 @@
 {% load static %}
 {% load widget_tweaks %}
+{% load method_override %}
 
 {# players #}
 <div id="playerPageSuccessMessageWrapper" class="message-wrapper"></div>
@@ -25,6 +26,7 @@
                               id="{{ scoring_category.id }}-deletePlayerForm"
                               style="margin-left: auto;">
                             {% csrf_token %}
+                            {% method_override 'DELETE' %}
                             <button class="red-btn small delete-btn-small"></button>
                         </form>
                     </div>

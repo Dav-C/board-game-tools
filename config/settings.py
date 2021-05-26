@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'bgt_app.apps.BgtAppConfig',
     # third party
     'widget_tweaks',
+    'method_override',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # middleware pkg for overriding HTTP methods so put and delete can be used
+    'method_override.middleware.MethodOverrideMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

@@ -326,11 +326,11 @@ def delete_model_object(request, model, uuid):
     return redirect('user_home')
 
 
-class PlayerCreate(LoginRequiredMixin, View):
-    """create a Player object and associate it with the active tool session
-    that the current user has open, post is ajax"""
+class PlayerView(LoginRequiredMixin, View):
+    """create, update and delete players"""
 
     def post(self, request, *args, **kwargs):
+        print(request.method())
         if object_count(self.request, Player) <= 14:
             return save_new_tool_and_associate_with_session(
                 form=PlayerForm,
@@ -341,11 +341,7 @@ class PlayerCreate(LoginRequiredMixin, View):
                 'error': "maximum 15 players per session"
             }, status=401)
 
-
-class PlayerDelete(LoginRequiredMixin, View):
-    """delete a Player object"""
-
-    def post(self, request, player_uuid):
+    def delete(self, request, player_uuid):
         player_to_delete = get_object_or_404(Player, id=player_uuid)
         if player_to_delete.tool_session.session_owner.user.id == request.user.id:
             player_to_delete.delete()
