@@ -84,7 +84,8 @@ class Player(models.Model):
                                      null=True
                                      )
     score = models.FloatField(
-        default=0,
+        null=True,
+        blank=True,
         validators=[
             MinValueValidator(limit_value=-1000),
             MaxValueValidator(limit_value=1000)],

@@ -182,8 +182,6 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
                 if player in group.players.all():
                     scoring_group_initial_player_checks_box_values.append(player)
 
-        for player in players:
-            print(player.id)
 
         context['players'] = players
         context['player_form'] = PlayerForm
@@ -265,7 +263,6 @@ def create_or_update_obj_and_serialize(
         object_to_save = model.objects.get(id=obj_uuid)
         form = form(request.PUT, instance=object_to_save)
         print(request.PUT)
-        print(form.instance)
         update_existing_object = True
     except model.DoesNotExist:
         form = form(request.POST)

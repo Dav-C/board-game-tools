@@ -1919,6 +1919,7 @@ ul {
     font-size: 3rem;
     border-radius: 1rem;
     padding: 0;
+    margin-right: .5rem;
 }
 
 .score-calc-input-area-close-btn {
@@ -1930,6 +1931,7 @@ ul {
     font-size: 3rem;
     border-radius: 1rem;
     padding: 0;
+    margin-right: .5rem;
 }
 
 .score-calc-player-score-form {

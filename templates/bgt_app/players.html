@@ -17,7 +17,11 @@
             {% for player in players %}
                 <div class="player-box">
                     <div class="player-box-row">
-                        <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;{{ player.name }}</span>
+                        {% if player.name %}
+                            <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;{{ player.name }}</span>
+                        {% else %}
+                            <span class="player-name-text">{{ forloop.counter }}&nbsp;|&nbsp;<i>no name</i></span>
+                        {% endif %}
                     </div>
                     <br>
                     <div class="player-box-row">
