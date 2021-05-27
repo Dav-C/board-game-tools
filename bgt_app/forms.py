@@ -47,7 +47,7 @@ class PlayerForm(forms.ModelForm):
     """Create and update Player objects"""
     class Meta:
         model = Player
-        fields = ['name', 'color']
+        fields = ['name', 'color', 'score']
 
     name = forms.CharField(
         required=False,
@@ -60,7 +60,7 @@ class PlayerForm(forms.ModelForm):
         ),
     )
     color = forms.ChoiceField(
-        required=True,
+        required=False,
         choices=Player.player_color_choices,
         widget=forms.Select(
             attrs={
@@ -68,14 +68,6 @@ class PlayerForm(forms.ModelForm):
             },
         ),
     )
-
-
-class PlayerScoreForm(forms.ModelForm):
-    """change a Player score value"""
-    class Meta:
-        model = Player
-        fields = ['score']
-
     score = forms.FloatField(
         required=False,
         widget=forms.NumberInput(

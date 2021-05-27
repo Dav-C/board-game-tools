@@ -27,7 +27,7 @@ from .forms import (
     CreateUserForm,
     ToolSessionForm,
     PlayerForm,
-    PlayerScoreForm,
+    # PlayerScoreForm,
     HpTrackerCreateForm,
     HpTrackerChangeValueForm,
     DieGroupForm,
@@ -176,20 +176,18 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
             .filter(group__tool_session_id=active_tool_session_id)\
             .order_by('name')
 
-        # for bag in draw_bags:
-        #     for item in bag.draw_bag_items.all():
-        #         print(item.image.path)
-        #         print(item.image.url)
-
         scoring_group_initial_player_checks_box_values = []
         for group in scoring_groups:
             for player in players:
                 if player in group.players.all():
                     scoring_group_initial_player_checks_box_values.append(player)
 
+        for player in players:
+            print(player.id)
+
         context['players'] = players
         context['player_form'] = PlayerForm
-        context['player_score_form'] = PlayerScoreForm
+        # context['player_score_form'] = PlayerScoreForm
         context['hp_tracker_create_form'] = HpTrackerCreateForm
         context['hp_change_value_form'] = HpTrackerChangeValueForm
         context['hp_trackers'] = hp_trackers
@@ -265,9 +263,9 @@ def create_or_update_obj_and_serialize(
         request, form, model, obj_uuid, group_model):
     try:
         object_to_save = model.objects.get(id=obj_uuid)
-        form = form(
-            request.POST or None, instance=object_to_save
-        )
+        form = form(request.PUT, instance=object_to_save)
+        print(request.PUT)
+        print(form.instance)
         update_existing_object = True
     except model.DoesNotExist:
         form = form(request.POST)
@@ -330,7 +328,6 @@ class PlayerView(LoginRequiredMixin, View):
     """create, update and delete players"""
 
     def post(self, request, *args, **kwargs):
-        print(request.method())
         if object_count(self.request, Player) <= 14:
             return save_new_tool_and_associate_with_session(
                 form=PlayerForm,
@@ -340,6 +337,15 @@ class PlayerView(LoginRequiredMixin, View):
             return JsonResponse({
                 'error': "maximum 15 players per session"
             }, status=401)
+
+    def put(self, request, player_uuid):
+        return create_or_update_obj_and_serialize(
+            request=self.request,
+            form=PlayerForm,
+            model=Player,
+            obj_uuid=player_uuid,
+            group_model=None,
+        )
 
     def delete(self, request, player_uuid):
         player_to_delete = get_object_or_404(Player, id=player_uuid)
@@ -812,17 +818,17 @@ class ScoringCategoryDelete(LoginRequiredMixin, View):
             return redirect('user_home')
 
 
-class PlayerScoreUpdate(LoginRequiredMixin, View):
-    """Update a Player score value"""
-
-    def post(self, request, player_uuid):
-        return create_or_update_obj_and_serialize(
-            request=self.request,
-            form=PlayerScoreForm,
-            model=Player,
-            obj_uuid=player_uuid,
-            group_model=None,
-        )
+# class PlayerScoreUpdate(LoginRequiredMixin, View):
+#     """Update a Player score value"""
+#
+#     def post(self, request, player_uuid):
+#         return create_or_update_obj_and_serialize(
+#             request=self.request,
+#             form=PlayerScoreForm,
+#             model=Player,
+#             obj_uuid=player_uuid,
+#             group_model=None,
+#         )
 
 
 class DrawBagCreate(LoginRequiredMixin, View):

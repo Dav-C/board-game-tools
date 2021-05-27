@@ -6,7 +6,6 @@ from .views import (
     UserHome,
     ToolSessionDetail,
     PlayerView,
-    PlayerScoreUpdate,
     PlayerRandomizeOrder,
     HpTrackerCreate,
     HpTrackerUpdate,
@@ -59,23 +58,26 @@ urlpatterns = [
     path('tool-session/<str:slug>/',
          ToolSessionDetail.as_view(), name='tool_session_detail'),
 
-    path('player/',
+    path('player-create/',
          PlayerView.as_view(), name='player_create'),
 
-    path('player/<player_uuid>',
+    path('player-delete/<player_uuid>',
          PlayerView.as_view(), name='player_delete'),
+
+    path('player-update/<player_uuid>',
+         PlayerView.as_view(), name='player_update'),
 
     path('player-randomize-order/',
          PlayerRandomizeOrder.as_view(), name='player_randomize_order'),
 
-    path('add-hp-tracker/',
+    path('hp-tracker-create/',
          HpTrackerCreate.as_view(), name='hp_tracker_create'),
-
-    path('hp-tracker-update/<hp_tracker_uuid>',
-         HpTrackerUpdate.as_view(), name='hp_tracker_update'),
 
     path('hp-tracker-delete/<uuid>',
          HpTrackerDelete.as_view(), name='hp_tracker_delete'),
+
+    path('hp-tracker-update/<hp_tracker_uuid>',
+         HpTrackerUpdate.as_view(), name='hp_tracker_update'),
 
     path('add-die-group/',
          DieGroupCreate.as_view(), name='die_group_create'),
@@ -155,10 +157,6 @@ urlpatterns = [
     path('scoring-category-delete/<category_uuid>',
          ScoringCategoryDelete.as_view(),
          name='scoring_category_delete'),
-
-    path('player-score-update/<player_uuid>',
-         PlayerScoreUpdate.as_view(),
-         name='player_score_update'),
 
     path('draw-bag-create/',
          DrawBagCreate.as_view(), name='draw_bag_create'),

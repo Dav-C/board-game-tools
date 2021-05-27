@@ -73,22 +73,25 @@ class Player(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
-    color = models.CharField(max_length=10, choices=player_color_choices)
-    player_order = models.SmallIntegerField(null=True)
+    color = models.CharField(max_length=10,
+                             choices=player_color_choices,
+                             default='black'
+                             )
+    player_order = models.SmallIntegerField(default=0)
     tool_session = models.ForeignKey(ToolSession,
                                      related_name='players',
                                      on_delete=models.CASCADE,
                                      null=True
                                      )
     score = models.FloatField(
-        null=True,
+        default=0,
         validators=[
             MinValueValidator(limit_value=-1000),
             MaxValueValidator(limit_value=1000)],
     )
 
     def __str__(self):
-        return f'{self.name}'
+        return f'player-{self.name}'
 
 
 class HpTracker(models.Model):

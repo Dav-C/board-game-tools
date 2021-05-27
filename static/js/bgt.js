@@ -1348,7 +1348,8 @@ $('.score-calc-form').submit(function(e) {
     // final score value
     let final_score = scores_array.reduce((a, b) => a + b, 0);
     let player_score_form = $('#' + data_id + '-scoreCalcPlayerScoreForm');
-    $(player_score_form).children().children('input').val(final_score);
+    $(player_score_form).children().children('input').closest('#id_score').val(final_score);
+    console.log($(player_score_form).children().children().closest('#id_score'));
     player_score_form.submit();
 });
 
@@ -1359,6 +1360,7 @@ $('.score-calc-player-score-form').submit(function(e) {
     let data_id = '#' + $(this).attr('data-id');
     let serialized_data = $(this).serialize();
     $.ajax({
+        headers: { "X-HTTP-Method-Override": "PUT" },
         type: 'POST',
         url: $(this).attr('action'),
         data: serialized_data,
