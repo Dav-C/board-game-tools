@@ -14,9 +14,7 @@ from .views import (
     RollDie,
     ResourceGroupView,
     ResourceView,
-    GameTimerCreate,
-    GameTimerDelete,
-    GameTimerTitleUpdate,
+    GameTimerView,
     GameTimerDurationUpdate,
     ScoringGroupCreate,
     ScoringGroupUpdate,
@@ -108,13 +106,13 @@ urlpatterns = [
          ResourceView.as_view(), name='resource_delete'),
 
     path('game-timer-create/',
-         GameTimerCreate.as_view(), name='game_timer_create'),
+         GameTimerView.as_view(), name='game_timer_create'),
+
+    path('game-timer-update/<game_timer_uuid>',
+         GameTimerView.as_view(), name='game_timer_update'),
 
     path('game-timer-delete/<game_timer_uuid>',
-         GameTimerDelete.as_view(), name='game_timer_delete'),
-
-    path('game-timer-title-update/<game_timer_uuid>',
-         GameTimerTitleUpdate.as_view(), name='game_timer_title_update'),
+         GameTimerView.as_view(), name='game_timer_delete'),
 
     path('game-timer-duration-update/<game_timer_uuid>',
          GameTimerDurationUpdate.as_view(), name='game_timer_duration_update'),

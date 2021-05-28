@@ -1,11 +1,12 @@
 {% load static %}
 {% load widget_tweaks %}
+{% load method_override %}
 
 {#game timers#}
 <div id="gameTimersViewWrapper" class="tool-body">
     {% for game_timer in game_timers %}
         <div class="game-timer-box">
-            <form action="{% url 'game_timer_title_update' game_timer.id%}"
+            <form action="{% url 'game_timer_update' game_timer.id%}"
                   method="POST"
                   id="{{ game_timer.id }}-gameTimerForm"
                   data-id="{{ game_timer.id }}"
@@ -56,6 +57,7 @@
                   action="{% url 'game_timer_delete' game_timer.id %}?next={{ request.get_full_path }}"
                   method="POST">
                 {% csrf_token %}
+                {% method_override 'DELETE' %}
                 <button id="{{ game_timer.id }}-gameTimerDeleteBtn"
                         class="delete-btn-large">
                 </button>

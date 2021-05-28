@@ -580,7 +580,7 @@ class ResourceView(LoginRequiredMixin, View):
         return redirect('user_home')
 
 
-class GameTimerCreate(LoginRequiredMixin, View):
+class GameTimerView(LoginRequiredMixin, View):
     """Create a GameTimer Object"""
 
     def post(self, request, *args, **kwargs):
@@ -594,22 +594,7 @@ class GameTimerCreate(LoginRequiredMixin, View):
                 'error': "only 1 timer per session is supported"
             }, status=401)
 
-
-class GameTimerDelete(LoginRequiredMixin, View):
-    """Delete a GameTimer Object"""
-
-    def post(self, request, game_timer_uuid):
-        return delete_model_object(
-            request=self.request,
-            model=GameTimer,
-            uuid=game_timer_uuid
-        )
-
-
-class GameTimerTitleUpdate(LoginRequiredMixin, View):
-    """Update the title of a GameTimer object"""
-
-    def post(self, request, game_timer_uuid):
+    def put(self, request, game_timer_uuid):
         return create_or_update_obj_and_serialize(
             request=self.request,
             form=GameTimerCreateForm,
@@ -617,6 +602,36 @@ class GameTimerTitleUpdate(LoginRequiredMixin, View):
             obj_uuid=game_timer_uuid,
             group_model=None
         )
+
+    def delete(self, request, game_timer_uuid):
+        return delete_model_object(
+            request=self.request,
+            model=GameTimer,
+            uuid=game_timer_uuid
+        )
+
+# class GameTimerDelete(LoginRequiredMixin, View):
+#     """Delete a GameTimer Object"""
+#
+#     def post(self, request, game_timer_uuid):
+#         return delete_model_object(
+#             request=self.request,
+#             model=GameTimer,
+#             uuid=game_timer_uuid
+#         )
+#
+#
+# class GameTimerTitleUpdate(LoginRequiredMixin, View):
+#     """Update the title of a GameTimer object"""
+#
+#     def post(self, request, game_timer_uuid):
+#         return create_or_update_obj_and_serialize(
+#             request=self.request,
+#             form=GameTimerCreateForm,
+#             model=GameTimer,
+#             obj_uuid=game_timer_uuid,
+#             group_model=None
+#         )
 
 
 class GameTimerDurationUpdate(LoginRequiredMixin, View):
