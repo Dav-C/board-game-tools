@@ -540,29 +540,6 @@ class ResourceGroupView(LoginRequiredMixin, View):
             uuid=resource_group_uuid
         )
 
-# class ResourceGroupUpdate(LoginRequiredMixin, View):
-#     """Change a ResourceGroup title"""
-#
-#     def put(self, request, resource_group_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ResourceGroupForm,
-#             model=ResourceGroup,
-#             obj_uuid=resource_group_uuid,
-#             group_model=None,
-#         )
-#
-#
-# class ResourceGroupDelete(LoginRequiredMixin, View):
-#     """Delete a ResourceGroup Object"""
-#
-#     def post(self, request, resource_group_uuid):
-#         return delete_model_object(
-#             request=self.request,
-#             model=ResourceGroup,
-#             uuid=resource_group_uuid
-#         )
-
 
 class ResourceView(LoginRequiredMixin, View):
     """create, update and delete Resource objects"""
@@ -592,6 +569,7 @@ class ResourceView(LoginRequiredMixin, View):
             obj_uuid=resource_uuid,
             group_model=ResourceGroup,
         )
+
     def delete(self, request, resource_uuid):
         resource_to_delete = get_object_or_404(Resource, id=resource_uuid)
         if resource_to_delete.group.tool_session.session_owner.user.id == request.user.id:
@@ -600,56 +578,6 @@ class ResourceView(LoginRequiredMixin, View):
         else:
             messages.error(request, "Insufficient Permission")
         return redirect('user_home')
-
-class ResourceDelete(LoginRequiredMixin, View):
-    """Delete a Resource object"""
-    def post(self, request, resource_uuid):
-        resource_to_delete = get_object_or_404(Resource, id=resource_uuid)
-        if resource_to_delete.group.tool_session.session_owner.user.id == request.user.id:
-            resource_to_delete.delete()
-            return reload_current_url(request)
-        else:
-            messages.error(request, "Insufficient Permission")
-        return redirect('user_home')
-
-
-# class ResourceNameChange(LoginRequiredMixin, View):
-#     """Change a Resource object's name field """
-#
-#     def put(self, request, resource_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ResourceNameChangeForm,
-#             model=Resource,
-#             obj_uuid=resource_uuid,
-#             group_model=ResourceGroup,
-#         )
-#
-#
-# class ResourceQtyChange(LoginRequiredMixin, View):
-#     """Change a Resource quantity or production modifier """
-#
-#     def post(self, request, resource_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ResourceQuantityChangeForm,
-#             model=Resource,
-#             obj_uuid=resource_uuid,
-#             group_model=ResourceGroup,
-#         )
-#
-#
-# class ResourceProductionModifierChange(LoginRequiredMixin, View):
-#     """Change a Resource quantity or production modifier"""
-#
-#     def post(self, request, resource_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ResourceProductionModifierChangeForm,
-#             model=Resource,
-#             obj_uuid=resource_uuid,
-#             group_model=ResourceGroup,
-#         )
 
 
 class GameTimerCreate(LoginRequiredMixin, View):

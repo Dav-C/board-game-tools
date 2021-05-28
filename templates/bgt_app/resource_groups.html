@@ -108,7 +108,7 @@
 
 {# user's resources #}
         {% for resource in resource_group.resources.all %}
-            <div class="resource-box">
+            <div id="{{ resource.id }}-resourceBox" class="resource-box">
                 <form action="{% url "resource_update" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
@@ -137,31 +137,55 @@
                                 class="cancel-change-btn resource-name-change-cancel-btn">
                         </button>
                     </div>
+{# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
+                    <div id="{{ resource.id }}-nameChangeResourceQtyInputWrapper"
+                         class="absolute-hidden">{{ resource_form.quantity }}
+                    </div>
+                    {% if resource.production_available %}
+                        <div id="{{ resource.id }}-nameChangeResourceProdAvailableInputWrapper"
+                             class="absolute-hidden">{{ resource_form.production_available }}
+                        </div>
+                        <div id="{{ resource.id }}-nameChangeResourceProdModifierInputWrapper"
+                             class="absolute-hidden">{{ resource_form.production_modifier }}
+                        </div>
+                    {% endif %}
                 </form>
-{# delete single resource form#}
+{#display and update resource quanity #}
                 <form action="{% url "resource_update" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
                       id={{ resource.id }}-resourceQtyChangeForm"
                       class="resource-qty-change-form">
                     {% csrf_token %}
-                        <div class="resource-box-row">
-                            <Button type="button"
-                                    data-id="{{ resource.id }}"
-                                    class="resource-change-amt-btn resource-decrease">-
-                            </Button>
-                            <div id="{{ resource.id }}-resourceValueChange" class="resource-value-change"></div>
-                            <div id="{{ resource.id }}-resourceQtyInput" class="resource-qty-input-hidden">
-                                {{ resource_form.quantity }}
-                            </div>
-                            <div id="{{ resource.id }}-resourceQtyBox" class="resource-qty-box">
-                                {{ resource.quantity }}
-                            </div>
-                            <Button type="button"
-                                    data-id="{{ resource.id }}"
-                                    class="resource-change-amt-btn resource-increase">+
-                            </Button>
+                    <div class="resource-box-row">
+                        <Button type="button"
+                                data-id="{{ resource.id }}"
+                                class="resource-change-amt-btn resource-decrease">-
+                        </Button>
+                        <div id="{{ resource.id }}-resourceValueChange" class="resource-value-change"></div>
+                        <div id="{{ resource.id }}-resourceQtyInput" class="resource-qty-input-hidden">
+                            {{ resource_form.quantity }}
                         </div>
+                        <div id="{{ resource.id }}-resourceQtyBox" class="resource-qty-box">
+                            {{ resource.quantity }}
+                        </div>
+                        <Button type="button"
+                                data-id="{{ resource.id }}"
+                                class="resource-change-amt-btn resource-increase">+
+                        </Button>
+                    </div>
+{# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
+                    <div id="{{ resource.id }}-qtyChangeResourceNameInputWrapper"
+                         class="absolute-hidden">{{ resource_form.name}}
+                    </div>
+                    {% if resource.production_available %}
+                        <div id="{{ resource.id }}-qtyChangeResourceProdAvailableInputWrapper"
+                             class="absolute-hidden">{{ resource_form.production_available }}
+                        </div>
+                        <div id="{{ resource.id }}-qtyChangeResourceProdModifierInputWrapper"
+                             class="absolute-hidden">{{ resource_form.production_modifier }}
+                        </div>
+                    {% endif %}
                 </form>
 {# production section - only shown if production is available for the resource#}
                 {% if resource.production_available %}
@@ -170,30 +194,40 @@
                       id={{ resource.id }}-resourceProductionModifierChangeForm"
                       class="resource-production-modifier-change-form">
                     {% csrf_token %}
-                        <div class="resource-box-row">
-                            <Button type="button"
-                                    data-id="{{ resource.id }}"
-                                    class="resource-change-amt-btn modifier-decrease">-
-                            </Button>
-                            <div id="{{ resource.id }}-productionModifierValueChange"
-                                 class="production-modifier-value-change"></div>
-                            <div id="{{ resource.id }}-productionModifierQtyBox"
-                                 class="production-modifier-qty-box">
-                                {{ resource.production_modifier }}
-                            </div>
-                            <div id="{{ resource.id }}-productionModifierQtyInput"
-                                 class="production-modifier-input-hidden">
-                                {{ resource_form.production_modifier }}
-                            </div>
-                            <Button type="button"
-                                    data-id="{{ resource.id }}"
-                                    class="resource-change-amt-btn modifier-increase">+
-                            </Button>
-                            <Button type="button"
-                                    form="{{ resource.id }}-produceResourceForm"
-                                    class="resource-change-amt-btn produce-single-resource-btn">prod
-                            </Button>
+                    <div class="resource-box-row">
+                        <Button type="button"
+                                data-id="{{ resource.id }}"
+                                class="resource-change-amt-btn modifier-decrease">-
+                        </Button>
+                        <div id="{{ resource.id }}-productionModifierValueChange"
+                             class="production-modifier-value-change"></div>
+                        <div id="{{ resource.id }}-productionModifierQtyBox"
+                             class="production-modifier-qty-box">
+                            {{ resource.production_modifier }}
                         </div>
+                        <div id="{{ resource.id }}-productionModifierQtyInput"
+                             class="production-modifier-input-hidden">
+                            {{ resource_form.production_modifier }}
+                        </div>
+                        <Button type="button"
+                                data-id="{{ resource.id }}"
+                                class="resource-change-amt-btn modifier-increase">+
+                        </Button>
+                        <Button type="button"
+                                form="{{ resource.id }}-produceResourceForm"
+                                class="resource-change-amt-btn produce-single-resource-btn">prod
+                        </Button>
+                    </div>
+{# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
+                    <div id="{{ resource.id }}-prodChangeResourceNameInputWrapper"
+                         class="absolute-hidden">{{ resource_form.name}}
+                    </div>
+                    <div id="{{ resource.id }}-prodChangeResourceProdAvailableInputWrapper"
+                         class="absolute-hidden">{{ resource_form.production_available }}
+                    </div>
+                    <div id="{{ resource.id }}-prodChangeResourceQtyInputWrapper"
+                         class="absolute-hidden">{{ resource_form.quantity }}
+                    </div>
                 </form>
                 <form action="{% url 'resource_update' resource.id%}"
                       method="POST"
@@ -204,6 +238,13 @@
                     <div id="{{ resource.id }}-newResourceQtyInput">
                         {{ resource_form.quantity|add_class:"absolute-hidden" }}
                     </div>
+{# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
+                    <div id="{{ resource.id }}-produceResourceNameInputWrapper"
+                         class="absolute-hidden">{{ resource_form.name}}
+                    </div>
+                    <div id="{{ resource.id }}-produceResourceProdAvailableInputWrapper"
+                         class="absolute-hidden">{{ resource_form.production_available }}
+                    </div>
                 </form>
                 {% endif %}
                 <div class="resource-box-row">
@@ -211,6 +252,7 @@
                             id="{{ resource.id }}-resourceDeleteButton"
                             class="delete-btn-large resource-delete-button {{ resource.id }}">
                     </button>
+{# delete single resource #}
                     <form action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}"
                           method="POST" id="{{ resource.id }}-deleteSingleResourceForm">
                         {% csrf_token %}

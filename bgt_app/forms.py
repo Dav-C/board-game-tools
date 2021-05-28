@@ -163,7 +163,9 @@ class ResourceForm(forms.ModelForm):
 
     class Meta:
         model = Resource
-        fields = ['name', 'production_available']
+        fields = ['name', 'quantity',
+                  'production_available',
+                  'production_modifier']
 
     name = forms.CharField(
         required=True,
@@ -175,15 +177,6 @@ class ResourceForm(forms.ModelForm):
             },
         ),
     )
-
-    production_available = forms.BooleanField(
-        required=False,
-        initial=False,
-        widget=forms.CheckboxInput(
-            attrs={
-            },
-        ),
-    )
     quantity = forms.IntegerField(
         required=False,
         initial=0,
@@ -192,6 +185,14 @@ class ResourceForm(forms.ModelForm):
                 'placeholder': 'amount',
                 'maxlength': '4',
                 'autocomplete': 'off',
+            },
+        ),
+    )
+    production_available = forms.BooleanField(
+        required=False,
+        initial=False,
+        widget=forms.CheckboxInput(
+            attrs={
             },
         ),
     )

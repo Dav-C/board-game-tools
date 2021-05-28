@@ -732,6 +732,45 @@ resourceControl = {
             window.location.reload(true);
             closeToolPageCover();
         },
+        create_resource: function(form) {
+            'use strict';
+            let serialized_data = form.serialize();
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: serialized_data,
+                success: function (response) {
+                    messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
+                    console.log('ajaxSuccess');
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                }
+            });
+        },
+        update_resource: function(form, data_id) {
+            'use strict';
+            let resource_box_div = $('#' + data_id + '-resourceBox');
+            let serialized_data = form.serialize();
+            $.ajax({
+                headers: { "X-HTTP-Method-Override": "PUT" },
+                type: 'POST',
+                url: form.attr('action'),
+                data: serialized_data,
+                success: function (response) {
+                    console.log('ajaxSuccess');
+                    resource_box_div.load(' ' + '#' + data_id + '-resourceBox' + ' > *', function () {
+                    });
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                }
+            });
+        },
         reveal_resource_title_change_and_delete_btn: function(data_id_value) {
             let data_id = '#' + data_id_value;
             $(data_id + '-resourceName').css({'display':'none'});
@@ -755,12 +794,23 @@ resourceControl = {
             'use strict';
             clearTimeout(resourceTimeoutHandler);
             let form = $(element).closest(form_class);
-            let data_id = '#' + form.attr("data-id");
-            let initial_qty = parseInt($(data_id + object_quantity_box_id).text());
+            let data_id = form.attr("data-id");
+            let initial_qty = parseInt($('#' + data_id + object_quantity_box_id).text());
             let add_subtract_value = initial_qty + resource_change_value;
             resourceTimeoutHandler = setTimeout(function () {
-                $(data_id + input_field_id).val(add_subtract_value);
-                $(form).submit();
+                $('#' + data_id + input_field_id).val(add_subtract_value);
+                // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
+                let resource_name = $('#' + data_id + '-resourceName').text().trim();
+                let resource_name_input = $('#' + data_id + '-qtyChangeResourceNameInputWrapper').children('input');
+                resource_name_input.val(resource_name);
+                if ($('#' + data_id + '-qtyChangeResourceProdAvailableInputWrapper')) {
+                    let prod_modifier = parseInt($('#' + data_id + '-productionModifierQtyBox').text().trim());
+                    let prod_available_input = $('#' + data_id + '-qtyChangeResourceProdAvailableInputWrapper').children('input');
+                    let prod_modifier_input = $('#' + data_id + '-qtyChangeResourceProdModifierInputWrapper').children('input');
+                    prod_available_input.attr('checked', 'checked');
+                    prod_modifier_input.val(prod_modifier);
+                }
+                resourceControl.resource_funcs.update_resource(form, data_id);
                 resource_change_value = 0;
             }, 2000);
         },
@@ -784,12 +834,21 @@ resourceControl = {
             'use strict';
             clearTimeout(productionModifierTimeoutHandler);
             let form = $(element).closest(form_class);
-            let data_id = '#' + form.attr("data-id");
-            let initial_qty = parseInt($(data_id + object_quantity_box_id).text());
+            let data_id = form.attr("data-id");
+            let initial_qty = parseInt($('#' + data_id + object_quantity_box_id).text());
             let add_subtract_value = initial_qty + production_modifier_change_value;
             productionModifierTimeoutHandler = setTimeout(function () {
-                $(data_id + input_field_id).val(add_subtract_value);
-                $(form).submit();
+                $('#' + data_id + input_field_id).val(add_subtract_value);
+                // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
+                let resource_name = $('#' + data_id + '-resourceName').text().trim();
+                let resource_name_input = $('#' + data_id + '-prodChangeResourceNameInputWrapper').children('input');
+                resource_name_input.val(resource_name);
+                let resource_qty = parseInt($('#' + data_id + '-resourceQtyBox').text().trim());
+                let resource_qty_input = $('#' + data_id + '-prodChangeResourceQtyInputWrapper').children('input');
+                resource_qty_input.val(resource_qty);
+                let prod_available_input = $('#' + data_id + '-prodChangeResourceProdAvailableInputWrapper').children('input');
+                prod_available_input.attr('checked', 'checked');
+                resourceControl.resource_funcs.update_resource(form, data_id);
                 production_modifier_change_value = 0;
             }, 2000);
         },
@@ -898,102 +957,72 @@ $('.resource-group-update-form').submit(function(e) {
 });
 
 // open the create resource form
-$('.resource-group-add-resource-open-form-btn').click(function() {
+$("#resourceGroupsViewWrapper").on('click', '.resource-group-add-resource-open-form-btn', function (e) {
     'use strict';
     resourceControl.resource_funcs.open_create_resource_form(this);
 });
 
 // close the create resource form and reload the resource groups
-$('.create-custom-object-form-done-btn.resource').click(function(){
+$("#resourceGroupsViewWrapper").on('click', '.create-custom-object-form-done-btn.resource', function (e) {
     'use strict';
     resourceControl.resource_funcs.close_create_resource_form(this);
 });
 
-// ajax for quickly adding a common resource via the #resourceGroupCreateResourceForm
-$('.common-object-quick-create-btn.resource-create').click(function(e) {
+// quickly add a common resource type with the quick-add buttons in the create
+// resource form
+$("#resourceGroupsViewWrapper").on('click', '.common-object-quick-create-btn.resource-create', function (e) {
     'use strict';
     e.preventDefault();
     let data_id = "#" + $(this).parent('div').attr('data-id');
     let form = $(data_id + '-resourceGroupCreateResourceForm');
     let resource_name = $(this).attr('data-name').toString();
     $(data_id + '-createResourceNameField input').val(resource_name);
-    let serialized_data = form.serialize();
-    $.ajax({
-        type: 'POST',
-        url: form.attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
-            console.log('ajaxSuccess');
-        },
-        error: function(response) {
-            let error_text = response.responseText
-                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-            messageControl.display_error_message('#errorMessageWrapper', error_text);
-        }
-    });
+    resourceControl.resource_funcs.create_resource(form);
 });
 
-// ajax for adding a resource
-$('.create-custom-object-form.resource').submit(function(e) {
+// create a new resource with a custom name
+$("#resourceGroupsViewWrapper").on('submit', '.create-custom-object-form.resource', function (e) {
     'use strict';
     e.preventDefault();
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
-            console.log('ajaxSuccess');
-        },
-        error: function(response) {
-            let error_text = response.responseText
-                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-            messageControl.display_error_message('#errorMessageWrapper', error_text);
-        }
-    });
+    let form = $(this)
+    resourceControl.resource_funcs.create_resource(form);
 });
 
 // open the resource name change form and reveal the individual resource
 // delete buttons
-$('.resource-name-box').click(function(){
+$("#resourceGroupsViewWrapper").on('click', '.resource-name-box', function (e) {
     'use strict';
     resourceControl.resource_funcs.reveal_resource_title_change_and_delete_btn($(this).attr('data-id'));
 });
 // hide the resource name change form and hide the individual resource
 // delete buttons
-$('.resource-name-change-cancel-btn').click(function(){
+$("#resourceGroupsViewWrapper").on('click', '.resource-name-change-cancel-btn', function (e) {
     'use strict';
     resourceControl.resource_funcs.hide_resource_title_change_and_delete_btn($(this).attr('data-id'));
 });
-$('.resource-name-change-form').submit(function(e) {
+// change the name of a resource
+$("#resourceGroupsViewWrapper").on('submit', '.resource-name-change-form', function (e) {
     'use strict';
     e.preventDefault();
+    let form = $(this);
     let data_id = $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new resource_name
-            $('#' + data_id + '-resourceName').empty().prepend(fields.name).css({'display': 'inline'});
-            resourceControl.resource_funcs.hide_resource_title_change_and_delete_btn(data_id);
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+// forms.py - ResourceForm must have all fields completed to prevent data loss
+    let resource_qty = parseInt($('#' + data_id + '-resourceQtyBox').text().trim());
+    let resource_qty_input = $('#' + data_id + '-nameChangeResourceQtyInputWrapper').children('input');
+    resource_qty_input.val(resource_qty);
+    if ($('#' + data_id + '-nameChangeResourceProdAvailableInputWrapper')) {
+        let prod_modifier = parseInt($('#' + data_id + '-productionModifierQtyBox').text().trim());
+        let prod_available_input = $('#' + data_id + '-nameChangeResourceProdAvailableInputWrapper').children('input');
+        let prod_modifier_input = $('#' + data_id + '-nameChangeResourceProdModifierInputWrapper').children('input');
+        prod_available_input.attr('checked', 'checked');
+        prod_modifier_input.val(prod_modifier);
+    }
+    resourceControl.resource_funcs.update_resource(form, data_id);
 });
 
 // change the resource quantity with each button click - value is not submitted until
 // after a 2 second delay via resourceTimeoutControl()
-$('.resource-change-amt-btn.resource-increase').click(function() {
+$("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.resource-increase', function (e) {
     'use strict';
     resourceControl.resource_funcs.resource_increase_value(
         this,
@@ -1008,8 +1037,7 @@ $('.resource-change-amt-btn.resource-increase').click(function() {
     '-resourceQtyBox'
     );
 });
-
-$('.resource-change-amt-btn.resource-decrease').click(function() {
+$("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.resource-decrease', function (e) {
     'use strict';
     resourceControl.resource_funcs.resource_decrease_value(
         this,
@@ -1025,34 +1053,9 @@ $('.resource-change-amt-btn.resource-decrease').click(function() {
     );
 });
 
-// changing resource qty
-$('.resource-qty-change-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = '#' + $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new resource_quantity
-            $(data_id + '-resourceQtyBox').empty().prepend(fields.quantity).css({'display': 'inline'});;
-            $(data_id + '-resourceValueChange').css({'display': 'none'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
-});
-
 // change the production modifier with each button click - value is not submitted until
 // after a 2 second delay via resourceTimeoutControl()
-$('.resource-change-amt-btn.modifier-increase').click(function() {
+$("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.modifier-increase', function (e) {
     'use strict';
     resourceControl.resource_funcs.production_modifier_increase_value(
         this,
@@ -1067,9 +1070,7 @@ $('.resource-change-amt-btn.modifier-increase').click(function() {
     '-productionModifierQtyBox'
     );
 });
-
-
-$('.resource-change-amt-btn.modifier-decrease').click(function() {
+$("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.modifier-decrease', function (e) {
     'use strict';
     resourceControl.resource_funcs.production_modifier_decrease_value(
         this,
@@ -1085,61 +1086,19 @@ $('.resource-change-amt-btn.modifier-decrease').click(function() {
     );
 });
 
-// change production modifier
-$('.resource-production-modifier-change-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = "#" + $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new production_modifier
-            $(data_id + '-productionModifierQtyBox').empty().prepend(fields.production_modifier).css({'display': 'inline'});
-            $(data_id + '-productionModifierValueChange').css({'display': 'none'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
-});
-
 // produce resource
-$('.produce-single-resource-btn').click(function(){
-    let data_id = $(this).closest('form').attr('data-id')
-    let form = $('#' + data_id + '-produceResourceForm')
-    let new_resource_qty = resourceControl.resource_funcs.calculate_resource_production_value(data_id)
-    $("#" + data_id + '-newResourceQtyInput input').val(new_resource_qty)
-    form.submit();
-})
-
-$('.produce-resource-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new production_modifier
-            $("#" + data_id + '-resourceQtyBox').empty().prepend(fields.quantity).css({'display': 'inline'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+$("#resourceGroupsViewWrapper").on('click', '.produce-single-resource-btn', function (e) {
+    let data_id = $(this).closest('form').attr('data-id');
+    let form = $('#' + data_id + '-produceResourceForm');
+    let new_resource_qty = resourceControl.resource_funcs.calculate_resource_production_value(data_id);
+    $("#" + data_id + '-newResourceQtyInput input').val(new_resource_qty);
+    // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
+    let resource_name = $('#' + data_id + '-resourceName').text().trim();
+    let resource_name_input = $('#' + data_id + '-produceResourceNameInputWrapper').children('input');
+    resource_name_input.val(resource_name);
+    let prod_available_input = $('#' + data_id + '-produceResourceProdAvailableInputWrapper').children('input');
+    prod_available_input.attr('checked', 'checked');
+    resourceControl.resource_funcs.update_resource(form, data_id);
 });
 
 // --------------- SCORING CONTROL ---------------
