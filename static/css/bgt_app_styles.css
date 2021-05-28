@@ -1256,6 +1256,9 @@ ul {
 .quick-die-create-btn:hover {
     background-color: lightgray;
 }
+.coin {
+    background-image: url('/static/images/dice/coin_black.svg');
+}
 .D4 {
     background-image: url('/static/images/dice/d4_black.svg');
 }

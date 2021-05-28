@@ -64,9 +64,9 @@
                   class="add-new-tool-form">
                 {% csrf_token %}
                 <br />
-                {{ hp_tracker_create_form.title|add_class:'text-input-large' }}
+                {{ hp_tracker_form.title|add_class:'text-input-large' }}
                 <br />
-                {{ hp_tracker_create_form.hp_value|add_class:'text-input-large' }}
+                {{ hp_tracker_form.hp_value|add_class:'text-input-large' }}
                 <br />
                 <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
                 <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>

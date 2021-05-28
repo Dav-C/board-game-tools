@@ -454,10 +454,9 @@ $('.hp-change-value-form').submit(function(e) {
     'use strict';
     e.preventDefault();
     let data_id = $(this).attr("data-id");
-    // serialize the form data.
     let serializedData = $(this).serialize();
-    // make POST ajax call
     $.ajax({
+        headers: { "X-HTTP-Method-Override": "PUT" },
         type: 'POST',
         url: $(this).attr('action'),
         data: serializedData,
@@ -562,10 +561,9 @@ $('.die-group-update-form').submit(function(e) {
     'use strict';
     e.preventDefault();
     let data_id = $(this).attr("data-id");
-    // serialize the form data.
     let serializedData = $(this).serialize();
-    // make POST ajax call
     $.ajax({
+        headers: { "X-HTTP-Method-Override": "PUT" },
         type: 'POST',
         url: $(this).attr('action'),
         data: serializedData,
@@ -869,13 +867,11 @@ $('.resource-group-title').click(function() {
 // update a resource group title and hide editing controls
 $('.resource-group-update-form').submit(function(e) {
     'use strict';
-    // preventing from page reload and default actions
     e.preventDefault();
     let data_id = '#' + $(this).attr("data-id");
-    // serialize the form data.
     let serializedData = $(this).serialize();
-    // make POST ajax call
     $.ajax({
+        headers: { "X-HTTP-Method-Override": "PUT" },
         type: 'POST',
         url: $(this).attr('action'),
         data: serializedData,

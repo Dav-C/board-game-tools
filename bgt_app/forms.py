@@ -28,7 +28,7 @@ class CreateUserForm(UserCreationForm):
 
 
 class ToolSessionForm(forms.ModelForm):
-    """Create new tool session objects"""
+    """create new tool session objects"""
     class Meta:
         model = ToolSession
         fields = ['session_name']
@@ -76,8 +76,8 @@ class PlayerForm(forms.ModelForm):
     ),
 
 
-class HpTrackerCreateForm(forms.ModelForm):
-    """Create new HpTracker objects"""
+class HpTrackerForm(forms.ModelForm):
+    """create and update HpTracker objects"""
     class Meta:
         model = HpTracker
         fields = ['title', 'hp_value']
@@ -105,32 +105,8 @@ class HpTrackerCreateForm(forms.ModelForm):
     )
 
 
-class HpTrackerChangeValueForm(forms.ModelForm):
-    """update HpTracker values via ajax"""
-    class Meta:
-        model = HpTracker
-        fields = ['hp_value', 'title']
-
-    title = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                'maxlength': '40',
-                'autocomplete': 'off',
-            },
-        ),
-    )
-    hp_value = forms.IntegerField(
-        required=False,
-        widget=forms.NumberInput(
-            attrs={
-            },
-        ),
-    )
-
-
 class DieGroupForm(forms.ModelForm):
-    """Create new Die Group objects"""
+    """create and update DieGroup objects"""
     class Meta:
         model = DieGroup
         fields = ['title']
@@ -147,26 +123,8 @@ class DieGroupForm(forms.ModelForm):
     )
 
 
-class DieGroupUpdateForm(forms.ModelForm):
-    """update Die Group objects"""
-    class Meta:
-        model = DieGroup
-        fields = ['title']
-
-    title = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
-                'autocomplete': 'off',
-            },
-        ),
-    )
-
-
 class DieStandardForm(forms.ModelForm):
-    """Create and modify standard dice"""
+    """create and update DieStandard objects"""
     class Meta:
         model = DieStandard
         fields = ['num_sides']
@@ -182,7 +140,7 @@ class DieStandardForm(forms.ModelForm):
 
 
 class ResourceGroupForm(forms.ModelForm):
-    """Create and modify Resource Group objects"""
+    """create and update ResourceGroup objects"""
     class Meta:
         model = ResourceGroup
         fields = ['title']
@@ -199,7 +157,7 @@ class ResourceGroupForm(forms.ModelForm):
     )
 
 
-class ResourceCreateForm(forms.ModelForm):
+class ResourceForm(forms.ModelForm):
     """Create a Resource object and declare if it will be using the
     production feature or not"""
 
@@ -226,33 +184,6 @@ class ResourceCreateForm(forms.ModelForm):
             },
         ),
     )
-
-
-class ResourceNameChangeForm(forms.ModelForm):
-    """Change the name of a Resource object"""
-
-    class Meta:
-        model = Resource
-        fields = ['name']
-
-    name = forms.CharField(
-        required=True,
-        widget=forms.TextInput(
-            attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
-                'autocomplete': 'off',
-            },
-        ),
-    )
-
-
-class ResourceQuantityChangeForm(forms.ModelForm):
-    """Create and modify Resources objects"""
-    class Meta:
-        model = Resource
-        fields = ['quantity']
-
     quantity = forms.IntegerField(
         required=False,
         initial=0,
@@ -264,15 +195,6 @@ class ResourceQuantityChangeForm(forms.ModelForm):
             },
         ),
     )
-
-
-class ResourceProductionModifierChangeForm(forms.ModelForm):
-    """Change the production modifier of resource objects"""
-
-    class Meta:
-        model = Resource
-        fields = ['production_modifier']
-
     production_modifier = forms.IntegerField(
         required=False,
         initial=0,
@@ -283,6 +205,62 @@ class ResourceProductionModifierChangeForm(forms.ModelForm):
             },
         ),
     )
+
+# class ResourceNameChangeForm(forms.ModelForm):
+#     """Change the name of a Resource object"""
+#
+#     class Meta:
+#         model = Resource
+#         fields = ['name']
+#
+#     name = forms.CharField(
+#         required=True,
+#         widget=forms.TextInput(
+#             attrs={
+#                 'placeholder': 'Name',
+#                 'maxlength': '40',
+#                 'autocomplete': 'off',
+#             },
+#         ),
+#     )
+#
+#
+# class ResourceQuantityChangeForm(forms.ModelForm):
+#     """Create and modify Resources objects"""
+#     class Meta:
+#         model = Resource
+#         fields = ['quantity']
+#
+#     quantity = forms.IntegerField(
+#         required=False,
+#         initial=0,
+#         widget=forms.NumberInput(
+#             attrs={
+#                 'placeholder': 'amount',
+#                 'maxlength': '4',
+#                 'autocomplete': 'off',
+#             },
+#         ),
+#     )
+#
+#
+# class ResourceProductionModifierChangeForm(forms.ModelForm):
+#     """Change the production modifier of resource objects"""
+#
+#     class Meta:
+#         model = Resource
+#         fields = ['production_modifier']
+#
+#     production_modifier = forms.IntegerField(
+#         required=False,
+#         initial=0,
+#         widget=forms.NumberInput(
+#             attrs={
+#                 'maxlength': '4',
+#                 'autocomplete': 'off',
+#             },
+#         ),
+#     )
 
 
 class GameTimerCreateForm(forms.ModelForm):

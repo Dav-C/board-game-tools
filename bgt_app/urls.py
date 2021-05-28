@@ -7,24 +7,13 @@ from .views import (
     ToolSessionDetail,
     PlayerView,
     PlayerRandomizeOrder,
-    HpTrackerCreate,
-    HpTrackerUpdate,
-    HpTrackerDelete,
-    DieGroupCreate,
-    DieGroupUpdate,
-    DieGroupDelete,
-    DieStandardDelete,
-    DieStandardCreate,
+    HpTrackerView,
+    DieGroupView,
+    DieStandardView,
     RollDieGroup,
     RollDie,
-    ResourceGroupCreate,
-    ResourceGroupUpdate,
-    ResourceGroupDelete,
-    ResourceCreate,
-    ResourceDelete,
-    ResourceNameChange,
-    ResourceQtyChange,
-    ResourceProductionModifierChange,
+    ResourceGroupView,
+    ResourceView,
     GameTimerCreate,
     GameTimerDelete,
     GameTimerTitleUpdate,
@@ -61,38 +50,38 @@ urlpatterns = [
     path('player-create/',
          PlayerView.as_view(), name='player_create'),
 
-    path('player-delete/<player_uuid>',
-         PlayerView.as_view(), name='player_delete'),
-
     path('player-update/<player_uuid>',
          PlayerView.as_view(), name='player_update'),
+
+    path('player-delete/<player_uuid>',
+         PlayerView.as_view(), name='player_delete'),
 
     path('player-randomize-order/',
          PlayerRandomizeOrder.as_view(), name='player_randomize_order'),
 
     path('hp-tracker-create/',
-         HpTrackerCreate.as_view(), name='hp_tracker_create'),
-
-    path('hp-tracker-delete/<uuid>',
-         HpTrackerDelete.as_view(), name='hp_tracker_delete'),
+         HpTrackerView.as_view(), name='hp_tracker_create'),
 
     path('hp-tracker-update/<hp_tracker_uuid>',
-         HpTrackerUpdate.as_view(), name='hp_tracker_update'),
+         HpTrackerView.as_view(), name='hp_tracker_update'),
 
-    path('add-die-group/',
-         DieGroupCreate.as_view(), name='die_group_create'),
+    path('hp-tracker-delete/<uuid>',
+         HpTrackerView.as_view(), name='hp_tracker_delete'),
+
+    path('die-group-create/',
+         DieGroupView.as_view(), name='die_group_create'),
 
     path('die-group-update/<die_group_uuid>',
-         DieGroupUpdate.as_view(), name='die_group_update'),
+         DieGroupView.as_view(), name='die_group_update'),
 
     path('die-group-delete/<uuid>',
-         DieGroupDelete.as_view(), name='die_group_delete'),
-
-    path('die-standard-delete/<uuid>',
-         DieStandardDelete.as_view(), name='die_standard_delete'),
+         DieGroupView.as_view(), name='die_group_delete'),
 
     path('die-standard-create/<die_group_uuid>',
-         DieStandardCreate.as_view(), name='die_standard_create'),
+         DieStandardView.as_view(), name='die_standard_create'),
+
+    path('die-standard-delete/<uuid>',
+         DieStandardView.as_view(), name='die_standard_delete'),
 
     path('roll-die-group/<die_group_uuid>',
          RollDieGroup.as_view(), name='roll_die_group'),
@@ -101,29 +90,22 @@ urlpatterns = [
          RollDie.as_view(), name='roll_die'),
 
     path('resource-group-create/',
-         ResourceGroupCreate.as_view(), name='resource_group_create'),
+         ResourceGroupView.as_view(), name='resource_group_create'),
 
     path('resource-group-update/<resource_group_uuid>',
-         ResourceGroupUpdate.as_view(), name='resource_group_update'),
+         ResourceGroupView.as_view(), name='resource_group_update'),
 
     path('resource-group-delete/<resource_group_uuid>',
-         ResourceGroupDelete.as_view(), name='resource_group_delete'),
+         ResourceGroupView.as_view(), name='resource_group_delete'),
 
     path('resource-create/<resource_group_uuid>',
-         ResourceCreate.as_view(), name='resource_create'),
+         ResourceView.as_view(), name='resource_create'),
+
+    path('resource-update/<resource_uuid>',
+         ResourceView.as_view(), name='resource_update'),
 
     path('resource-delete/<resource_uuid>',
-         ResourceDelete.as_view(), name='resource_delete'),
-
-    path('resource-name-change/<resource_uuid>',
-         ResourceNameChange.as_view(), name='resource_name_change'),
-
-    path('resource-qty-change/<resource_uuid>',
-         ResourceQtyChange.as_view(), name='resource_qty_change'),
-
-    path('resource-production-modifier-change/<resource_uuid>',
-         ResourceProductionModifierChange.as_view(),
-         name='resource_production_modifier_change'),
+         ResourceView.as_view(), name='resource_delete'),
 
     path('game-timer-create/',
          GameTimerCreate.as_view(), name='game_timer_create'),

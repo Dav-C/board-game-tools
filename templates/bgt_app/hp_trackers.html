@@ -1,31 +1,53 @@
 {% load static %}
 {% load widget_tweaks %}
+{% load method_override %}
 
 {#Hp Trackers#}
 <div id="HpTrackersViewWrapper" class="tool-body">
     {% for hp_tracker in hp_trackers %}
         <div class="hp-tracker-box">
-            <form method="POST" action="{% url 'hp_tracker_update' hp_tracker.id %}" id="{{ hp_tracker.id }}-HpChangeValueForm" data-id="{{ hp_tracker.id }}" class="hp-change-value-form">
+            <form method="POST" action="{% url 'hp_tracker_update' hp_tracker.id %}"
+                  data-id="{{ hp_tracker.id }}"
+                  id="{{ hp_tracker.id }}-HpChangeValueForm"
+                  class="hp-change-value-form">
                 {% csrf_token %}
                 <div class="tool-title-box">
                     <div id="{{ hp_tracker.id }}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
                     <div id="{{ hp_tracker.id }}-HpTrackerTitleInput" class="tool-title no-display">
-                        {{ hp_change_value_form.title|add_class:"tool-title-input"}}
+                        {{ hp_tracker_form.title|add_class:"tool-title-input"}}
                     </div>
                 </div>
+{#hp tracker control box#}
                 <div class="hp-tracker-control-box">
-                    <button type="button" id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn" class="cancel-change-btn"></button>
-                    <button type="button" id="{{ hp_tracker.id }}-HpValueDecreaseBtn" class="hp-value-change-btn decrease disable-double-tap-to-zoom">-</button>
+                    <button type="button"
+                            id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn"
+                            class="cancel-change-btn">
+                    </button>
+                    <button type="button"
+                            id="{{ hp_tracker.id }}-HpValueDecreaseBtn"
+                            class="hp-value-change-btn decrease disable-double-tap-to-zoom">-
+                    </button>
+                    {# hp value display #}
                     <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
-                    <div id="{{ hp_tracker.id }}-HpValueInput" class="hp-value-input-hidden">{{ hp_change_value_form.hp_value }}</div>
+                    <div id="{{ hp_tracker.id }}-HpValueInput" class="hp-value-input-hidden">{{ hp_tracker_form.hp_value }}</div>
                     <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
                     <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-change-value"></div>
-                    <button type="button" id="{{ hp_tracker.id }}-HpValueIncreaseBtn" class="hp-value-change-btn increase disable-double-tap-to-zoom">+</button>
-                    <button type="submit" id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn" class="confirm-change-btn"></button>
+                    {# end value display #}
+                    <button type="button"
+                            id="{{ hp_tracker.id }}-HpValueIncreaseBtn"
+                            class="hp-value-change-btn increase disable-double-tap-to-zoom">+
+                    </button>
+                    <button type="submit"
+                            id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn"
+                            class="confirm-change-btn">
+                    </button>
                 </div>
             </form>
-        <form action="{% url 'hp_tracker_delete' hp_tracker.id %}?next={{ request.get_full_path }}" method="POST" class="delete-tool-form">
+        <form method="POST"
+              action="{% url 'hp_tracker_delete' hp_tracker.id %}?next={{ request.get_full_path }}"
+              class="delete-tool-form">
         {% csrf_token %}
+        {% method_override 'DELETE' %}
             <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="delete-btn-large"></button>
         </form>
         </div>
