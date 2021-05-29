@@ -761,8 +761,7 @@ resourceControl = {
                 data: serialized_data,
                 success: function (response) {
                     console.log('ajaxSuccess');
-                    resource_box_div.load(' ' + '#' + data_id + '-resourceBox' + ' > *', function () {
-                    });
+                    resource_box_div.load(' ' + '#' + data_id + '-resourceBox' + ' > *', function () {});
                 },
                 error: function(response) {
                     let error_text = response.responseText
@@ -1346,7 +1345,6 @@ let run_timer;
 gameTimerControl = {
     game_timer_funcs: {
         game_timer_start_stop: function(data_id_value, timer_run = 'not_running') {
-            // let data_id = $(this_value).attr('data-id')
             let duration_window = $('#' + data_id_value + '-gameTimerDuration');
             let duration = duration_window.text().replaceAll(':', '');
             let timer_running = timer_run;
@@ -1429,11 +1427,31 @@ gameTimerControl = {
             form.submit();
             duration_window.empty().text('0:00:00');
         },
+        update_game_timer: function(form, data_id) {
+            'use strict';
+            let game_timer_title_area = $('#' + data_id + '-gameTimerTileArea');
+            let serialized_data = form.serialize();
+            $.ajax({
+                headers: { "X-HTTP-Method-Override": "PUT" },
+                type: 'POST',
+                url: form.attr('action'),
+                data: serialized_data,
+                success: function (response) {
+                    game_timer_title_area.load(' ' + '#' + data_id + '-gameTimerTileArea' + ' > *', function () {});
+                    console.log('ajaxSuccess');
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                }
+            });
+        },
     }
 }
 
 // reveal editing options for a Game Timer
-$('.game-timer-title').click(function() {
+$("#gameTimersViewWrapper").on('click', '.game-timer-title', function () {
     'use strict';
     let selector = $(this).closest('form');
     let data_id = selector.attr("data-id");
@@ -1463,49 +1481,58 @@ $('.game-timer-title').click(function() {
         game_timer_delete_btn.css({'display': 'none'});
     }
 
-        revealGameTimerTitleChangeBtns();
+    revealGameTimerTitleChangeBtns();
     game_timer_title_input.children('input').val(game_timer_title_box.text().trim());
     game_timer_title_input.children('input').focus();
 
     // reveal title, hide input and re-enable buttons if user clicks cancel
     cancel_game_timer_title_change_btn.click(function() {
         hideGameTimerTitleChangeBtns();
-        });
+    });
+});
+// update a game timer title
+$("#gameTimersViewWrapper").on('submit', '.game-timer-title-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id')
+    let form = $('#' + data_id + '-gameTimerTitleForm')
+    let current_timer_duration = $('#' + data_id + '-gameTimerDuration').text().trim();
+    let timer_duration_input = form.find('#id_saved_duration');
+    timer_duration_input.val(current_timer_duration);
+    gameTimerControl.game_timer_funcs.update_game_timer(form, data_id);
 });
 
-// update a game timer title
-$('.game-timer-form').submit(function(e) {
-    'use strict';
-    // preventing from page reload and default actions
-    e.preventDefault();
-    let data_id = '#' + $(this).attr("data-id");
-    // serialize the form data.
-    let serializedData = $(this).serialize();
-    // make POST ajax call
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // reset the title box and display the value
-            $(data_id + '-gameTimerTitle').css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $(data_id + '-gameTimerTitleInput').css({'display': 'none'});
-            $('.game-timer-control-box-btn').css({'display': 'inline'});
-            $(data_id + '-confirmGameTimerTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-cancelGameTimerTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-gameTimerDeleteBtn').css({'display': 'none'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    })
-});
+// // update a game timer title
+// $("#gameTimersViewWrapper").on('submit', '.game-timer-form', function (e) {
+//     'use strict';
+//     e.preventDefault();
+//     let data_id = '#' + $(this).attr("data-id");
+//     let serializedData = $(this).serialize();
+//     $.ajax({
+//         headers: { "X-HTTP-Method-Override": "PUT" },
+//         type: 'POST',
+//         url: $(this).attr('action'),
+//         data: serializedData,
+//         success: function (response) {
+//             let form_instance = JSON.parse(response['form_instance']);
+//             let fields = form_instance[0]['fields'];
+//             // reset the title box and display the value
+//             $(data_id + '-gameTimerTitle').css({'display': 'inline'})
+//                                                 .empty()
+//                                                 .prepend(fields.title);
+//             $(data_id + '-gameTimerTitleInput').css({'display': 'none'});
+//             $('.game-timer-control-box-btn').css({'display': 'inline'});
+//             $(data_id + '-confirmGameTimerTitleChangeBtn').css({'display': 'none'});
+//             $(data_id + '-cancelGameTimerTitleChangeBtn').css({'display': 'none'});
+//             $(data_id + '-gameTimerDeleteBtn').css({'display': 'none'});
+//             console.log('ajaxSuccess');
+//         },
+//         error: function (response) {
+//             console.log(response["responseJSON"]["error"]);
+//             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
+//         }
+//     })
+// });
 
 // detect window unloads, stop the game timer and save the timer duration
 $(window).on('beforeunload', function() {
@@ -1539,9 +1566,8 @@ if (window.location.href.includes('tool-session')) {
         gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
     }
 }
-
 // start a game timer and set timer_running to true
-$('.game-timer-control-box-btn.start').click(function() {
+$("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.start', function (e) {
     let data_id = $(this).attr('data-id');
     if (timer_running === false) {
         timer_running = true;
@@ -1549,7 +1575,7 @@ $('.game-timer-control-box-btn.start').click(function() {
     }
 });
 // stop a game timer and set timer_running to false
-$('.game-timer-control-box-btn.stop').click(function() {
+$("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.stop', function (e) {
     if (timer_running === true) {
         timer_running = false;
         let data_id = $(this).attr('data-id');
@@ -1559,31 +1585,24 @@ $('.game-timer-control-box-btn.stop').click(function() {
     }
 });
 // reset a game timer back to 0
-$('.game-timer-control-box-btn.reset').click(function() {
+$("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.reset', function (e) {
     timer_running = false;
     let data_id = $(this).attr('data-id');
     gameTimerControl.game_timer_funcs.reset_game_timer(data_id);
     gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
 });
-
 // push current game timer duration to database
-$('.game-timer-duration-update-form').submit(function(e) {
+$("#gameTimersViewWrapper").on('submit', '.game-timer-duration-update-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = '#' + $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+    let data_id = $(this).attr('data-id');
+    let form = $('#' + data_id + "-gameTimerDurationUpdateForm");
+    // put the name of the game timer into the form for updating the time.
+    // the form must be complete prior to submitting to prevent data loss.
+    let game_timer_name =  $('#' + data_id + "-gameTimerTitle").text().trim();
+    let game_timer_name_input =  $('#' + data_id  + "-savedDurationInputWrapper").find('#id_title');
+    game_timer_name_input.val(game_timer_name);
+    gameTimerControl.game_timer_funcs.update_game_timer(form, data_id);
 });
 
 

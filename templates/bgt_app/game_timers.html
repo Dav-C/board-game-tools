@@ -6,51 +6,57 @@
 <div id="gameTimersViewWrapper" class="tool-body">
     {% for game_timer in game_timers %}
         <div class="game-timer-box">
-            <form action="{% url 'game_timer_update' game_timer.id%}"
-                  method="POST"
-                  id="{{ game_timer.id }}-gameTimerForm"
-                  data-id="{{ game_timer.id }}"
-                  class="game-timer-form">
-                {% csrf_token %}
-                <div class="tool-title-box">
-                    <div id="{{ game_timer.id }}-gameTimerTitle"
-                         class="tool-title game-timer-title">
-                        {{ game_timer.title }}
+            <div id="{{ game_timer.id }}-gameTimerTileArea"
+                 class="game-timer-title-area">
+                <form action="{% url 'game_timer_update' game_timer.id%}"
+                      method="POST"
+                      id="{{ game_timer.id }}-gameTimerTitleForm"
+                      data-id="{{ game_timer.id }}"
+                      class="game-timer-title-form">
+                    {% csrf_token %}
+                    <div id="{{ game_timer.id }}-toolTitleBox"
+                         class="tool-title-box">
+                        <div id="{{ game_timer.id }}-gameTimerTitle"
+                             class="tool-title game-timer-title">
+                            {{ game_timer.title }}
+                        </div>
+                        <div id="{{ game_timer.id }}-gameTimerTitleInput"
+                             class="tool-title no-display">
+                            {{ game_timer_form.title|add_class:"tool-title-input"}}
+                            {{ game_timer_form.saved_duration|add_class:"absolute-hidden" }}
+                        </div>
                     </div>
-                    <div id="{{ game_timer.id }}-gameTimerTitleInput"
-                         class="tool-title no-display">
-                        {{ game_timer_create_form.title|add_class:"tool-title-input"}}
-                    </div>
-                </div>
-            </form>
-{# game timer control box #}
-            <div class="game-timer-control-box" data-id="{{ game_timer.id }}">
-                <button type="button"
-                        data-id="{{ game_timer.id }}"
-                        id="{{ game_timer.id }}-gameTimerResetBtn"
-                        class="blue-btn game-timer-control-box-btn reset">reset
-                </button>
-                <button type="button"
-                        data-id="{{ game_timer.id }}"
-                        id="{{ game_timer.id }}-gameTimerStopBtn"
-                        class="blue-btn game-timer-control-box-btn stop">stop
-                </button>
-                <button type="button"
-                        data-id="{{ game_timer.id }}"
-                        id="{{ game_timer.id }}-gameTimerStartBtn"
-                        class="blue-btn game-timer-control-box-btn start">start
+                </form>
+    {# game timer control box #}
+                <div id="{{ game_timer.id }}-gameTimerControlBox"
+                     data-id="{{ game_timer.id }}"
+                     class="game-timer-control-box">
+                    <button type="button"
+                            data-id="{{ game_timer.id }}"
+                            id="{{ game_timer.id }}-gameTimerResetBtn"
+                            class="blue-btn game-timer-control-box-btn reset">reset
+                    </button>
+                    <button type="button"
+                            data-id="{{ game_timer.id }}"
+                            id="{{ game_timer.id }}-gameTimerStopBtn"
+                            class="blue-btn game-timer-control-box-btn stop">stop
+                    </button>
+                    <button type="button"
+                            data-id="{{ game_timer.id }}"
+                            id="{{ game_timer.id }}-gameTimerStartBtn"
+                            class="blue-btn game-timer-control-box-btn start">start
 
-                </button>
-                <button type="button"
-                        id="{{ game_timer.id }}-cancelGameTimerTitleChangeBtn"
-                        class="cancel-change-btn">
-                </button>
-                <button type="submit"
-                        id="{{ game_timer.id }}-confirmGameTimerTitleChangeBtn"
-                        class="confirm-change-btn" form="{{ game_timer.id }}-gameTimerForm">
-                </button>
-            </div>
-            <hr style="width: 80%;">
+                    </button>
+                    <button type="button"
+                            id="{{ game_timer.id }}-cancelGameTimerTitleChangeBtn"
+                            class="cancel-change-btn">
+                    </button>
+                    <button type="submit"
+                            id="{{ game_timer.id }}-confirmGameTimerTitleChangeBtn"
+                            class="confirm-change-btn" form="{{ game_timer.id }}-gameTimerTitleForm">
+                    </button>
+                </div>
+                <hr style="width: 80%;">
 {# delete game timer form #}
             <form id="{{ game_timer.id }}-deleteToolForm"
                   class="delete-tool-form"
@@ -62,13 +68,17 @@
                         class="delete-btn-large">
                 </button>
             </form>
-{#game timer duration#}
-            <form action="{% url 'game_timer_duration_update' game_timer.id %}"
+        </div>
+{# game timer duration #}
+            <form action="{% url 'game_timer_update' game_timer.id %}"
+                  data-id="{{ game_timer.id }}"
                   id="{{ game_timer.id }}-gameTimerDurationUpdateForm"
                   class="game-timer-duration-update-form absolute-hidden">
                 {% csrf_token %}
-                <div class="saved-duration-input-wrapper">
-                    {{ game_timer_duration_update_form.saved_duration }}
+                <div id="{{ game_timer.id }}-savedDurationInputWrapper"
+                     class="saved-duration-input-wrapper">
+                    {{ game_timer_form.saved_duration }}
+                    {{ game_timer_form.title }}
                 </div>
             </form>
             <div>

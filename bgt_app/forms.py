@@ -207,68 +207,12 @@ class ResourceForm(forms.ModelForm):
         ),
     )
 
-# class ResourceNameChangeForm(forms.ModelForm):
-#     """Change the name of a Resource object"""
-#
-#     class Meta:
-#         model = Resource
-#         fields = ['name']
-#
-#     name = forms.CharField(
-#         required=True,
-#         widget=forms.TextInput(
-#             attrs={
-#                 'placeholder': 'Name',
-#                 'maxlength': '40',
-#                 'autocomplete': 'off',
-#             },
-#         ),
-#     )
-#
-#
-# class ResourceQuantityChangeForm(forms.ModelForm):
-#     """Create and modify Resources objects"""
-#     class Meta:
-#         model = Resource
-#         fields = ['quantity']
-#
-#     quantity = forms.IntegerField(
-#         required=False,
-#         initial=0,
-#         widget=forms.NumberInput(
-#             attrs={
-#                 'placeholder': 'amount',
-#                 'maxlength': '4',
-#                 'autocomplete': 'off',
-#             },
-#         ),
-#     )
-#
-#
-# class ResourceProductionModifierChangeForm(forms.ModelForm):
-#     """Change the production modifier of resource objects"""
-#
-#     class Meta:
-#         model = Resource
-#         fields = ['production_modifier']
-#
-#     production_modifier = forms.IntegerField(
-#         required=False,
-#         initial=0,
-#         widget=forms.NumberInput(
-#             attrs={
-#                 'maxlength': '4',
-#                 'autocomplete': 'off',
-#             },
-#         ),
-#     )
 
-
-class GameTimerCreateForm(forms.ModelForm):
-    """Create GameTimer Objects"""
+class GameTimerForm(forms.ModelForm):
+    """Create and update GameTimer Objects"""
     class Meta:
         model = GameTimer
-        fields = ['title']
+        fields = ['title', 'saved_duration']
 
     title = forms.CharField(
         required=True,
@@ -280,16 +224,9 @@ class GameTimerCreateForm(forms.ModelForm):
             },
         ),
     )
-
-
-class GameTimerDurationUpdateForm(forms.ModelForm):
-    """Update the saved_duration field of a GameTimer"""
-    class Meta:
-        model = GameTimer
-        fields = ['saved_duration']
-
     saved_duration = forms.CharField(
         required=True,
+        initial=0,
         widget=forms.TextInput(
             attrs={},
         )

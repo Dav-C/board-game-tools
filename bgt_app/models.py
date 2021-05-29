@@ -202,7 +202,7 @@ class GameTimer(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=40)
-    saved_duration = models.DurationField(default=datetime.timedelta)
+    saved_duration = models.DurationField(default=datetime.timedelta(seconds=0))
     tool_session = models.ForeignKey(
         ToolSession,
         related_name='game_timers',

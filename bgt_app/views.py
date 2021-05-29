@@ -32,8 +32,7 @@ from .forms import (
     DieStandardForm,
     ResourceGroupForm,
     ResourceForm,
-    GameTimerCreateForm,
-    GameTimerDurationUpdateForm,
+    GameTimerForm,
     ScoringGroupForm,
     ScoringGroupAddPlayersForm,
     ScoringCategoryCreateForm,
@@ -289,7 +288,6 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
                 if player in group.players.all():
                     scoring_group_initial_player_checks_box_values.append(player)
 
-
         context['players'] = players
         context['player_form'] = PlayerForm
         context['hp_trackers'] = hp_trackers
@@ -300,17 +298,16 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['resource_groups'] = resource_groups
         context['resource_group_form'] = ResourceGroupForm
         context['resource_form'] = ResourceForm
-        context['game_timer_create_form'] = GameTimerCreateForm
-        context['game_timer_duration_update_form'] = GameTimerDurationUpdateForm
         context['game_timers'] = game_timers
+        context['game_timer_form'] = GameTimerForm
         context['scoring_group_form'] = ScoringGroupForm
+        context['scoring_groups'] = scoring_groups
         context['scoring_group_add_players_form'] = \
             ScoringGroupAddPlayersForm(
                 active_tool_session_id=active_tool_session_id,
                 initial={
                     'players': scoring_group_initial_player_checks_box_values
                          })
-        context['scoring_groups'] = scoring_groups
         context['scoring_category_create_form'] = \
             ScoringCategoryCreateForm
         context['draw_bags'] = draw_bags
@@ -586,7 +583,7 @@ class GameTimerView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         if object_count(self.request, GameTimer) == 0:
             return save_new_tool_and_associate_with_session(
-                form=GameTimerCreateForm,
+                form=GameTimerForm,
                 request=self.request
             )
         else:
@@ -597,7 +594,7 @@ class GameTimerView(LoginRequiredMixin, View):
     def put(self, request, game_timer_uuid):
         return create_or_update_obj_and_serialize(
             request=self.request,
-            form=GameTimerCreateForm,
+            form=GameTimerForm,
             model=GameTimer,
             obj_uuid=game_timer_uuid,
             group_model=None
@@ -634,17 +631,17 @@ class GameTimerView(LoginRequiredMixin, View):
 #         )
 
 
-class GameTimerDurationUpdate(LoginRequiredMixin, View):
-    """update the saved_duration field of a GameTimer object"""
-
-    def post(self, request, game_timer_uuid):
-        return create_or_update_obj_and_serialize(
-            request=self.request,
-            form=GameTimerDurationUpdateForm,
-            model=GameTimer,
-            obj_uuid=game_timer_uuid,
-            group_model=None
-        )
+# class GameTimerDurationUpdate(LoginRequiredMixin, View):
+#     """update the saved_duration field of a GameTimer object"""
+#
+#     def post(self, request, game_timer_uuid):
+#         return create_or_update_obj_and_serialize(
+#             request=self.request,
+#             form=GameTimerDurationUpdateForm,
+#             model=GameTimer,
+#             obj_uuid=game_timer_uuid,
+#             group_model=None
+#         )
 
 
 class ScoringGroupCreate(LoginRequiredMixin, View):

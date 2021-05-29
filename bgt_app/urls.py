@@ -15,7 +15,6 @@ from .views import (
     ResourceGroupView,
     ResourceView,
     GameTimerView,
-    GameTimerDurationUpdate,
     ScoringGroupCreate,
     ScoringGroupUpdate,
     ScoringGroupDelete,
@@ -114,8 +113,8 @@ urlpatterns = [
     path('game-timer-delete/<game_timer_uuid>',
          GameTimerView.as_view(), name='game_timer_delete'),
 
-    path('game-timer-duration-update/<game_timer_uuid>',
-         GameTimerDurationUpdate.as_view(), name='game_timer_duration_update'),
+    # path('game-timer-duration-update/<game_timer_uuid>',
+    #      GameTimerDurationUpdate.as_view(), name='game_timer_duration_update'),
 
     path('scoring-group-create/',
          ScoringGroupCreate.as_view(), name='scoring_group_create'),

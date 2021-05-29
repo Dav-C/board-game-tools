@@ -121,7 +121,8 @@
                   class="add-new-tool-form">
                 {% csrf_token %}
                 <br />
-                {{ game_timer_create_form.title|add_class:'text-input-large' }}
+                {{ game_timer_form.title|add_class:'text-input-large' }}
+                {{ game_timer_form.saved_duration|add_class:"absolute-hidden" }}
                 <br />
                 <button id="createGameTimerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
                 <button id="createGameTimerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
