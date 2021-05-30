@@ -1105,6 +1105,7 @@ $("#resourceGroupsViewWrapper").on('click', '.produce-single-resource-btn', func
 scoringControl = {
     scoring_funcs: {
         change_open_sub_group: function(sub_group_wrapper, this_value) {
+            'use strict';
             let data_id = $(this_value).parent().attr('data-id');
             $('#' + data_id + '-scoringGroupPlayersWrapper').addClass('absolute-hidden');
             $('#' + data_id + '-scoringGroupCategoriesWrapper').addClass('absolute-hidden');
@@ -1112,6 +1113,7 @@ scoringControl = {
             $(sub_group_wrapper).removeClass('absolute-hidden');
         },
         open_create_scoring_category_forms_box: function(this_value) {
+            'use strict';
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-scoringCategoryCreateFormWrapper');
             form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
@@ -1126,6 +1128,7 @@ scoringControl = {
             closeToolPageCover();
         },
         open_player_score_input_area: function(this_value) {
+            'use strict';
             let data_id = '#' + $(this_value).attr('data-id');
             let input_area_wrapper = $(data_id + '-scoreCalcInputAreaWrapper');
             let all_input_areas = $('.score-calc-input-area-wrapper');
@@ -1140,19 +1143,41 @@ scoringControl = {
             close_btn.removeClass('absolute-hidden');
         },
         close_player_score_input_area: function(this_value) {
+            'use strict';
             let data_id = '#' + $(this_value).attr('data-id');
             let all_input_areas = $('.score-calc-input-area-wrapper');
             let all_open_buttons = $('.score-calc-input-area-open-btn');
             let all_close_buttons = $('.score-calc-input-area-close-btn');
             all_close_buttons.addClass('absolute-hidden');
             all_open_buttons.removeClass('absolute-hidden');
-            all_input_areas.addClass('absolute-hidden')
-        }
+            all_input_areas.addClass('absolute-hidden');
+        },
+        update_scoring_group: function(form, data_id) {
+            'use strict';
+            let scoring_group_box = $('#' + data_id + '-scoringGroupBox');
+            let serialized_data = form.serialize();
+            $.ajax({
+                headers: { "X-HTTP-Method-Override": "PUT" },
+                type: 'POST',
+                url: form.attr('action'),
+                data: serialized_data,
+                success: function (response) {
+                    scoring_group_box.load(' ' + '#' + data_id + '-scoringGroupBox' + ' > *', function () {
+                    console.log('ajaxSuccess');
+                    });
+                },
+                error: function(response) {
+                    let error_text = response.responseText
+                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
+                    messageControl.display_error_message('#errorMessageWrapper', error_text);
+                }
+            });
+        },
     }
-}
+};
 
 // reveal editing options for a scoring group box
-$('.scoring-group-title').click(function() {
+$("#scoringGroupsViewWrapper").on('click', '.scoring-group-title', function (e) {
     'use strict';
     let selector = $(this).closest('form');
     let data_id = selector.attr("data-id");
@@ -1192,55 +1217,31 @@ $('.scoring-group-title').click(function() {
         });
 });
 
-// update a scoring group title and hide editing controls
-$('.scoring-group-form').submit(function(e) {
+// update a scoring group title
+$("#scoringGroupsViewWrapper").on('submit', '.scoring-group-title-form', function (e) {
     'use strict';
-    // preventing from page reload and default actions
     e.preventDefault();
-    let data_id = '#' + $(this).attr("data-id");
-    // serialize the form data.
-    let serializedData = $(this).serialize();
-    // make POST ajax call
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // reset the title box and display the value
-            $(data_id + '-scoringGroupTitle').css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $(data_id + '-scoringGroupTitleInput').css({'display': 'none'});
-            $('.scoring-group-control-box-btn').css({'display': 'inline'});
-            $(data_id + '-confirmScoringGroupTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-cancelScoringGroupTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-scoringGroupDeleteBtn').css({'display': 'none'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    })
+    let data_id = $(this).attr("data-id");
+    let form = $('#' + data_id + '-scoringGroupTitleForm');
+    scoringControl.scoring_funcs.update_scoring_group(form, data_id);
 });
-$('.scoring-group-control-box-btn').click(function() {
+$("#scoringGroupsViewWrapper").on('click', '.scoring-group-control-box-btn', function (e) {
+    'use strict';
     let sub_group_wrapper = $(this).attr('data-id');
     scoringControl.scoring_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
-
 // add a scoring category
-$('.scoring-group-add-category-open-form-btn').click(function() {
+$("#scoringGroupsViewWrapper").on('click', '.scoring-group-add-category-open-form-btn', function (e) {
+    'use strict';
     scoringControl.scoring_funcs.open_create_scoring_category_forms_box(this);
-})
+});
 // close the add scoring category form
-$('.create-custom-object-form-done-btn.scoring_category').click(function() {
+$("#scoringGroupsViewWrapper").on('click', '.create-custom-object-form-done-btn.scoring_category', function (e) {
+    'use strict';
     scoringControl.scoring_funcs.close_create_scoring_category_forms_box(this);
-})
-
-// ajax for adding a scoring category
-$('.create-custom-object-form.scoring-category').submit(function(e) {
+});
+// create a new scoring category
+$("#scoringGroupsViewWrapper").on('submit', '.create-custom-object-form.scoring-category', function (e) {
     'use strict';
     e.preventDefault();
     let serialized_data = $(this).serialize();
@@ -1259,19 +1260,20 @@ $('.create-custom-object-form.scoring-category').submit(function(e) {
         }
     });
 });
-
 // open a player's scoring input area, this will also close any other open
 // scoring input areas
-$('.score-calc-input-area-open-btn').click(function() {
-   scoringControl.scoring_funcs.open_player_score_input_area($(this))
+$("#scoringGroupsViewWrapper").on('click', '.score-calc-input-area-open-btn', function (e) {
+    'use strict';
+    scoringControl.scoring_funcs.open_player_score_input_area($(this));
 });
 //  close all player scoring input areas
-$('.score-calc-input-area-close-btn').click(function() {
-   scoringControl.scoring_funcs.close_player_score_input_area($(this))
+$("#scoringGroupsViewWrapper").on('click', '.score-calc-input-area-close-btn', function (e) {
+    'use strict';
+    scoringControl.scoring_funcs.close_player_score_input_area($(this));
 });
 
 // calculate a player's score
-$('.score-calc-form').submit(function(e) {
+$("#scoringGroupsViewWrapper").on('submit', '.score-calc-form', function (e) {
     'use strict';
     e.preventDefault();
     // identify form and count number of scoring categories (inputs)
@@ -1305,36 +1307,16 @@ $('.score-calc-form').submit(function(e) {
     $(player_score_form).children().children('input').closest('#id_score').val(final_score);
     let player_name = $(player_score_form).parent().find('.scoring-calc-name-text').text();
     $(player_score_form).children().children('input').closest('#id_name').val(player_name);
-    console.log(player_name)
-
     player_score_form.submit();
 });
 
-// ajax for updating a player's score with a calculated value
-$('.score-calc-player-score-form').submit(function(e) {
+$("#scoringGroupsViewWrapper").on('submit', '.score-calc-player-score-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = '#' + $(this).attr('data-id');
-    let serialized_data = $(this).serialize();
-    console.log(serialized_data)
-    $.ajax({
-        headers: { "X-HTTP-Method-Override": "PUT" },
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            messageControl.display_success_message('#scoringPageSuccessMessageWrapper', 'scored!');
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the player's new calculated score
-            $(data_id + '-scoreCalcScoreValueBox').empty().prepend(fields.score).css({'display': 'inline'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+    let data_id = $(this).parent().parent().attr('data-id');
+    console.log(data_id)
+    let form = $(this);
+    scoringControl.scoring_funcs.update_scoring_group(form, data_id);
 });
 
 // --------------- GAME TIMER CONTROL ---------------
@@ -1502,38 +1484,6 @@ $("#gameTimersViewWrapper").on('submit', '.game-timer-title-form', function (e) 
     gameTimerControl.game_timer_funcs.update_game_timer(form, data_id);
 });
 
-// // update a game timer title
-// $("#gameTimersViewWrapper").on('submit', '.game-timer-form', function (e) {
-//     'use strict';
-//     e.preventDefault();
-//     let data_id = '#' + $(this).attr("data-id");
-//     let serializedData = $(this).serialize();
-//     $.ajax({
-//         headers: { "X-HTTP-Method-Override": "PUT" },
-//         type: 'POST',
-//         url: $(this).attr('action'),
-//         data: serializedData,
-//         success: function (response) {
-//             let form_instance = JSON.parse(response['form_instance']);
-//             let fields = form_instance[0]['fields'];
-//             // reset the title box and display the value
-//             $(data_id + '-gameTimerTitle').css({'display': 'inline'})
-//                                                 .empty()
-//                                                 .prepend(fields.title);
-//             $(data_id + '-gameTimerTitleInput').css({'display': 'none'});
-//             $('.game-timer-control-box-btn').css({'display': 'inline'});
-//             $(data_id + '-confirmGameTimerTitleChangeBtn').css({'display': 'none'});
-//             $(data_id + '-cancelGameTimerTitleChangeBtn').css({'display': 'none'});
-//             $(data_id + '-gameTimerDeleteBtn').css({'display': 'none'});
-//             console.log('ajaxSuccess');
-//         },
-//         error: function (response) {
-//             console.log(response["responseJSON"]["error"]);
-//             messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-//         }
-//     })
-// });
-
 // detect window unloads, stop the game timer and save the timer duration
 $(window).on('beforeunload', function() {
     console.log('unload trigger')
@@ -1613,6 +1563,7 @@ let resized_draw_bag_upload_image;
 drawBagControl = {
     draw_bag_funcs: {
         change_open_sub_group: function(sub_group_wrapper, this_value) {
+            'use strict';
             let data_id = $(this_value).parent().attr('data-id');
             $('#' + data_id + '-drawBagItemsWrapper').addClass('absolute-hidden');
             $('#' + data_id + '-drawBagDrawnItemsWrapper').addClass('absolute-hidden');
@@ -1623,6 +1574,7 @@ drawBagControl = {
 
         },
         set_active_view_wrapper: function() {
+            'use strict';
             if (localStorage.getItem('active-draw-bag-group-data-id')) {
                 let active_draw_bag_group_data_id = localStorage.getItem('active-draw-bag-group-data-id');
                 let active_draw_bag_view_wrapper_id = localStorage.getItem('active-draw-bag-view-wrapper-id')
@@ -1633,6 +1585,7 @@ drawBagControl = {
             }
         },
         update_draw_bag_item_modal: function(group_id, item_name, image_path) {
+            'use strict';
             let draw_bag_item_modal_wrapper = $('#' + group_id + '-drawBagItemModalWrapper');
             let draw_bag_item_name = draw_bag_item_modal_wrapper.find('span:first');
             let draw_bag_image = draw_bag_item_modal_wrapper.find('img:first');
@@ -1641,16 +1594,19 @@ drawBagControl = {
             draw_bag_image.attr('src', image_path);
         },
         open_draw_bag_item_modal: function(group_id) {
+            'use strict';
             let draw_bag_item_modal_wrapper = $('#' + group_id + '-drawBagItemModalWrapper');
             draw_bag_item_modal_wrapper.css({'visibility': 'visible'});
             openToolPageCover();
         },
         close_draw_bag_item_modal: function(group_id) {
+            'use strict';
             let draw_bag_item_modal_wrapper = $('#' + group_id + '-drawBagItemModalWrapper');
             draw_bag_item_modal_wrapper.css({'visibility': 'hidden'});
             closeToolPageCover();
         },
         update_bag_and_open_modal: function(form) {
+            'use strict';
             let data_id = $(form).attr('data-id');
             return $.ajax({
                 type: 'GET',

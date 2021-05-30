@@ -15,12 +15,9 @@ from .views import (
     ResourceGroupView,
     ResourceView,
     GameTimerView,
-    ScoringGroupCreate,
-    ScoringGroupUpdate,
-    ScoringGroupDelete,
+    ScoringGroupView,
     ScoringGroupAddPlayers,
-    ScoringCategoryCreate,
-    ScoringCategoryDelete,
+    ScoringCategoryView,
     DrawBagCreate,
     DrawBagDelete,
     DrawBagUpdate,
@@ -47,11 +44,8 @@ urlpatterns = [
     path('player-create/',
          PlayerView.as_view(), name='player_create'),
 
-    path('player-update/<player_uuid>',
-         PlayerView.as_view(), name='player_update'),
-
-    path('player-delete/<player_uuid>',
-         PlayerView.as_view(), name='player_delete'),
+    path('player-update-or-delete/<player_uuid>',
+         PlayerView.as_view(), name='player_update_delete'),
 
     path('player-randomize-order/',
          PlayerRandomizeOrder.as_view(), name='player_randomize_order'),
@@ -59,25 +53,20 @@ urlpatterns = [
     path('hp-tracker-create/',
          HpTrackerView.as_view(), name='hp_tracker_create'),
 
-    path('hp-tracker-update/<hp_tracker_uuid>',
-         HpTrackerView.as_view(), name='hp_tracker_update'),
-
-    path('hp-tracker-delete/<uuid>',
-         HpTrackerView.as_view(), name='hp_tracker_delete'),
+    path('hp-tracker-update-or-delete/<hp_tracker_uuid>',
+         HpTrackerView.as_view(), name='hp_tracker_update_delete'),
 
     path('die-group-create/',
          DieGroupView.as_view(), name='die_group_create'),
 
-    path('die-group-update/<die_group_uuid>',
-         DieGroupView.as_view(), name='die_group_update'),
+    path('die-group-update-or-delete/<die_group_uuid>',
+         DieGroupView.as_view(), name='die_group_update_delete'),
 
-    path('die-group-delete/<uuid>',
-         DieGroupView.as_view(), name='die_group_delete'),
 
     path('die-standard-create/<die_group_uuid>',
          DieStandardView.as_view(), name='die_standard_create'),
 
-    path('die-standard-delete/<uuid>',
+    path('die-standard-delete/<die_standard_uuid>',
          DieStandardView.as_view(), name='die_standard_delete'),
 
     path('roll-die-group/<die_group_uuid>',
@@ -89,52 +78,37 @@ urlpatterns = [
     path('resource-group-create/',
          ResourceGroupView.as_view(), name='resource_group_create'),
 
-    path('resource-group-update/<resource_group_uuid>',
-         ResourceGroupView.as_view(), name='resource_group_update'),
-
-    path('resource-group-delete/<resource_group_uuid>',
-         ResourceGroupView.as_view(), name='resource_group_delete'),
+    path('resource-group-update-or-delete/<resource_group_uuid>',
+         ResourceGroupView.as_view(), name='resource_group_update_delete'),
 
     path('resource-create/<resource_group_uuid>',
          ResourceView.as_view(), name='resource_create'),
 
-    path('resource-update/<resource_uuid>',
-         ResourceView.as_view(), name='resource_update'),
-
-    path('resource-delete/<resource_uuid>',
-         ResourceView.as_view(), name='resource_delete'),
+    path('resource-update-or-delete/<resource_uuid>',
+         ResourceView.as_view(), name='resource_update_delete'),
 
     path('game-timer-create/',
          GameTimerView.as_view(), name='game_timer_create'),
 
-    path('game-timer-update/<game_timer_uuid>',
-         GameTimerView.as_view(), name='game_timer_update'),
-
-    path('game-timer-delete/<game_timer_uuid>',
-         GameTimerView.as_view(), name='game_timer_delete'),
-
-    # path('game-timer-duration-update/<game_timer_uuid>',
-    #      GameTimerDurationUpdate.as_view(), name='game_timer_duration_update'),
+    path('game-timer-update-or-delete/<game_timer_uuid>',
+         GameTimerView.as_view(), name='game_timer_update_delete'),
 
     path('scoring-group-create/',
-         ScoringGroupCreate.as_view(), name='scoring_group_create'),
+         ScoringGroupView.as_view(), name='scoring_group_create'),
 
-    path('scoring-group-update/<scoring_group_uuid>',
-         ScoringGroupUpdate.as_view(), name='scoring_group_update'),
-
-    path('scoring-group-delete/<scoring_group_uuid>',
-         ScoringGroupDelete.as_view(), name='scoring_group_delete'),
+    path('scoring-group-update-delete/<scoring_group_uuid>',
+         ScoringGroupView.as_view(), name='scoring_group_update_delete'),
 
     path('scoring-group-add-players/<scoring_group_uuid>',
          ScoringGroupAddPlayers.as_view(),
          name='scoring_group_add_players'),
 
     path('scoring-category-create/<scoring_group_uuid>',
-         ScoringCategoryCreate.as_view(),
+         ScoringCategoryView.as_view(),
          name='scoring_category_create'),
 
     path('scoring-category-delete/<category_uuid>',
-         ScoringCategoryDelete.as_view(),
+         ScoringCategoryView.as_view(),
          name='scoring_category_delete'),
 
     path('draw-bag-create/',

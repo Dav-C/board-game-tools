@@ -7,7 +7,7 @@
 <div id="resourceGroupsViewWrapper" class="tool-body">
     {% for resource_group in resource_groups %}
     <div class="resource-group-box">
-        <form method="POST" action="{% url 'resource_group_update' resource_group.id %}"
+        <form method="POST" action="{% url 'resource_group_update_delete' resource_group.id %}"
               id="{{ resource_group.id }}-resourceGroupUpdateForm"
               data-id="{{ resource_group.id }}"
               class="resource-group-update-form">
@@ -36,7 +36,7 @@
                     class="confirm-change-btn"></button>
         </div>
 {# delete resource group form #}
-        <form action="{% url 'resource_group_delete' resource_group.id %}?next={{ request.get_full_path }}"
+        <form action="{% url 'resource_group_update_delete' resource_group.id %}?next={{ request.get_full_path }}"
               method="POST"
               class="delete-tool-form">
             {% csrf_token %}
@@ -109,7 +109,7 @@
 {# user's resources #}
         {% for resource in resource_group.resources.all %}
             <div id="{{ resource.id }}-resourceBox" class="resource-box">
-                <form action="{% url "resource_update" resource.id %}"
+                <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
                       id={{ resource.id }}-resourceNameChangeForm"
@@ -151,7 +151,7 @@
                     {% endif %}
                 </form>
 {#display and update resource quanity #}
-                <form action="{% url "resource_update" resource.id %}"
+                <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
                       id={{ resource.id }}-resourceQtyChangeForm"
@@ -189,7 +189,7 @@
                 </form>
 {# production section - only shown if production is available for the resource#}
                 {% if resource.production_available %}
-                <form action="{% url "resource_update" resource.id %}"
+                <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST" data-id="{{ resource.id }}"
                       id={{ resource.id }}-resourceProductionModifierChangeForm"
                       class="resource-production-modifier-change-form">
@@ -229,7 +229,7 @@
                          class="absolute-hidden">{{ resource_form.quantity }}
                     </div>
                 </form>
-                <form action="{% url 'resource_update' resource.id%}"
+                <form action="{% url 'resource_update_delete' resource.id%}"
                       method="POST"
                       data-id="{{ resource.id }}"
                       id="{{ resource.id }}-produceResourceForm"
@@ -253,7 +253,7 @@
                             class="delete-btn-large resource-delete-button {{ resource.id }}">
                     </button>
 {# delete single resource #}
-                    <form action="{% url 'resource_delete' resource.id %}?next={{ request.get_full_path }}"
+                    <form action="{% url 'resource_update_delete' resource.id %}?next={{ request.get_full_path }}"
                           method="POST" id="{{ resource.id }}-deleteSingleResourceForm">
                         {% csrf_token %}
                         {% method_override 'DELETE' %}

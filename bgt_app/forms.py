@@ -278,7 +278,7 @@ class ScoringGroupAddPlayersForm(forms.ModelForm):
             )
 
 
-class ScoringCategoryCreateForm(forms.ModelForm):
+class ScoringCategoryForm(forms.ModelForm):
     """Create a ScoringCategory object """
     class Meta:
         model = ScoringCategory

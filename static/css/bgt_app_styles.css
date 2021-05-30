@@ -1580,7 +1580,7 @@ ul {
                 rgba(255, 255, 255, 0.08) 0 1px 0 inset;
 }
 
-.scoring-group-form {
+.scoring-group-title-form {
     display: flex;
     justify-content: center;
     width: 100%;

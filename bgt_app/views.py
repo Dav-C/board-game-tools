@@ -35,7 +35,7 @@ from .forms import (
     GameTimerForm,
     ScoringGroupForm,
     ScoringGroupAddPlayersForm,
-    ScoringCategoryCreateForm,
+    ScoringCategoryForm,
     DrawBagForm,
     DrawBagItemCreateForm
 )
@@ -163,8 +163,8 @@ def delete_model_object(request, model, uuid):
 
 
 class CreateUser(View):
-    """create new user (accounts).  When a new user is created it is immediately
-    associated with a UserProfile"""
+    """create a new user (accounts).  When a new user is created it is
+    immediately associated with a UserProfile"""
     def get(self, request):
         context = {'create_user_form': CreateUserForm}
         return render(request, 'bgt_app/create_user.html', context)
@@ -308,8 +308,8 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
                 initial={
                     'players': scoring_group_initial_player_checks_box_values
                          })
-        context['scoring_category_create_form'] = \
-            ScoringCategoryCreateForm
+        context['scoring_category_form'] = \
+            ScoringCategoryForm
         context['draw_bags'] = draw_bags
         context['draw_bag_items_sorted_by_name'] = draw_bag_items_sorted_by_name
         context['draw_bag_form'] = DrawBagForm
@@ -392,9 +392,9 @@ class HpTrackerView(LoginRequiredMixin, View):
             group_model=None,
         )
 
-    def delete(self, request, uuid):
+    def delete(self, request, hp_tracker_uuid):
         return delete_model_object(
-            request=self.request, model=HpTracker, uuid=uuid
+            request=self.request, model=HpTracker, uuid=hp_tracker_uuid
         )
 
 
@@ -421,9 +421,9 @@ class DieGroupView(LoginRequiredMixin, View):
             group_model=None,
         )
 
-    def delete(self, request, uuid):
+    def delete(self, request, die_group_uuid):
         return delete_model_object(
-            request=self.request, model=DieGroup, uuid=uuid
+            request=self.request, model=DieGroup, uuid=die_group_uuid
         )
 
 
@@ -447,8 +447,8 @@ class DieStandardView(LoginRequiredMixin, View):
                 'error': "maximum 20 dice per die collection"
             }, status=401)
 
-    def delete(self, request, uuid):
-        die_to_delete = get_object_or_404(DieStandard, id=uuid)
+    def delete(self, request, die_standard_uuid):
+        die_to_delete = get_object_or_404(DieStandard, id=die_standard_uuid)
         if die_to_delete.group.tool_session.session_owner.user.id == request.user.id:
             die_to_delete.delete()
             return reload_current_url(request)
@@ -607,47 +607,9 @@ class GameTimerView(LoginRequiredMixin, View):
             uuid=game_timer_uuid
         )
 
-# class GameTimerDelete(LoginRequiredMixin, View):
-#     """Delete a GameTimer Object"""
-#
-#     def post(self, request, game_timer_uuid):
-#         return delete_model_object(
-#             request=self.request,
-#             model=GameTimer,
-#             uuid=game_timer_uuid
-#         )
-#
-#
-# class GameTimerTitleUpdate(LoginRequiredMixin, View):
-#     """Update the title of a GameTimer object"""
-#
-#     def post(self, request, game_timer_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=GameTimerCreateForm,
-#             model=GameTimer,
-#             obj_uuid=game_timer_uuid,
-#             group_model=None
-#         )
 
-
-# class GameTimerDurationUpdate(LoginRequiredMixin, View):
-#     """update the saved_duration field of a GameTimer object"""
-#
-#     def post(self, request, game_timer_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=GameTimerDurationUpdateForm,
-#             model=GameTimer,
-#             obj_uuid=game_timer_uuid,
-#             group_model=None
-#         )
-
-
-class ScoringGroupCreate(LoginRequiredMixin, View):
-    """Add a ScoringGroup to the database and associate it with the active tool
-    session that the current user has open, post is ajax
-    Resource Groups hold sets of resources"""
+class ScoringGroupView(LoginRequiredMixin, View):
+    """create, updated and delete scoring groups"""
 
     def post(self, request, *args, **kwargs):
         if object_count(self.request, ScoringGroup) == 0:
@@ -660,29 +622,44 @@ class ScoringGroupCreate(LoginRequiredMixin, View):
                 'error': "only 1 scoring calculator per session is supported"
             }, status=401)
 
-
-class ScoringGroupUpdate(LoginRequiredMixin, View):
-    """Change a ScoringGroup title"""
-
-    def post(self, request, scoring_group_uuid, *args, **kwargs):
+    def put(self, request, scoring_group_uuid, *args, **kwargs):
         return create_or_update_obj_and_serialize(
             request=self.request,
             form=ScoringGroupForm,
             model=ScoringGroup,
             obj_uuid=scoring_group_uuid,
-            group_model=ScoringGroup,
+            group_model=None,
         )
 
-
-class ScoringGroupDelete(LoginRequiredMixin, View):
-    """Delete a ScoringGroup Object"""
-
-    def post(self, request, scoring_group_uuid):
+    def delete(self, request, scoring_group_uuid):
         return delete_model_object(
             request=self.request,
             model=ScoringGroup,
             uuid=scoring_group_uuid
         )
+
+# class ScoringGroupUpdate(LoginRequiredMixin, View):
+#     """Change a ScoringGroup title"""
+#
+#     def post(self, request, scoring_group_uuid, *args, **kwargs):
+#         return create_or_update_obj_and_serialize(
+#             request=self.request,
+#             form=ScoringGroupForm,
+#             model=ScoringGroup,
+#             obj_uuid=scoring_group_uuid,
+#             group_model=ScoringGroup,
+#         )
+#
+#
+# class ScoringGroupDelete(LoginRequiredMixin, View):
+#     """Delete a ScoringGroup Object"""
+#
+#     def post(self, request, scoring_group_uuid):
+#         return delete_model_object(
+#             request=self.request,
+#             model=ScoringGroup,
+#             uuid=scoring_group_uuid
+#         )
 
 
 class ScoringGroupAddPlayers(LoginRequiredMixin, View):
@@ -704,9 +681,8 @@ class ScoringGroupAddPlayers(LoginRequiredMixin, View):
             return redirect('user_home')
 
 
-class ScoringCategoryCreate(LoginRequiredMixin, View):
-    """Create a ScoringCategorySimple object and associate it with the group
-    that invoked the create request"""
+class ScoringCategoryView(LoginRequiredMixin, View):
+    """create and delete scoring categories"""
 
     def post(self, request, scoring_group_uuid, *args, **kwargs):
         if group_nested_object_count(
@@ -722,7 +698,7 @@ class ScoringCategoryCreate(LoginRequiredMixin, View):
                 player.save()
             return create_or_update_obj_and_serialize(
                 request=self.request,
-                form=ScoringCategoryCreateForm,
+                form=ScoringCategoryForm,
                 model=ScoringCategory,
                 obj_uuid=scoring_group_uuid,
                 group_model=ScoringGroup,
@@ -732,11 +708,7 @@ class ScoringCategoryCreate(LoginRequiredMixin, View):
                 'error': "maximum 20 scoring categories per scoring calculator"
             }, status=401)
 
-
-class ScoringCategoryDelete(LoginRequiredMixin, View):
-    """Delete a ScoringCategorySimple object"""
-
-    def post(self, request, category_uuid):
+    def delete(self, request, category_uuid):
         category_to_delete = get_object_or_404(
             ScoringCategory, id=category_uuid
         )
@@ -756,6 +728,30 @@ class ScoringCategoryDelete(LoginRequiredMixin, View):
         else:
             messages.error(request, "Insufficient Permission")
             return redirect('user_home')
+
+# class ScoringCategoryDelete(LoginRequiredMixin, View):
+#     """Delete a ScoringCategorySimple object"""
+#
+#     def post(self, request, category_uuid):
+#         category_to_delete = get_object_or_404(
+#             ScoringCategory, id=category_uuid
+#         )
+#         if category_to_delete\
+#                 .group.tool_session\
+#                 .session_owner.user.id == request.user.id:
+#             category_to_delete.delete()
+#             # erase player scores
+#             active_tool_session_id = self.request.session[
+#                 'active_tool_session_id']
+#             players = Player.objects \
+#                 .filter(tool_session_id=active_tool_session_id)
+#             for player in players:
+#                 player.score = None
+#                 player.save()
+#             return reload_current_url(request)
+#         else:
+#             messages.error(request, "Insufficient Permission")
+#             return redirect('user_home')
 
 
 # class PlayerScoreUpdate(LoginRequiredMixin, View):

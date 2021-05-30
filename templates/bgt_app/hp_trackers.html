@@ -6,7 +6,7 @@
 <div id="HpTrackersViewWrapper" class="tool-body">
     {% for hp_tracker in hp_trackers %}
         <div class="hp-tracker-box">
-            <form method="POST" action="{% url 'hp_tracker_update' hp_tracker.id %}"
+            <form method="POST" action="{% url 'hp_tracker_update_delete' hp_tracker.id %}"
                   data-id="{{ hp_tracker.id }}"
                   id="{{ hp_tracker.id }}-HpChangeValueForm"
                   class="hp-change-value-form">
@@ -44,7 +44,7 @@
                 </div>
             </form>
         <form method="POST"
-              action="{% url 'hp_tracker_delete' hp_tracker.id %}?next={{ request.get_full_path }}"
+              action="{% url 'hp_tracker_update_delete' hp_tracker.id %}?next={{ request.get_full_path }}"
               class="delete-tool-form">
         {% csrf_token %}
         {% method_override 'DELETE' %}

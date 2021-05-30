@@ -26,7 +26,7 @@
                     <br>
                     <div class="player-box-row">
                         <form method="POST"
-                              action="{% url 'player_delete' player.id %}?next={{ request.get_full_path }}"
+                              action="{% url 'player_update_delete' player.id %}?next={{ request.get_full_path }}"
                               id="{{ scoring_category.id }}-deletePlayerForm"
                               style="margin-left: auto;">
                             {% csrf_token %}

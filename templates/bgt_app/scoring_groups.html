@@ -1,15 +1,16 @@
 {% load static %}
 {% load widget_tweaks %}
+{% load method_override %}
 
 {# scoring groups and scoring categories #}
 <div id="scoringPageSuccessMessageWrapper" class="message-wrapper"></div>
 <div id="scoringGroupsViewWrapper" class="tool-body flex-start">
     {% for scoring_group in scoring_groups %}
-        <div class="scoring-group-box">
-            <form method="POST" action="{% url 'scoring_group_update' scoring_group.id %}"
-                  id="{{ scoring_group.id }}-scoringGroupForm"
+        <div id="{{ scoring_group.id }}-scoringGroupBox" class="scoring-group-box">
+            <form method="POST" action="{% url 'scoring_group_update_delete' scoring_group.id %}"
+                  id="{{ scoring_group.id }}-scoringGroupTitleForm"
                   data-id="{{ scoring_group.id }}"
-                  class="scoring-group-form">
+                  class="scoring-group-title-form">
                 {% csrf_token %}
                 <div class="tool-title-box">
                     <div id="{{ scoring_group.id }}-scoringGroupTitle"
@@ -45,37 +46,38 @@
 {# delete scoring group form #}
             <form id="{{ scoring_group.id }}-deleteToolForm"
                   class="delete-tool-form"
-                  action="{% url 'scoring_group_delete' scoring_group.id %}?next={{ request.get_full_path }}"
+                  action="{% url 'scoring_group_update_delete' scoring_group.id %}?next={{ request.get_full_path }}"
                   method="POST">
                 {% csrf_token %}
+                {% method_override 'DELETE' %}
                 <button id="{{ scoring_group.id }}-scoringGroupDeleteBtn"
                         class="delete-btn-large">
                 </button>
             </form>
 {# add players to scoring group #}
-        <div id="{{ scoring_group.id }}-scoringGroupPlayersWrapper" class="scoring-group-players-wrapper absolute-hidden">
-        {% if players %}
-            <div class="scoring-group-add-players-box">
-                <form action="{% url 'scoring_group_add_players' scoring_group.id %}?next={{ request.get_full_path }}"
-                      method="POST">
-                {% csrf_token %}
-                    {% for player in scoring_group_add_players_form.players %}
-                        <div class="scoring-group-add-player-row">
-                            <label for="{{ player.id_for_label }}"></label>
-                            <div class="scoring-group-add-player-checkbox">{{ player.tag }}</div>
-                            <div class="scoring-group-add-player-name">{{ player.choice_label }}</div>
-                        </div>
-                    {% endfor %}
-                <br />
-                <div class="scoring-group-add-player-row flex-end">
-                    <button class="blue-btn">save</button>
+            <div id="{{ scoring_group.id }}-scoringGroupPlayersWrapper" class="scoring-group-players-wrapper absolute-hidden">
+            {% if players %}
+                <div class="scoring-group-add-players-box">
+                    <form action="{% url 'scoring_group_add_players' scoring_group.id %}?next={{ request.get_full_path }}"
+                          method="POST">
+                    {% csrf_token %}
+                        {% for player in scoring_group_add_players_form.players %}
+                            <div class="scoring-group-add-player-row">
+                                <label for="{{ player.id_for_label }}"></label>
+                                <div class="scoring-group-add-player-checkbox">{{ player.tag }}</div>
+                                <div class="scoring-group-add-player-name">{{ player.choice_label }}</div>
+                            </div>
+                        {% endfor %}
+                    <br />
+                    <div class="scoring-group-add-player-row flex-end">
+                        <button class="blue-btn">save</button>
+                    </div>
+                    </form>
                 </div>
-                </form>
+            {% else %}
+                <span class="large-text"><i>create players first</i></span>
+            {% endif %}
             </div>
-        {% else %}
-            <span class="large-text"><i>create players first</i></span>
-        {% endif %}
-        </div>
 {# create new scoring categories #}
             <div id="{{ scoring_group.id }}-scoringCategoryCreateFormWrapper" class="create-new-object-form-wrapper">
                 <div class="form-title-box">
@@ -90,7 +92,7 @@
                     <div class="create-object-form-row">
                         <div id={{ scoring_group.id }}-createScoringCategoryCategoryNameField
                              class="create-scoring-category-input-wrapper">
-                            {{ scoring_category_create_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}
+                            {{ scoring_category_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}
                             <span class="create-scoring-category-field-text">points</span>
                         </div>
                     </div>
@@ -98,19 +100,19 @@
                         <div id={{ scoring_group.id }}-createScoringCategoryTypeField
                              class="create-scoring-category-input-wrapper">
                             <span class="create-scoring-category-field-text">for every</span>
-                            {{ scoring_category_create_form.items_per_group|add_class:"create-scoring-category-input" }}
+                            {{ scoring_category_form.items_per_group|add_class:"create-scoring-category-input" }}
                         </div>
                     </div>
                     <div class="create-object-form-row">
                         <div id={{ scoring_group.id }}-createScoringCategoryRoundingField
                              class="create-scoring-category-input-wrapper">
-                            {{ scoring_category_create_form.name|add_class:"create-scoring-category-input" }}
+                            {{ scoring_category_form.name|add_class:"create-scoring-category-input" }}
                         </div>
                     </div>
                 <br />
                     <div class="create-object-form-row">
                         <span class="create-scoring-category-field-text">rounding</span>
-                        {{ scoring_category_create_form.rounding|add_class:"create-scoring-category-input" }}
+                        {{ scoring_category_form.rounding|add_class:"create-scoring-category-input" }}
                     </div>
                     <br>
                     <div class="create-object-form-row">
@@ -122,108 +124,112 @@
                 </button>
             </div>
 {# display scoring categories #}
-        <div id="{{ scoring_group.id }}-scoringGroupCategoriesWrapper" class="scoring-group-categories-wrapper">
-            <button data-id="{{ scoring_group.id }}"
-                    class="scoring-group-add-category-open-form-btn open-create-item-form-btn">
-            </button>
-            <br />
-            {% for scoring_category in scoring_group.scoring_categories.all %}
-                <div class="scoring-category-box">
-                    <div class="scoring-category-box-row title-row">
-                        <span class="scoring-category-box-title">{{ scoring_category.name }}</span>
-                        <form method="POST"
-                              action="{% url 'scoring_category_delete' scoring_category.id %}?next={{ request.get_full_path }}"
-                              id="{{ scoring_category.id }}-deleteSingleScoringCategoryForm">
+            <div id="{{ scoring_group.id }}-scoringGroupCategoriesWrapper" class="scoring-group-categories-wrapper">
+                <button data-id="{{ scoring_group.id }}"
+                        class="scoring-group-add-category-open-form-btn open-create-item-form-btn">
+                </button>
+                <br />
+                {% for scoring_category in scoring_group.scoring_categories.all %}
+                    <div class="scoring-category-box">
+                        <div class="scoring-category-box-row title-row">
+                            <span class="scoring-category-box-title">{{ scoring_category.name }}</span>
+{# delete a single scoring category #}
+                            <form method="POST"
+                                  action="{% url 'scoring_category_delete' scoring_category.id %}?next={{ request.get_full_path }}"
+                                  id="{{ scoring_category.id }}-deleteSingleScoringCategoryForm">
+                                {% csrf_token %}
+                                {% method_override 'DELETE' %}
+                                <button class="red-btn small delete-btn-small"></button>
+                            </form>
+                        </div>
+                        <hr style="width: 100%;">
+                        <div class="scoring-category-box-row scoring-category-text">
+                            <span class="scoring-category-text-input-values">{{ scoring_category.points_gained_or_lost}}</span>
+                            <span>point(s) per</span>
+                            <span class="scoring-category-text-input-values">{{ scoring_category.items_per_group }}</span>
+                            {% if scoring_category.rounding == "up" %}
+                                <div>
+                                    <span>rounded up</span>
+                                </div>
+                            {% elif scoring_category.rounding == "down" %}
+                                <div>
+                                    <span>rounded down</span>
+                                </div>
+                            {% elif scoring_category.rounding == "none" %}
+                                <div>
+                                    <span>no rounding</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <span class="large-text"><i>add some scoring categories</i></span>
+                {% endfor %}
+            </div>
+{# scores #}
+            <div data-id="{{ scoring_group.id }}"
+                 id="{{ scoring_group.id }}-scoringGroupScoresWrapper"
+                 class="scoring-group-scores-wrapper  absolute-hidden">
+                {% for player in scoring_group.players.all %}
+                    <div class="scoring-calc-row player-name-row">
+                        <button data-id="{{ player.id }}" class="score-calc-input-area-open-btn">&plus;</button>
+                        <button class="score-calc-input-area-close-btn absolute-hidden">&minus;</button>
+                        {% if player.name %}
+                            <div class="scoring-calc-name-text">{{ player.name }}</div>
+                        {% else %}
+                            <div class="scoring-calc-name-text"><i>no name</i></div>
+                        {% endif %}
+                        <form action="{% url 'player_update_delete' player.id %}"
+                              data-id="{{ player.id }}"
+                              id="{{ player.id }}-scoreCalcPlayerScoreForm"
+                              class="score-calc-player-score-form">
                             {% csrf_token %}
-                            <button class="red-btn small delete-btn-small"></button>
+                            {% if player.score == None %}
+                                <div id="{{ player.id }}-scoreCalcScoreValueBox"
+                                     class="score-calc-score-value-box">no score
+                                </div>
+                            {% else %}
+                                <div id="{{ player.id }}-scoreCalcScoreValueBox"
+                                     class="score-calc-score-value-box">{{ player.score|floatformat }}
+                                </div>
+                            {% endif %}
+                            <div class="absolute-hidden">{{ player_form.score }}</div>
+                            <div class="absolute-hidden">{{ player_form.name }}</div>
                         </form>
                     </div>
-                    <hr style="width: 100%;">
-                    <div class="scoring-category-box-row scoring-category-text">
-                        <span class="scoring-category-text-input-values">{{ scoring_category.points_gained_or_lost}}</span>
-                        <span>point(s) per</span>
-                        <span class="scoring-category-text-input-values">{{ scoring_category.items_per_group }}</span>
-                        {% if scoring_category.rounding == "up" %}
-                            <div>
-                                <span>rounded up</span>
-                            </div>
-                        {% elif scoring_category.rounding == "down" %}
-                            <div>
-                                <span>rounded down</span>
-                            </div>
-                        {% elif scoring_category.rounding == "none" %}
-                            <div>
-                                <span>no rounding</span>
-                            </div>
-                        {% endif %}
+                    <div id="{{ player.id }}-scoreCalcInputAreaWrapper" class="score-calc-input-area-wrapper absolute-hidden">
+                        <form action=""
+                              data-id="{{ player.id }}"
+                              id="{{ player.id }}-scoreCalcForm"
+                              class="score-calc-form">
+                            {% for scoring_category in scoring_group.scoring_categories.all %}
+                                <div class="scoring-calc-row">
+                                    <div class="score-calc-category-name-text">{{ scoring_category.name }}</div>
+                                <input type="number"
+                                       step="0.01"
+                                       name="score-calc-number-input"
+                                       data-points="{{ scoring_category.points_gained_or_lost }}"
+                                       data-group="{{ scoring_category.items_per_group }}"
+                                       data-rounding="{{ scoring_category.rounding }}"
+                                       placeholder="0"
+                                       class="score-calc-input-box">
+                                </div>
+                                <hr style="width: 100%;">
+                            {% endfor %}
+                            {% if scoring_group.scoring_categories.all %}
+                                <div class="scoring-calc-row flex-end">
+                                    <button>score it!</button>
+                                </div>
+                            {% else %}
+                                <div class="scoring-calc-row">
+                                    <span class="large-text"><i>add some scoring categories</i></span>
+                                </div>
+                            {% endif %}
+                        </form>
                     </div>
-                </div>
-            {% empty %}
-                <span class="large-text"><i>add some scoring categories</i></span>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
-{# scores #}
-        <div id="{{ scoring_group.id }}-scoringGroupScoresWrapper" class="scoring-group-scores-wrapper  absolute-hidden">
-            {% for player in scoring_group.players.all %}
-                <div class="scoring-calc-row player-name-row">
-                    <button data-id="{{ player.id }}" class="score-calc-input-area-open-btn">&plus;</button>
-                    <button class="score-calc-input-area-close-btn absolute-hidden">&minus;</button>
-                    {% if player.name %}
-                        <div class="scoring-calc-name-text">{{ player.name }}</div>
-                    {% else %}
-                        <div class="scoring-calc-name-text"><i>no name</i></div>
-                    {% endif %}
-                    <form action="{% url 'player_update' player.id %}"
-                          data-id="{{ player.id }}"
-                          id="{{ player.id }}-scoreCalcPlayerScoreForm"
-                          class="score-calc-player-score-form">
-                        {% csrf_token %}
-                        {% if player.score == None %}
-                            <div id="{{ player.id }}-scoreCalcScoreValueBox"
-                                 class="score-calc-score-value-box">no score
-                            </div>
-                        {% else %}
-                            <div id="{{ player.id }}-scoreCalcScoreValueBox"
-                                 class="score-calc-score-value-box">{{ player.score|floatformat }}
-                            </div>
-                        {% endif %}
-                        <div class="absolute-hidden">{{ player_form.score }}</div>
-                        <div class="absolute-hidden">{{ player_form.name }}</div>
-                    </form>
-                </div>
-                <div id="{{ player.id }}-scoreCalcInputAreaWrapper" class="score-calc-input-area-wrapper absolute-hidden">
-                    <form action=""
-                          data-id="{{ player.id }}"
-                          id="{{ player.id }}-scoreCalcForm"
-                          class="score-calc-form">
-                        {% for scoring_category in scoring_group.scoring_categories.all %}
-                            <div class="scoring-calc-row">
-                                <div class="score-calc-category-name-text">{{ scoring_category.name }}</div>
-                            <input type="number"
-                                   step="0.01"
-                                   name="score-calc-number-input"
-                                   data-points="{{ scoring_category.points_gained_or_lost }}"
-                                   data-group="{{ scoring_category.items_per_group }}"
-                                   data-rounding="{{ scoring_category.rounding }}"
-                                   placeholder="0"
-                                   class="score-calc-input-box">
-                            </div>
-                            <hr style="width: 100%;">
-                        {% endfor %}
-                        {% if scoring_group.scoring_categories.all %}
-                            <div class="scoring-calc-row flex-end">
-                                <button>score it!</button>
-                            </div>
-                        {% else %}
-                            <div class="scoring-calc-row">
-                                <span class="large-text"><i>add some scoring categories</i></span>
-                            </div>
-                        {% endif %}
-                    </form>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
     {% empty %}
         <span class="large-text"><i>nothing to score yet</i></span>
     {% endfor %}

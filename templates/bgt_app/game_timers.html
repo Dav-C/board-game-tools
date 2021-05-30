@@ -8,7 +8,7 @@
         <div class="game-timer-box">
             <div id="{{ game_timer.id }}-gameTimerTileArea"
                  class="game-timer-title-area">
-                <form action="{% url 'game_timer_update' game_timer.id%}"
+                <form action="{% url 'game_timer_update_delete' game_timer.id%}"
                       method="POST"
                       id="{{ game_timer.id }}-gameTimerTitleForm"
                       data-id="{{ game_timer.id }}"
@@ -60,7 +60,7 @@
 {# delete game timer form #}
             <form id="{{ game_timer.id }}-deleteToolForm"
                   class="delete-tool-form"
-                  action="{% url 'game_timer_delete' game_timer.id %}?next={{ request.get_full_path }}"
+                  action="{% url 'game_timer_update_delete' game_timer.id %}?next={{ request.get_full_path }}"
                   method="POST">
                 {% csrf_token %}
                 {% method_override 'DELETE' %}
@@ -70,7 +70,7 @@
             </form>
         </div>
 {# game timer duration #}
-            <form action="{% url 'game_timer_update' game_timer.id %}"
+            <form action="{% url 'game_timer_update_delete' game_timer.id %}"
                   data-id="{{ game_timer.id }}"
                   id="{{ game_timer.id }}-gameTimerDurationUpdateForm"
                   class="game-timer-duration-update-form absolute-hidden">

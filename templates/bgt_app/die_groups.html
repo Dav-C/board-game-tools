@@ -8,7 +8,7 @@
     {% for die_group in die_groups %}
         <div class="die-group-box">
             <form method="POST"
-                  action="{% url 'die_group_update' die_group.id %}"
+                  action="{% url 'die_group_update_delete' die_group.id %}"
                   data-id="{{ die_group.id }}"
                   id="{{ die_group.id }}-dieGroupUpdateForm"
                   class="die-group-update-form">
@@ -42,7 +42,7 @@
             </div>
 {# delete die group form #}
             <form method="POST"
-                  action="{% url 'die_group_delete' die_group.id %}?next={{ request.get_full_path }}"
+                  action="{% url 'die_group_update_delete' die_group.id %}?next={{ request.get_full_path }}"
                   class="delete-tool-form">
                 {% csrf_token %}
                 {% method_override 'DELETE' %}
