@@ -638,29 +638,6 @@ class ScoringGroupView(LoginRequiredMixin, View):
             uuid=scoring_group_uuid
         )
 
-# class ScoringGroupUpdate(LoginRequiredMixin, View):
-#     """Change a ScoringGroup title"""
-#
-#     def post(self, request, scoring_group_uuid, *args, **kwargs):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=ScoringGroupForm,
-#             model=ScoringGroup,
-#             obj_uuid=scoring_group_uuid,
-#             group_model=ScoringGroup,
-#         )
-#
-#
-# class ScoringGroupDelete(LoginRequiredMixin, View):
-#     """Delete a ScoringGroup Object"""
-#
-#     def post(self, request, scoring_group_uuid):
-#         return delete_model_object(
-#             request=self.request,
-#             model=ScoringGroup,
-#             uuid=scoring_group_uuid
-#         )
-
 
 class ScoringGroupAddPlayers(LoginRequiredMixin, View):
     """associate selected Players with a ScoringGroup Object"""
@@ -728,43 +705,6 @@ class ScoringCategoryView(LoginRequiredMixin, View):
         else:
             messages.error(request, "Insufficient Permission")
             return redirect('user_home')
-
-# class ScoringCategoryDelete(LoginRequiredMixin, View):
-#     """Delete a ScoringCategorySimple object"""
-#
-#     def post(self, request, category_uuid):
-#         category_to_delete = get_object_or_404(
-#             ScoringCategory, id=category_uuid
-#         )
-#         if category_to_delete\
-#                 .group.tool_session\
-#                 .session_owner.user.id == request.user.id:
-#             category_to_delete.delete()
-#             # erase player scores
-#             active_tool_session_id = self.request.session[
-#                 'active_tool_session_id']
-#             players = Player.objects \
-#                 .filter(tool_session_id=active_tool_session_id)
-#             for player in players:
-#                 player.score = None
-#                 player.save()
-#             return reload_current_url(request)
-#         else:
-#             messages.error(request, "Insufficient Permission")
-#             return redirect('user_home')
-
-
-# class PlayerScoreUpdate(LoginRequiredMixin, View):
-#     """Update a Player score value"""
-#
-#     def post(self, request, player_uuid):
-#         return create_or_update_obj_and_serialize(
-#             request=self.request,
-#             form=PlayerScoreForm,
-#             model=Player,
-#             obj_uuid=player_uuid,
-#             group_model=None,
-#         )
 
 
 class DrawBagCreate(LoginRequiredMixin, View):

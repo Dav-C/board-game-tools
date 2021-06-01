@@ -1111,6 +1111,19 @@ scoringControl = {
             $('#' + data_id + '-scoringGroupCategoriesWrapper').addClass('absolute-hidden');
             $('#' + data_id + '-scoringGroupScoresWrapper').addClass('absolute-hidden');
             $(sub_group_wrapper).removeClass('absolute-hidden');
+            localStorage.setItem('active-scoring-group-data-id', data_id.toString());
+            localStorage.setItem('active-scoring-view-wrapper-id', sub_group_wrapper.toString());
+        },
+        set_active_view_wrapper: function() {
+            'use strict';
+            if (localStorage.getItem('active-scoring-group-data-id')) {
+                let active_scoring_group_data_id = localStorage.getItem('active-scoring-group-data-id');
+                let active_scoring_view_wrapper_id = localStorage.getItem('active-scoring-view-wrapper-id');
+                $('#' + active_scoring_group_data_id  + '-scoringGroupPlayersWrapper').addClass('absolute-hidden');
+                $('#' + active_scoring_group_data_id  + '-scoringGroupCategoriesWrapper').addClass('absolute-hidden');
+                $('#' + active_scoring_group_data_id  + '-scoringGroupScoresWrapper').addClass('absolute-hidden');
+                $(active_scoring_view_wrapper_id).removeClass('absolute-hidden');
+            }
         },
         open_create_scoring_category_forms_box: function(this_value) {
             'use strict';
@@ -1163,6 +1176,7 @@ scoringControl = {
                 data: serialized_data,
                 success: function (response) {
                     scoring_group_box.load(' ' + '#' + data_id + '-scoringGroupBox' + ' > *', function () {
+                        scoringControl.scoring_funcs.set_active_view_wrapper();
                     console.log('ajaxSuccess');
                     });
                 },
@@ -1251,6 +1265,7 @@ $("#scoringGroupsViewWrapper").on('submit', '.create-custom-object-form.scoring-
         data: serialized_data,
         success: function (response) {
             messageControl.display_success_message('#scoringPageSuccessMessageWrapper', 'category added!');
+            scoringControl.scoring_funcs.set_active_view_wrapper();
             console.log('ajaxSuccess');
         },
         error: function(response) {
@@ -1314,7 +1329,6 @@ $("#scoringGroupsViewWrapper").on('submit', '.score-calc-player-score-form', fun
     'use strict';
     e.preventDefault();
     let data_id = $(this).parent().parent().attr('data-id');
-    console.log(data_id)
     let form = $(this);
     scoringControl.scoring_funcs.update_scoring_group(form, data_id);
 });
@@ -1486,7 +1500,8 @@ $("#gameTimersViewWrapper").on('submit', '.game-timer-title-form', function (e) 
 
 // detect window unloads, stop the game timer and save the timer duration
 $(window).on('beforeunload', function() {
-    console.log('unload trigger')
+    'use strict';
+    console.log('unload trigger');
     if (localStorage.getItem('game_timer_status') === 'running') {
         timer_running = false;
         let data_id = localStorage.getItem('game_timer_id');
@@ -1577,7 +1592,7 @@ drawBagControl = {
             'use strict';
             if (localStorage.getItem('active-draw-bag-group-data-id')) {
                 let active_draw_bag_group_data_id = localStorage.getItem('active-draw-bag-group-data-id');
-                let active_draw_bag_view_wrapper_id = localStorage.getItem('active-draw-bag-view-wrapper-id')
+                let active_draw_bag_view_wrapper_id = localStorage.getItem('active-draw-bag-view-wrapper-id');
                 $('#' + active_draw_bag_group_data_id  + '-drawBagItemsWrapper').addClass('absolute-hidden');
                 $('#' + active_draw_bag_group_data_id  + '-drawBagDrawnItemsWrapper').addClass('absolute-hidden');
                 $('#' + active_draw_bag_group_data_id  + '-drawBagItemsInBagWrapper').addClass('absolute-hidden');
@@ -1634,7 +1649,7 @@ drawBagControl = {
                             // let message = response.message
                             // messageControl.display_success_message('#errorMessageWrapper', message);
                             $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
-                            drawBagControl.draw_bag_funcs.set_active_view_wrapper(data_id);
+                            drawBagControl.draw_bag_funcs.set_active_view_wrapper();
                             messageControl.display_success_message('#drawBagPageSuccessMessageWrapper', 'the bag is empty!')
                             });
                         }
@@ -1669,7 +1684,7 @@ drawBagControl = {
                             // let message = response.message
                             // messageControl.display_success_message('#errorMessageWrapper', message);
                             $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
-                            drawBagControl.draw_bag_funcs.set_active_view_wrapper(data_id);
+                            drawBagControl.draw_bag_funcs.set_active_view_wrapper();
                             });
                         }
                     }
@@ -1718,7 +1733,6 @@ drawBagControl = {
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-drawBagItemCreateFormWrapper');
             form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
-            // $('body, html').addClass('no_scroll');
             openToolPageCover();
         },
         close_draw_bag_item_create_form_wrapper: function(this_value) {
