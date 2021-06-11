@@ -37,7 +37,7 @@ from .forms import (
     ScoringGroupAddPlayersForm,
     ScoringCategoryForm,
     DrawBagForm,
-    DrawBagItemCreateForm
+    DrawBagItemForm
 )
 
 from .models import (
@@ -313,7 +313,7 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
         context['draw_bags'] = draw_bags
         context['draw_bag_items_sorted_by_name'] = draw_bag_items_sorted_by_name
         context['draw_bag_form'] = DrawBagForm
-        context['draw_bag_item_create_form'] = DrawBagItemCreateForm
+        context['draw_bag_item_form'] = DrawBagItemForm
 
         return context
 
@@ -707,10 +707,8 @@ class ScoringCategoryView(LoginRequiredMixin, View):
             return redirect('user_home')
 
 
-class DrawBagCreate(LoginRequiredMixin, View):
-    """Add a DrawBag to the database and associate it with the active tool
-    session that the current user has open, post is ajax
-    Resource Groups hold sets of resources"""
+class DrawBagView(LoginRequiredMixin, View):
+    """create update and delete DrawBag objects"""
 
     def post(self, request, *args, **kwargs):
         if object_count(self.request, DrawBag) <= 5:
@@ -723,22 +721,7 @@ class DrawBagCreate(LoginRequiredMixin, View):
                 'error': "maximum 5 draw bags per session"
             }, status=401)
 
-
-class DrawBagDelete(LoginRequiredMixin, View):
-    """Delete a ScoringGroup Object"""
-
-    def post(self, request, draw_bag_uuid):
-        return delete_model_object(
-            request=self.request,
-            model=DrawBag,
-            uuid=draw_bag_uuid
-        )
-
-
-class DrawBagUpdate(LoginRequiredMixin, View):
-    """Change a DrawBag title"""
-
-    def post(self, request, draw_bag_uuid, *args, **kwargs):
+    def put(self, request, draw_bag_uuid, *args, **kwargs):
         return create_or_update_obj_and_serialize(
             request=self.request,
             form=DrawBagForm,
@@ -747,11 +730,35 @@ class DrawBagUpdate(LoginRequiredMixin, View):
             group_model=DrawBag,
         )
 
+    def delete(self, request, draw_bag_uuid):
+        return delete_model_object(
+            request=self.request,
+            model=DrawBag,
+            uuid=draw_bag_uuid
+        )
 
-class DrawBagItemDelete(LoginRequiredMixin, View):
-    """Delete a DrawBagItem"""
 
-    def post(self, request, draw_bag_item_uuid):
+class DrawBagItemView(LoginRequiredMixin, View):
+    """create and delete DrawBagItem Objects"""
+
+    def post(self, request, draw_bag_uuid):
+        form = DrawBagItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            form_instance.group = \
+                DrawBag.objects.get(
+                    id=draw_bag_uuid
+                )
+            form_instance.save()
+            serialized_form_instance = serializers.serialize(
+                'json', [form_instance, ])
+            return JsonResponse(
+                {'form_instance': serialized_form_instance}, status=200)
+        else:
+            return JsonResponse({'error': form.errors.as_json()},
+                                status=400)
+
+    def delete(self, request, draw_bag_item_uuid):
         draw_bag_item_to_delete = get_object_or_404(
             DrawBagItem, id=draw_bag_item_uuid
         )
@@ -795,7 +802,7 @@ class DrawBagDrawRandomItem(LoginRequiredMixin, View):
 
 
 class DrawBagItemReturn(LoginRequiredMixin, View):
-    """Return a specific item to a draw bag"""
+    """Return a specific DrawBagItem to a draw bag"""
 
     def get(self, request, draw_bag_item_uuid):
         try:
@@ -812,7 +819,7 @@ class DrawBagItemReturn(LoginRequiredMixin, View):
 
 
 class DrawBagItemDraw(LoginRequiredMixin, View):
-    """draw a specific item from a draw bag"""
+    """draw a specific DrawBagItem from a draw bag"""
 
     def get(self, request, draw_bag_item_uuid):
         try:
@@ -829,7 +836,7 @@ class DrawBagItemDraw(LoginRequiredMixin, View):
 
 
 class DrawBagReset(LoginRequiredMixin, View):
-    """Put all the items back in the bag"""
+    """Put all the DrawBagItems back in the bag"""
 
     def get(self, request, draw_bag_uuid):
         draw_bag_items = DrawBagItem.objects.filter(
@@ -846,27 +853,6 @@ class DrawBagReset(LoginRequiredMixin, View):
             return JsonResponse({
                 'message': 'nothing to put in the bag'
             }, status=200)
-
-
-class DrawBagItemCreate(FloatingPointError, View):
-    """create DrawBagItem Objects"""
-
-    def post(self, request, draw_bag_uuid):
-        form = DrawBagItemCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            form_instance = form.save(commit=False)
-            form_instance.group = \
-                DrawBag.objects.get(
-                    id=draw_bag_uuid
-                )
-            form_instance.save()
-            serialized_form_instance = serializers.serialize(
-                'json', [form_instance, ])
-            return JsonResponse(
-                {'form_instance': serialized_form_instance}, status=200)
-        else:
-            return JsonResponse({'error': form.errors.as_json()},
-                                status=400)
 
 
 

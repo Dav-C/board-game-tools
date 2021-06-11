@@ -346,7 +346,7 @@ class DrawBagForm(forms.ModelForm):
     )
 
 
-class DrawBagItemCreateForm(forms.ModelForm):
+class DrawBagItemForm(forms.ModelForm):
     """Create DrawBagItem Objects"""
     class Meta:
         model = DrawBagItem

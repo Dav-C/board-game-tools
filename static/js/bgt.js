@@ -820,7 +820,6 @@ resourceControl = {
             $(data_id + object_quantity_box_id).css({'display': 'none'});
             $(data_id + value_change_id).empty().prepend(resource_change_value).css({'display': 'inline'});
         },
-
         resource_decrease_value: function(this_value, value_change_id, object_quantity_box_id) {
             'use strict';
             let data_id = '#' + $(this_value).attr('data-id');
@@ -1705,7 +1704,6 @@ drawBagControl = {
                 form_data.append('image', form_data_value, 'uploaded_image.jpg');
                 content_type = false
             }
-            // console.log(form);
             console.log(form_data);
             $.ajax({
                 processData: false,
@@ -1823,7 +1821,6 @@ $("#drawBagsViewWrapper").on('click', '.draw-bag-title', function() {
     hideDrawBagTitleChangeBtns();
     });
 });
-
 // update a draw bag title and hide editing controls
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function(e) {
     'use strict';
@@ -1831,6 +1828,7 @@ $("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function(e) {
     let data_id = '#' + $(this).attr("data-id");
     let serializedData = $(this).serialize();
     $.ajax({
+        headers: { "X-HTTP-Method-Override": "PUT" },
         type: 'POST',
         url: $(this).attr('action'),
         data: serializedData,
@@ -1934,5 +1932,5 @@ $("#drawBagsViewWrapper").on('click', '.draw-bag-item-img-small', function (e) {
 
 });
 
-// --------------- END OF FILE ---------------
 console.log('this application has been brought to you by David Cates.');
+// --------------- END OF FILE ---------------

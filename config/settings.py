@@ -1,3 +1,7 @@
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
 """
 Django settings for bgt project.
 
@@ -10,21 +14,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
-import os
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# load environment variables
+load_dotenv(os.path.join(BASE_DIR, 'config\.env'))
+
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'rg#=cshe%r&rdqr!s@hx)%24=fgd=8=2=&6h3&m)e6&5)-vcdm'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 # 192.168.4.33 is for testing only REMOVE BEFORE DEPLOYING
 ALLOWED_HOSTS = ['192.168.4.33', '127.0.0.1', 'localhost']
@@ -86,8 +91,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'bgt_data',
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': 5432
     }
 }
 

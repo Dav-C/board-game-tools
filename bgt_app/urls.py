@@ -18,15 +18,12 @@ from .views import (
     ScoringGroupView,
     ScoringGroupAddPlayers,
     ScoringCategoryView,
-    DrawBagCreate,
-    DrawBagDelete,
-    DrawBagUpdate,
-    DrawBagItemDelete,
+    DrawBagView,
+    DrawBagItemView,
     DrawBagDrawRandomItem,
     DrawBagItemReturn,
     DrawBagItemDraw,
     DrawBagReset,
-    DrawBagItemCreate,
 )
 
 urlpatterns = [
@@ -112,16 +109,16 @@ urlpatterns = [
          name='scoring_category_delete'),
 
     path('draw-bag-create/',
-         DrawBagCreate.as_view(), name='draw_bag_create'),
+         DrawBagView.as_view(), name='draw_bag_create'),
 
-    path('draw-bag-delete/<draw_bag_uuid>',
-         DrawBagDelete.as_view(), name='draw_bag_delete'),
+    path('draw-bag-update-delete/<draw_bag_uuid>',
+         DrawBagView.as_view(), name='draw_bag_update_delete'),
 
-    path('draw-bag-title-update/<draw_bag_uuid>',
-         DrawBagUpdate.as_view(), name='draw_bag_title_update'),
+    path('draw-bag-item-create/<draw_bag_uuid>',
+         DrawBagItemView.as_view(), name='draw_bag_item_create'),
 
     path('draw-bag-item-delete/<draw_bag_item_uuid>',
-         DrawBagItemDelete.as_view(), name='draw_bag_item_delete'),
+         DrawBagItemView.as_view(), name='draw_bag_item_delete'),
 
     path('draw-bag-draw-random-item/<draw_bag_uuid>',
          DrawBagDrawRandomItem.as_view(), name='draw_bag_draw_random_item'),
@@ -134,7 +131,4 @@ urlpatterns = [
 
     path('draw-bag-reset/<draw_bag_uuid>',
          DrawBagReset.as_view(), name='draw_bag_reset'),
-
-    path('draw-bag-item-create/<draw_bag_uuid>',
-         DrawBagItemCreate.as_view(), name='draw_bag_item_create'),
 ]
