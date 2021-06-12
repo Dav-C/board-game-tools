@@ -6,7 +6,8 @@
 <div id="resourceCreatedSuccessMessageWrapper" class="message-wrapper"></div>
 <div id="resourceGroupsViewWrapper" class="tool-body">
     {% for resource_group in resource_groups %}
-    <div class="resource-group-box">
+    <div id="{{ resource_group.id }}-resourceGroupBox"
+         class="resource-group-box">
         <form method="POST" action="{% url 'resource_group_update_delete' resource_group.id %}"
               id="{{ resource_group.id }}-resourceGroupUpdateForm"
               data-id="{{ resource_group.id }}"
@@ -46,7 +47,7 @@
             </button>
         </form>
 {# add new resource form #}
-            <div id="{{ resource_group.id }}-resourceGroupCreateResourceFormWrapper" class="create-new-object-form-wrapper">
+            <div id="{{ resource_group.id }}-resourceGroupCreateResourceFormWrapper" class="create-new-object-form-wrapper no-display">
                 <div class="form-title-box">
                     <span class="form-title-text">custom resource</span>
                 </div>
@@ -74,35 +75,44 @@
 
 {# quick add resource buttons #}
                <div class="common-object-quick-add-btn-box" data-id="{{ resource_group.id }}">
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="money" class="common-object-quick-create-btn resource-create">mony
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="gold" class="common-object-quick-create-btn resource-create">gold
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="stone" class="common-object-quick-create-btn resource-create">stone
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="wood" class="common-object-quick-create-btn resource-create">wood
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="food" class="common-object-quick-create-btn resource-create">food
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="brick" class="common-object-quick-create-btn resource-create">brick
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="cloth" class="common-object-quick-create-btn resource-create">cloth
-                   </button>
-                   <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                           data-name="animals" class="common-object-quick-create-btn resource-create">animl
-                   </button>
+                   <div class="quick-add-item-row">
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="money" class="common-object-quick-create-btn resource-create">mony
+                       </button>
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="wood" class="common-object-quick-create-btn resource-create">wood
+                       </button>
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="food" class="common-object-quick-create-btn resource-create">food
+                       </button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="brick" class="common-object-quick-create-btn resource-create">brick
+                       </button>
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="cloth" class="common-object-quick-create-btn resource-create">cloth
+                       </button>
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="animals" class="common-object-quick-create-btn resource-create">animl
+                       </button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="stone" class="common-object-quick-create-btn resource-create">stone
+                       </button>
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="strength" class="common-object-quick-create-btn resource-create">strength
+                       </button>
+                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
+                               data-name="animals" class="common-object-quick-create-btn resource-create">defence
+                       </button>
+                   </div>
                </div>
                <br />
                <br />
                <button class="blue-btn smaller create-custom-object-form-done-btn resource"
-                       data-id="{{ die_group.id }}">done
+                       data-id="{{ resource_group.id }}">done
                </button>
             </div>
 

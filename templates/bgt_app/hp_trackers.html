@@ -5,7 +5,7 @@
 {#Hp Trackers#}
 <div id="HpTrackersViewWrapper" class="tool-body">
     {% for hp_tracker in hp_trackers %}
-        <div class="hp-tracker-box">
+        <div id="{{ hp_tracker.id }}-hpTrackerBox" class="hp-tracker-box">
             <form method="POST" action="{% url 'hp_tracker_update_delete' hp_tracker.id %}"
                   data-id="{{ hp_tracker.id }}"
                   id="{{ hp_tracker.id }}-HpChangeValueForm"

@@ -48,8 +48,8 @@
                     <span>{{ player_form.color|add_class:'text-input-large create-player-color-select-field-select-box' }}</span>
                 </div>
                 <br />
-                <button id="createPlayerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="createPlayerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
+                <button id="createPlayerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">confirm</button>
+                <button id="createPlayerFormCancelBtn" type="button" class="red-btn create-form-btn">cancel</button>
             </form>
         </div>
 
@@ -68,8 +68,14 @@
                 <br />
                 {{ hp_tracker_form.hp_value|add_class:'text-input-large' }}
                 <br />
-                <button id="AddHpTrackerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="AddHpTrackerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
+                <button type="submit"
+                        id="AddHpTrackerFormSubmitBtn"
+                        class="blue-btn create-form-btn">confirm
+                </button>
+                <button type="button"
+                        id="AddHpTrackerFormCancelBtn"
+                        class="red-btn create-form-btn">cancel
+                </button>
             </form>
         </div>
 {# create die group form #}
@@ -87,8 +93,14 @@
                 <br />
                 {{ die_group_form.hp_value|add_class:'text-input-large' }}
                 <br />
-                <button id="AddDieGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="AddDieGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
+                <button type="submit"
+                        id="AddDieGroupFormSubmitBtn"
+                        class="blue-btn create-form-btn">confirm
+                </button>
+                <button type="button"
+                        id="AddDieGroupFormCancelBtn"
+                        class="red-btn create-form-btn">cancel
+                </button>
             </form>
         </div>
 
@@ -105,8 +117,14 @@
                 <br />
                 {{ resource_group_form.title|add_class:'text-input-large' }}
                 <br />
-                <button id="createResourceGroupFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="createResourceGroupFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
+                <button type="submit"
+                        id="createResourceGroupFormSubmitBtn"
+                        class="blue-btn create-form-btn">confirm
+                </button>
+                <button type="button"
+                        id="createResourceGroupFormCancelBtn"
+                        class="red-btn create-form-btn">cancel
+                </button>
             </form>
         </div>
 
@@ -124,8 +142,14 @@
                 {{ game_timer_form.title|add_class:'text-input-large' }}
                 {{ game_timer_form.saved_duration|add_class:"absolute-hidden" }}
                 <br />
-                <button id="createGameTimerFormSubmitBtn" type="submit" class="blue-btn create-form-btn">Add</button>
-                <button id="createGameTimerFormCancelBtn" type="button" class="red-btn create-form-btn">Done</button>
+                <button type="submit"
+                        id="createGameTimerFormSubmitBtn"
+                        class="blue-btn create-form-btn">confirm
+                </button>
+                <button type="button"
+                        id="createGameTimerFormCancelBtn"
+                        class="red-btn create-form-btn">cancel
+                </button>
             </form>
         </div>
 
@@ -144,11 +168,11 @@
                 <br />
                 <button type="submit"
                         id="createDrawBagFormSubmitBtn"
-                        class="blue-btn create-form-btn create-form-btn">Add
+                        class="blue-btn create-form-btn create-form-btn">confirm
                 </button>
                 <button type="button"
                         id="createDrawBagFormCancelBtn"
-                        class="red-btn create-form-btn create-form-btn">Done
+                        class="red-btn create-form-btn create-form-btn">cancel
                 </button>
             </form>
         </div>
@@ -168,11 +192,11 @@
                 <br />
                 <button type="submit"
                         id="createScoringGroupFormSubmitBtn"
-                        class="blue-btn create-form-btn create-form-btn">Add
+                        class="blue-btn create-form-btn create-form-btn">confirm
                 </button>
                 <button type="button"
                         id="createScoringGroupFormCancelBtn"
-                        class="red-btn create-form-btn create-form-btn">Done
+                        class="red-btn create-form-btn create-form-btn">cancel
                 </button>
             </form>
         </div>

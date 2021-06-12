@@ -6,8 +6,9 @@ if (localStorage.getItem('activeTool')) {
 
 /* Utility function to convert a canvas to a BLOB */
 let dataURLToBlob = function(dataURL) {
+    'use strict';
     let BASE64_MARKER = ';base64,';
-    if (dataURL.indexOf(BASE64_MARKER) == -1) {
+    if (dataURL.indexOf(BASE64_MARKER) === -1) {
         let parts = dataURL.split(',');
         let contentType = parts[0].split(':')[1];
         let raw = parts[1];
@@ -27,7 +28,7 @@ let dataURLToBlob = function(dataURL) {
     }
 
     return new Blob([uInt8Array], {type: contentType});
-}
+};
 /* End Utility function to convert a canvas to a BLOB      */
 
 // control messages that popup after certain actions (such as creating a tool)
@@ -312,6 +313,37 @@ $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#openScoringGroupsBtn'
 ));
 
+// reload the contents of an element
+function load_element(element_id) {
+    'use strict';
+    let element = $(element_id);
+            console.log(element_id);
+    element.load(' ' + element_id + ' > *', function() {
+        closeToolPageCover();
+    });
+}
+// submit form and reload element
+function submit_form_and_load_element(form, element_id){
+    'use strict';
+    let data_id = form.attr("data-id");
+    let serializedData = form.serialize();
+    $.ajax({
+        headers: {"X-HTTP-Method-Override": "PUT"},
+        type: 'POST',
+        url: form.attr('action'),
+        data: serializedData,
+        success: function () {
+            load_element(element_id);
+            console.log('ajaxSuccess, element loaded');
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message(
+                '#errorMessageWrapper', 'Uh oh, status ' + response.status
+            );
+        }
+    });
+}
 // reveal the dark cover over the tool page when various forms are opened
 function openToolPageCover() {
     'use strict';
@@ -373,7 +405,7 @@ function timeoutControl(element) {
 
 // decrease the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
-$('.hp-value-change-btn.decrease').click(function () {
+$("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', function (e) {
     'use strict';
     let selector = $(this).closest('.hp-tracker-control-box');
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
@@ -388,7 +420,7 @@ $('.hp-value-change-btn.decrease').click(function () {
 
 // increase the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
-$('.hp-value-change-btn.increase').click(function () {
+$("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.increase', function (e) {
     'use strict';
     let selector = $(this).closest('.hp-tracker-control-box');
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
@@ -402,7 +434,7 @@ $('.hp-value-change-btn.increase').click(function () {
 });
 
 // reveal editing options for an hp tracker - change title/delete
-$('.hp-tracker-title').click(function() {
+$("#HpTrackersViewWrapper").on('click', '.hp-tracker-title', function (e) {
     'use strict';
     let selector = $(this).closest('form');
     let data_id = selector.attr("data-id");
@@ -441,7 +473,6 @@ $('.hp-tracker-title').click(function() {
     hp_tracker_title_input.children('input').val(hp_tracker_title_box.text());
     hp_tracker_title_input.children('input').focus();
     hp_value_input.val(hp_value);
-    // title_box.not(this).prop('disabled', true);
 
     // reveal title, hide input and re-enable buttons if user clicks cancel
     cancel_hp_title_change_btn.click(function() {
@@ -449,40 +480,13 @@ $('.hp-tracker-title').click(function() {
         });
 });
 
-// ajax for HpChangeValueForm
-$('.hp-change-value-form').submit(function(e) {
+$("#HpTrackersViewWrapper").on('submit', '.hp-change-value-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).attr("data-id");
-    let serializedData = $(this).serialize();
-    $.ajax({
-        headers: { "X-HTTP-Method-Override": "PUT" },
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // display the new hp_value
-            $("#" + data_id + "-HpValue").empty().prepend(fields.hp_value);
-            // reset the title box and display the value
-            $("#" + data_id + "-HpTrackerTitle").css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $('#' + data_id + '-HpTrackerTitleInput').css({'display': 'none'});
-            $('#' + data_id + '-HpValueIncreaseBtn').css({'display': 'inline'});
-            $('#' + data_id + '-HpValueDecreaseBtn').css({'display': 'inline'});
-            $('#' + data_id + '-ConfirmHpTitleChangeBtn').css({'display': 'none'});
-            $('#' + data_id + '-CancelHpTitleChangeBtn').css({'display': 'none'});
-            $('#' + data_id + '-HpTrackerDeleteBtn').css({'display': 'none'});
-            $('.hp-value-change-btn').prop('disabled', false);
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#' + data_id + '-hpTrackerBox';
+    submit_form_and_load_element(form, element_id);
 });
 
 // --------------- DICE CONTROL ---------------
@@ -719,18 +723,19 @@ let production_modifier_change_value = 0;
 resourceControl = {
     resource_funcs: {
         open_create_resource_form: function(this_value) {
+            'use strict';
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-resourceGroupCreateResourceFormWrapper');
-            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+            form_wrapper.removeClass('no-display');
             $('body, html').addClass('no_scroll');
             openToolPageCover();
         },
         close_create_resource_form: function(this_value) {
-            let data_id = '#' + $(this_value).attr('data-id');
-            let form_wrapper = $(data_id + '-resourceGroupCreateResourceFormWrapper');
-            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
-            window.location.reload(true);
-            closeToolPageCover();
+            'use strict';
+            let data_id = $(this_value).attr('data-id');
+            let form_wrapper = $('#' + data_id + '-resourceGroupCreateResourceFormWrapper');
+            form_wrapper.addClass('no-display');
+            load_element('#' + data_id + '-resourceGroupBox');
         },
         create_resource: function(form) {
             'use strict';
@@ -982,7 +987,7 @@ $("#resourceGroupsViewWrapper").on('click', '.common-object-quick-create-btn.res
 $("#resourceGroupsViewWrapper").on('submit', '.create-custom-object-form.resource', function (e) {
     'use strict';
     e.preventDefault();
-    let form = $(this)
+    let form = $(this);
     resourceControl.resource_funcs.create_resource(form);
 });
 
@@ -1579,10 +1584,10 @@ drawBagControl = {
         change_open_sub_group: function(sub_group_wrapper, this_value) {
             'use strict';
             let data_id = $(this_value).parent().attr('data-id');
-            $('#' + data_id + '-drawBagItemsWrapper').addClass('absolute-hidden');
-            $('#' + data_id + '-drawBagDrawnItemsWrapper').addClass('absolute-hidden');
-            $('#' + data_id + '-drawBagItemsInBagWrapper').addClass('absolute-hidden');
-            $(sub_group_wrapper).removeClass('absolute-hidden');
+            $('#' + data_id + '-drawBagItemsWrapper').addClass('no-display');
+            $('#' + data_id + '-drawBagDrawnItemsWrapper').addClass('no-display');
+            $('#' + data_id + '-drawBagItemsInBagWrapper').addClass('no-display');
+            $(sub_group_wrapper).removeClass('no-display');
             localStorage.setItem('active-draw-bag-group-data-id', data_id.toString());
             localStorage.setItem('active-draw-bag-view-wrapper-id', sub_group_wrapper.toString());
 
@@ -1592,10 +1597,10 @@ drawBagControl = {
             if (localStorage.getItem('active-draw-bag-group-data-id')) {
                 let active_draw_bag_group_data_id = localStorage.getItem('active-draw-bag-group-data-id');
                 let active_draw_bag_view_wrapper_id = localStorage.getItem('active-draw-bag-view-wrapper-id');
-                $('#' + active_draw_bag_group_data_id  + '-drawBagItemsWrapper').addClass('absolute-hidden');
-                $('#' + active_draw_bag_group_data_id  + '-drawBagDrawnItemsWrapper').addClass('absolute-hidden');
-                $('#' + active_draw_bag_group_data_id  + '-drawBagItemsInBagWrapper').addClass('absolute-hidden');
-                $(active_draw_bag_view_wrapper_id).removeClass('absolute-hidden');
+                $('#' + active_draw_bag_group_data_id  + '-drawBagItemsWrapper').addClass('no-display');
+                $('#' + active_draw_bag_group_data_id  + '-drawBagDrawnItemsWrapper').addClass('no-display');
+                $('#' + active_draw_bag_group_data_id  + '-drawBagItemsInBagWrapper').addClass('no-display');
+                $(active_draw_bag_view_wrapper_id).removeClass('no-display');
             }
         },
         update_draw_bag_item_modal: function(group_id, item_name, image_path) {
@@ -1747,6 +1752,7 @@ drawBagControl = {
         // upload
         handleDrawBagImageUpload: function(this_value) {
             let data_id = $(this_value).attr('data-id');
+            form = $('#' + data_id + '-drawBagItemCreateForm');
             let canvas = document.getElementById(data_id + '-imageCanvas');
             let context = canvas.getContext('2d');
             let image_input_field = $('#' + data_id + '-id_image')
@@ -1780,6 +1786,7 @@ drawBagControl = {
                 image.src = event.target.result;
             }
             file_reader.readAsDataURL(image_upload);
+            form.reset();
         },
     }
 }

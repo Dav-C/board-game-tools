@@ -113,7 +113,7 @@
             </form>
         </div>
 {# display all items #}
-        <div id="{{ draw_bag.id }}-drawBagItemsWrapper" class="draw-bag-items-wrapper  absolute-hidden">
+        <div id="{{ draw_bag.id }}-drawBagItemsWrapper" class="draw-bag-items-wrapper  no-display">
             <button data-id="{{ draw_bag.id }}"
                     class="draw-bag-add-item-open-form-btn open-create-item-form-btn">
             </button>
@@ -128,7 +128,7 @@
                                   id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm">
                                 {% csrf_token %}
                                 {% method_override 'DELETE' %}
-                                <button class="red-btn small delete-btn-small">delete</button>
+                                <button class="red-btn small delete-btn-small"></button>
                             </form>
                         </div>
                         <hr style="width: 100%;">
@@ -225,7 +225,7 @@
             {% endfor %}
         </div>
 {# display only items still in the bag #}
-        <div id="{{ draw_bag.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper absolute-hidden">
+        <div id="{{ draw_bag.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper no-display">
             <div class="draw-bag-draw-control-row">
                 <div class="draw-bag-img-wrapper">
                     <img src="" alt="image of draw bag" class="">
