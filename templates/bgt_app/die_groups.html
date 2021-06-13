@@ -6,7 +6,7 @@
 <div id="DieGroupsViewWrapper" class="tool-body">
     <div id="dieAddedSuccessMessageWrapper" class="message-wrapper"></div>
     {% for die_group in die_groups %}
-        <div class="die-group-box">
+        <div id="{{ die_group.id }}-dieGroupBox" class="die-group-box">
             <form method="POST"
                   action="{% url 'die_group_update_delete' die_group.id %}"
                   data-id="{{ die_group.id }}"
@@ -49,7 +49,7 @@
                 <button id="{{ die_group.id }}-dieGroupDeleteBtn" class="delete-btn-large"></button>
             </form>
 {# add new dice form #}
-            <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="create-new-object-form-wrapper">
+            <div id="{{ die_group.id }}-dieGroupAddNewDieFormWrapper" class="create-new-object-form-wrapper no-display">
                 <div class="form-title-box">
                     <span class="form-title-text">Add a custom die</span>
                 </div>

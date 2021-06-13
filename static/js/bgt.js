@@ -313,11 +313,21 @@ $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#openScoringGroupsBtn'
 ));
 
+// hide an element and reveal a replacement element
+function hide_reveal_element(hide_element, reveal_element) {
+    'use strict';
+    if (hide_element !== null) {
+        hide_element.addClass('no-display');
+    }
+    if (reveal_element !== null) {
+        reveal_element.removeClass('no-display');
+    }
+}
+
 // reload the contents of an element
 function load_element(element_id) {
     'use strict';
     let element = $(element_id);
-            console.log(element_id);
     element.load(' ' + element_id + ' > *', function() {
         closeToolPageCover();
     });
@@ -373,32 +383,22 @@ let hpTrackerTimeoutHandler;
 function timeoutControl(element) {
     'use strict';
     clearTimeout(hpTrackerTimeoutHandler);
-    // select the closest for to the clicked button
     let selector = $(element).closest('.hp-change-value-form');
-
-    // assign the unique django object id to a variable
     let data_id = '#' + selector.attr("data-id");
-
-    // get the hp change value from local storage
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
-
-    // get the current hp value being provided by django context
-    let hp_initial_value = parseInt($(data_id + "-HpValue").text());
-
-    // calculate the amount to be entered into the hp value change form
+    let hp_initial_value = parseInt($(data_id + "-hpValue").text());
     let hp_add_subtract_value = hp_initial_value + hp_change_value;
-
     // get the title of the hp tracker to submit with the form so its not set
     // to an empty string when the form posts.
-    let title_box = $(data_id + "-HpTrackerTitle");
+    let title_box = $(data_id + "-hpTrackerTitle");
 
     // After a 2 second delay submit the form and reset the change value to 0
     hpTrackerTimeoutHandler = setTimeout(function () {
-        $(data_id + '-HpValueInput input').val(hp_add_subtract_value);
-        $(data_id + '-HpTrackerTitleInput input').val(title_box.text());
-        $(data_id + '-HpChangeValueForm').submit();
-        $(data_id + '-HpValueChange').css({'display': 'none'});
-        $(data_id + '-HpValueChangeCover').css({'display': 'none'});
+        $(data_id + '-hpValueInput input').val(hp_add_subtract_value);
+        $(data_id + '-hpTrackerTitleInput input').val(title_box.text());
+        $(data_id + '-hpChangeValueForm').submit();
+        $(data_id + '-hpValueChange').css({'display': 'none'});
+        $(data_id + '-hpValueChangeCover').css({'display': 'none'});
         localStorage.setItem('hp_change_value', '0');
     }, 2000);
 }
@@ -408,6 +408,10 @@ function timeoutControl(element) {
 $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', function (e) {
     'use strict';
     let selector = $(this).closest('.hp-tracker-control-box');
+    let data_id = selector.attr('data-id');
+    let tool_box = $('#' + data_id + '-hpTrackerBox');
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
     hp_change_value--;
     localStorage.setItem('hp_change_value', hp_change_value.toString());
@@ -415,7 +419,6 @@ $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', functio
     $(selector.find('.hp-change-value-cover')).css({'display': 'inline'});
     $(selector.find('.hp-change-value')).empty().prepend(hp_change_value);
     timeoutControl(this);
-
 });
 
 // increase the hp value with each button click - value is not submitted until
@@ -423,6 +426,10 @@ $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', functio
 $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.increase', function (e) {
     'use strict';
     let selector = $(this).closest('.hp-tracker-control-box');
+    let data_id = selector.attr('data-id');
+    let tool_box = $('#' + data_id + '-hpTrackerBox');
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
     let hp_change_value = parseInt(localStorage.getItem('hp_change_value'));
     hp_change_value++;
     localStorage.setItem('hp_change_value', hp_change_value.toString());
@@ -432,60 +439,45 @@ $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.increase', functio
     timeoutControl(this);
 
 });
-
 // reveal editing options for an hp tracker - change title/delete
-$("#HpTrackersViewWrapper").on('click', '.hp-tracker-title', function (e) {
+$("#HpTrackersViewWrapper").on('click', '.tool-title', function (e) {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let hp_tracker_title_box = $("#" + data_id + "-HpTrackerTitle");
-    let hp_tracker_title_input = $('#' + data_id + '-HpTrackerTitleInput');
-    let hp_value_increase_btn = $('#' + data_id + '-HpValueIncreaseBtn');
-    let hp_value_decrease_btn = $('#' + data_id + '-HpValueDecreaseBtn');
-    let confirm_hp_title_change_btn = $('#' + data_id + '-ConfirmHpTitleChangeBtn');
-    let cancel_hp_title_change_btn = $('#' + data_id + '-CancelHpTitleChangeBtn');
-    let hp_tracker_value_change_buttons = $('.hp-value-change-btn');
-    let hp_value_input = $('#' + data_id + '-HpValueInput input');
-    let hp_value = parseInt($("#" + data_id + "-HpValue").text());
-    let hp_tracker_delete_btn = $('#' + data_id + '-HpTrackerDeleteBtn');
-
-    function revealHpTitleChangeBtns() {
-        hp_tracker_title_box.css({'display': 'none'});
-        hp_tracker_title_input.css({'display': 'flex', 'background-color': '#555555'});
-        hp_value_increase_btn.css({'display': 'none'});
-        hp_value_decrease_btn.css({'display': 'none'});
-        confirm_hp_title_change_btn.css({'display': 'inline'});
-        cancel_hp_title_change_btn.css({'display': 'inline'});
-        hp_tracker_delete_btn.css({'display': 'inline'});
-        hp_tracker_value_change_buttons.prop('disabled', true);
-    }
-    function hideHpTitleChangeBtns() {
-        hp_tracker_title_box.css({'display': 'inline'});
-        hp_tracker_title_input.css({'display': 'none'});
-        hp_value_increase_btn.css({'display': 'inline'});
-        hp_value_decrease_btn.css({'display': 'inline'});
-        confirm_hp_title_change_btn.css({'display': 'none'});
-        cancel_hp_title_change_btn.css({'display': 'none'});
-        hp_tracker_delete_btn.css({'display': 'none'});
-        hp_tracker_value_change_buttons.prop('disabled', false);
-    }
-    revealHpTitleChangeBtns();
-    hp_tracker_title_input.children('input').val(hp_tracker_title_box.text());
-    hp_tracker_title_input.children('input').focus();
-    hp_value_input.val(hp_value);
-
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_hp_title_change_btn.click(function() {
-        hideHpTitleChangeBtns();
-        });
+    let data_id = $(this).attr('data-id');
+    let tool_box = $('#' + data_id + '-hpTrackerBox');
+    let control_values_box = $('#' + data_id + '-controlValuesBox');
+    let edit_values_box = $('#' + data_id + '-editValuesBox');
+    let title = $('#' + data_id + '-hpTrackerTitle');
+    let title_input = $('#' + data_id + '-hpTrackerTitleInput');
+    let delete_tool_form = $('#' + data_id + '-deleteToolForm');
+    title_input.children('input').val(title.text().trim());
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
+    hide_reveal_element(control_values_box, edit_values_box);
+    hide_reveal_element(title, title_input);
+    hide_reveal_element(null, delete_tool_form);
+    $("#HpTrackersViewWrapper").on('click', '.cancel-change-btn', function (e) {
+        hide_reveal_element(edit_values_box, control_values_box);
+        hide_reveal_element(title_input, title);
+        hide_reveal_element(delete_tool_form, null);
+        closeToolPageCover();
+        tool_box.removeClass('raise-over-cover');
+    });
 });
-
+// submit the change value form and fill in empty inputs if needed
 $("#HpTrackersViewWrapper").on('submit', '.hp-change-value-form', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
     let data_id = form.attr('data-id');
+    let tool_box = $('#' + data_id + '-hpTrackerBox');
+    tool_box.removeClass('raise-over-cover');
     let element_id = '#' + data_id + '-hpTrackerBox';
+    // check if the hp value has been changed, if not then set the hp value input
+    // to the current hp value
+    if (parseInt(localStorage.getItem('hp_change_value')) === 0) {
+        let hp_initial_value = parseInt($('#' + data_id + "-hpValue").text());
+        $('#' + data_id + '-hpValueInput input').val(hp_initial_value);
+    }
     submit_form_and_load_element(form, element_id);
 });
 
@@ -496,16 +488,15 @@ diceControl = {
         open_add_die_form: function(this_value) {
             let data_id = "#" + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-dieGroupAddNewDieFormWrapper');
-            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
-            $('body, html').addClass('no_scroll');
+            form_wrapper.removeClass('no-display');
+            $('body, html').removeClass('no_scroll');
             openToolPageCover();
         },
         close_add_die_form: function(this_value) {
-            let data_id = "#" + $(this_value).attr('data-id');
-            let form_wrapper = $(data_id + '-dieGroupAddNewDieFormWrapper');
-            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
-            window.location.reload(true);
-            closeToolPageCover();
+            let data_id = $(this_value).attr('data-id');
+            let form_wrapper = $("#" + data_id + '-dieGroupAddNewDieFormWrapper');
+            form_wrapper.addClass('no-display');
+            load_element("#" + data_id + '-dieGroupBox');
         }
     }
 };
@@ -1735,13 +1726,13 @@ drawBagControl = {
         open_draw_bag_item_create_form_wrapper: function(this_value) {
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-drawBagItemCreateFormWrapper');
-            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
+            form_wrapper.removeClass('no-display');
             openToolPageCover();
         },
         close_draw_bag_item_create_form_wrapper: function(this_value) {
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-drawBagItemCreateFormWrapper');
-            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
+            form_wrapper.addClass('no-display');
             $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
                 drawBagControl.draw_bag_funcs.set_active_view_wrapper();
                 closeToolPageCover();

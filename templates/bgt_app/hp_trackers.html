@@ -8,34 +8,38 @@
         <div id="{{ hp_tracker.id }}-hpTrackerBox" class="hp-tracker-box">
             <form method="POST" action="{% url 'hp_tracker_update_delete' hp_tracker.id %}"
                   data-id="{{ hp_tracker.id }}"
-                  id="{{ hp_tracker.id }}-HpChangeValueForm"
+                  id="{{ hp_tracker.id }}-hpChangeValueForm"
                   class="hp-change-value-form">
                 {% csrf_token %}
                 <div class="tool-title-box">
-                    <div id="{{ hp_tracker.id }}-HpTrackerTitle" class="hp-tracker-title">{{ hp_tracker.title }}</div>
-                    <div id="{{ hp_tracker.id }}-HpTrackerTitleInput" class="tool-title no-display">
+                    <div data-id="{{ hp_tracker.id }}"
+                         id="{{ hp_tracker.id }}-hpTrackerTitle"
+                         class="tool-title">{{ hp_tracker.title }}
+                    </div>
+                    <div id="{{ hp_tracker.id }}-hpTrackerTitleInput" class="tool-title no-display">
                         {{ hp_tracker_form.title|add_class:"tool-title-input"}}
                     </div>
                 </div>
-{#hp tracker control box#}
-                <div class="hp-tracker-control-box">
-                    <button type="button"
-                            id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn"
-                            class="cancel-change-btn">
-                    </button>
+                <div data-id="{{ hp_tracker.id }}"id="{{ hp_tracker.id }}-controlValuesBox" class="hp-tracker-control-box">
                     <button type="button"
                             id="{{ hp_tracker.id }}-HpValueDecreaseBtn"
                             class="hp-value-change-btn decrease disable-double-tap-to-zoom">-
                     </button>
                     {# hp value display #}
-                    <div id="{{ hp_tracker.id }}-HpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
-                    <div id="{{ hp_tracker.id }}-HpValueInput" class="hp-value-input-hidden">{{ hp_tracker_form.hp_value }}</div>
-                    <div id="{{ hp_tracker.id }}-HpValueChangeCover" class="hp-value hp-change-value-cover"></div>
-                    <div id="{{ hp_tracker.id }}-HpValueChange" class="hp-change-value"></div>
+                    <div id="{{ hp_tracker.id }}-hpValue" class="hp-value">{{ hp_tracker.hp_value }}</div>
+                    <div id="{{ hp_tracker.id }}-hpValueInput" class="hp-value-input-hidden">{{ hp_tracker_form.hp_value }}</div>
+                    <div id="{{ hp_tracker.id }}-hpValueChangeCover" class="hp-value hp-change-value-cover"></div>
+                    <div id="{{ hp_tracker.id }}-hpValueChange" class="hp-change-value"></div>
                     {# end value display #}
                     <button type="button"
                             id="{{ hp_tracker.id }}-HpValueIncreaseBtn"
                             class="hp-value-change-btn increase disable-double-tap-to-zoom">+
+                    </button>
+                </div>
+                <div id="{{ hp_tracker.id }}-editValuesBox" class="hp-tracker-control-box no-display">
+                    <button type="button"
+                            id="{{ hp_tracker.id }}-CancelHpTitleChangeBtn"
+                            class="cancel-change-btn">
                     </button>
                     <button type="submit"
                             id="{{ hp_tracker.id }}-ConfirmHpTitleChangeBtn"
@@ -45,10 +49,11 @@
             </form>
         <form method="POST"
               action="{% url 'hp_tracker_update_delete' hp_tracker.id %}?next={{ request.get_full_path }}"
-              class="delete-tool-form">
+              id="{{ hp_tracker.id }}-deleteToolForm"
+              class="delete-tool-form no-display">
         {% csrf_token %}
         {% method_override 'DELETE' %}
-            <button id="{{ hp_tracker.id }}-HpTrackerDeleteBtn" class="delete-btn-large"></button>
+            <button id="{{ hp_tracker.id }}-hpTrackerDeleteBtn" class="delete-btn-large"></button>
         </form>
         </div>
     {% empty %}
