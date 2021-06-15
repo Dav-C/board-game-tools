@@ -351,13 +351,11 @@ class PlayerView(LoginRequiredMixin, View):
         )
 
     def delete(self, request, player_uuid):
-        player_to_delete = get_object_or_404(Player, id=player_uuid)
-        if player_to_delete.tool_session.session_owner.user.id == request.user.id:
-            player_to_delete.delete()
-            return reload_current_url(request)
-        else:
-            messages.error(request, "Insufficient Permission")
-        return redirect('user_home')
+        return delete_object(
+            request=self.request,
+            model=Player,
+            uuid=player_uuid
+        )
 
 
 class PlayerRandomizeOrder(LoginRequiredMixin, View):
@@ -579,7 +577,7 @@ class GameTimerView(LoginRequiredMixin, View):
         )
 
     def delete(self, request, game_timer_uuid):
-        return delete_model_object(
+        return delete_object(
             request=self.request,
             model=GameTimer,
             uuid=game_timer_uuid

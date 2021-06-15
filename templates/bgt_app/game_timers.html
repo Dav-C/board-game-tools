@@ -5,8 +5,8 @@
 {#game timers#}
 <div id="gameTimersViewWrapper" class="tool-body no-display">
     {% for game_timer in game_timers %}
-        <div class="game-timer-box">
-            <div id="{{ game_timer.id }}-gameTimerTileArea"
+        <div id="{{ game_timer.id }}-gameTimerBox" class="game-timer-box">
+            <div id="{{ game_timer.id }}-gameTimerTitleArea"
                  class="game-timer-title-area">
                 <form action="{% url 'game_timer_update_delete' game_timer.id%}"
                       method="POST"
@@ -17,7 +17,8 @@
                     <div id="{{ game_timer.id }}-toolTitleBox"
                          class="tool-title-box">
                         <div id="{{ game_timer.id }}-gameTimerTitle"
-                             class="tool-title game-timer-title">
+                             class="tool-title game-timer-title"
+                             data-id="{{ game_timer.id}}">
                             {{ game_timer.title }}
                         </div>
                         <div id="{{ game_timer.id }}-gameTimerTitleInput"
@@ -28,7 +29,7 @@
                     </div>
                 </form>
     {# game timer control box #}
-                <div id="{{ game_timer.id }}-gameTimerControlBox"
+                <div id="{{ game_timer.id }}-controlValuesBox"
                      data-id="{{ game_timer.id }}"
                      class="game-timer-control-box">
                     <button type="button"
@@ -47,6 +48,8 @@
                             class="blue-btn game-timer-control-box-btn start">start
 
                     </button>
+                </div>
+                <div id="{{ game_timer.id }}-editValuesBox" class="game-timer-control-box no-display">
                     <button type="button"
                             id="{{ game_timer.id }}-cancelGameTimerTitleChangeBtn"
                             class="cancel-change-btn">
@@ -59,7 +62,7 @@
                 <hr style="width: 80%;">
 {# delete game timer form #}
             <form id="{{ game_timer.id }}-deleteToolForm"
-                  class="delete-tool-form"
+                  class="delete-tool-form no-display"
                   action="{% url 'game_timer_update_delete' game_timer.id %}?next={{ request.get_full_path }}"
                   method="POST">
                 {% csrf_token %}

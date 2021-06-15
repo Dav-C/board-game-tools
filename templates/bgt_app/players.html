@@ -6,12 +6,16 @@
 <div id="playerPageSuccessMessageWrapper" class="message-wrapper"></div>
 <div id="playersViewWrapper" class="tool-body no-display">
     {% if players %}
-        <div class="players-box-wrapper">
+        <div id="playersBoxWrapper" class="players-box-wrapper">
             <div class="players-control-box">
                 {% if players %}
-                    <a href="{% url 'player_randomize_order' %}?next={{ request.get_full_path }}">
+                    <form method="GET"
+                          action="{% url 'player_randomize_order'%}"
+                          id="#randomizePlayerOrderForm"
+                          class='randomize-player-order-form'>
+                        {% csrf_token %}
                         <button class="blue-btn">Randomize</button>
-                    </a>
+                    </form>
                 {% endif %}
             </div>
             {% for player in players %}
@@ -26,8 +30,10 @@
                     <br>
                     <div class="player-box-row">
                         <form method="POST"
-                              action="{% url 'player_update_delete' player.id %}?next={{ request.get_full_path }}"
+                              action="{% url 'player_update_delete' player.id %}"
                               id="{{ scoring_category.id }}-deletePlayerForm"
+                              data-id="{{ player.id }}"
+                              class="delete-player-form"
                               style="margin-left: auto;">
                             {% csrf_token %}
                             {% method_override 'DELETE' %}

@@ -14,7 +14,7 @@ function display_active_tool(){
     'use strict';
     if (localStorage.getItem('activeTool')) {
         let active_tool = localStorage.getItem('activeTool');
-        load_element(active_tool, null);
+        load_element(active_tool, check_game_timer_status);
         $('.tool-body').addClass('no-display');
         $(active_tool).removeClass('no-display');
     }
@@ -380,6 +380,25 @@ $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#openScoringGroupsBtn'
 ));
 
+
+// --------------- PLAYER CONTROL ---------------
+
+// delete a player
+$("#playersViewWrapper").on('submit', '.delete-player-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    submit_form_and_load_element(form, '#playersViewWrapper', 'DELETE', null, null);
+});
+// randomize player order
+$("#playersViewWrapper").on('submit', '.randomize-player-order-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    submit_form_and_load_element(form, '#playersViewWrapper', 'GET', null, null);
+});
+
+
 // --------------- HP TRACKER CONTROL ---------------
 
 // control timeout before hp_value increase or decrease is submitted
@@ -491,7 +510,6 @@ $("#hpTrackersViewWrapper").on('submit', '.delete-tool-form', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
-    let data_id = form.attr('data-id');
     submit_form_and_load_element(form, '#hpTrackersViewWrapper', 'DELETE');
 });
 
@@ -1233,9 +1251,8 @@ gameTimerControl = {
                 let input = $(form).children().children('input');
                 input.val(duration_value);
             }
-
             function game_timer_run(hr, min, sec) {
-                get_and_update_duration_update_form(data_id_value, duration_window.text())
+                get_and_update_duration_update_form(data_id_value, duration_window.text());
                 if (sec <= 58) {
                     second = sec + 1;
                 } else if (sec === 59) {
@@ -1261,7 +1278,7 @@ gameTimerControl = {
                 duration_window.empty().text(
                     hour + ':' + minute_display + ':' + second_display
                 );
-                get_and_update_duration_update_form(data_id_value, duration_window.text())
+                get_and_update_duration_update_form(data_id_value, duration_window.text());
                 localStorage.setItem('game_timer_value', duration_window.text());
             }
 
@@ -1269,7 +1286,7 @@ gameTimerControl = {
                 localStorage.setItem('game_timer_status', 'running');
                 localStorage.setItem('game_timer_id', data_id_value);
                 run_timer = setInterval(function () {
-                    game_timer_run(hour, minute, second)
+                    game_timer_run(hour, minute, second);
                 }, 1000);
             }
             function game_timer_stop() {
@@ -1293,7 +1310,7 @@ gameTimerControl = {
         },
         update_game_timer: function(form, data_id) {
             'use strict';
-            let game_timer_title_area = $('#' + data_id + '-gameTimerTileArea');
+            let game_timer_title_area = $('#' + data_id + '-gameTimerTitleArea');
             let serialized_data = form.serialize();
             $.ajax({
                 headers: { "X-HTTP-Method-Override": "PUT" },
@@ -1301,7 +1318,10 @@ gameTimerControl = {
                 url: form.attr('action'),
                 data: serialized_data,
                 success: function (response) {
-                    game_timer_title_area.load(' ' + '#' + data_id + '-gameTimerTileArea' + ' > *', function () {});
+                    game_timer_title_area.load(' ' + '#' + data_id + '-gameTimerTitleArea' + ' > *', function () {
+                        closeToolPageCover();
+                        $('#' + data_id + '-gameTimerBox').removeClass('raise-over-cover');
+                    });
                     console.log('ajaxSuccess');
                 },
                 error: function(response) {
@@ -1312,60 +1332,55 @@ gameTimerControl = {
             });
         },
     }
-}
-
-// reveal editing options for a Game Timer
-$("#gameTimersViewWrapper").on('click', '.game-timer-title', function () {
+};
+// start the game timer if it was running before the timer page was loaded/reloaded
+function check_game_timer_status() {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let game_timer_title_box = $("#" + data_id + "-gameTimerTitle");
-    let game_timer_title_input = $("#" + data_id + '-gameTimerTitleInput');
-    let confirm_game_timer_title_change_btn = $("#" + data_id + '-confirmGameTimerTitleChangeBtn');
-    let cancel_game_timer_title_change_btn = $("#" + data_id + '-cancelGameTimerTitleChangeBtn');
-    let game_timer_control_box_btn = $('.game-timer-control-box-btn');
-    let game_timer_delete_btn = $("#" + data_id + '-gameTimerDeleteBtn');
-
-
-    function revealGameTimerTitleChangeBtns() {
-        game_timer_title_box.css({'display': 'none'});
-        game_timer_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        game_timer_control_box_btn.css({'display': 'none'});
-        confirm_game_timer_title_change_btn.css({'display': 'inline'});
-        cancel_game_timer_title_change_btn.css({'display': 'inline'});
-        game_timer_delete_btn.css({'display': 'inline'});
+    if (localStorage.getItem('game_timer_status') === 'running') {
+        timer_running = true;
+        let data_id = localStorage.getItem('game_timer_id');
+        let duration_window = $('#' + data_id + '-gameTimerDuration');
+        duration_window.text(localStorage.getItem('game_timer_value'));
+        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
+        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
     }
-
-    function hideGameTimerTitleChangeBtns() {
-        game_timer_title_box.css({'display': 'inline'});
-        game_timer_title_input.css({'display': 'none'});
-        game_timer_control_box_btn.css({'display': 'inline'});
-        confirm_game_timer_title_change_btn.css({'display': 'none'});
-        cancel_game_timer_title_change_btn.css({'display': 'none'});
-        game_timer_delete_btn.css({'display': 'none'});
-    }
-
-    revealGameTimerTitleChangeBtns();
-    game_timer_title_input.children('input').val(game_timer_title_box.text().trim());
-    game_timer_title_input.children('input').focus();
-
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_game_timer_title_change_btn.click(function() {
-        hideGameTimerTitleChangeBtns();
+}
+// reveal editing options for a game timer - change title/delete
+$("#gameTimersViewWrapper").on('click', '.tool-title', function (e) {
+    'use strict';
+    let data_id = $(this).attr('data-id');
+    let tool_box = $('#' + data_id + '-gameTimerBox');
+    let control_values_box = $('#' + data_id + '-controlValuesBox');
+    let edit_values_box = $('#' + data_id + '-editValuesBox');
+    let title = $('#' + data_id + '-gameTimerTitle');
+    let title_input = $('#' + data_id + '-gameTimerTitleInput');
+    let delete_tool_form = $('#' + data_id + '-deleteToolForm');
+    title_input.children('input').val(title.text().trim());
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
+    hide_reveal_element(control_values_box, edit_values_box);
+    hide_reveal_element(title, title_input);
+    hide_reveal_element(null, delete_tool_form);
+    $("#gameTimersViewWrapper").on('click', '.cancel-change-btn', function (e) {
+        hide_reveal_element(edit_values_box, control_values_box);
+        hide_reveal_element(title_input, title);
+        hide_reveal_element(delete_tool_form, null);
+        closeToolPageCover();
+        tool_box.removeClass('raise-over-cover');
     });
 });
 // update a game timer title
 $("#gameTimersViewWrapper").on('submit', '.game-timer-title-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).attr('data-id')
-    let form = $('#' + data_id + '-gameTimerTitleForm')
+    let data_id = $(this).attr('data-id');
+    let form = $('#' + data_id + '-gameTimerTitleForm');
+    let element_id = $('#' + data_id + '-gameTimerBox');
     let current_timer_duration = $('#' + data_id + '-gameTimerDuration').text().trim();
     let timer_duration_input = form.find('#id_saved_duration');
     timer_duration_input.val(current_timer_duration);
     gameTimerControl.game_timer_funcs.update_game_timer(form, data_id);
 });
-
 // detect window unloads, stop the game timer and save the timer duration
 $(window).on('beforeunload', function() {
     'use strict';
@@ -1376,7 +1391,7 @@ $(window).on('beforeunload', function() {
         let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
         let input = $(form).children().children('input');
         input.val(localStorage.getItem('game_timer_value'));
-        form.submit()
+        form.submit();
         gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
         // set the timer status to continue running only if the user is refreshing
         // the tool-session page.  Otherwise the timer will stop running, with the
@@ -1386,21 +1401,17 @@ $(window).on('beforeunload', function() {
         }
     }
 });
-
-// if a game timer was running before a page reload, set the correct duration
-// value and start the timer
-if (window.location.href.includes('tool-session')) {
-    // check for running timers and start them on page load
-    if (localStorage.getItem('game_timer_status') === 'running') {
-        timer_running = true;
-        let data_id = localStorage.getItem('game_timer_id');
-        let duration_window = $('#' + data_id + '-gameTimerDuration');
-        duration_window.text(localStorage.getItem('game_timer_value'));
-        gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'running');
-    }
-}
+// delete a game timer
+$("#gameTimersViewWrapper").on('submit', '.delete-tool-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    submit_form_and_load_element(form, '#gameTimersViewWrapper', 'DELETE');
+});
 // start a game timer and set timer_running to true
 $("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.start', function (e) {
+    'use strict';
     let data_id = $(this).attr('data-id');
     if (timer_running === false) {
         timer_running = true;
@@ -1409,16 +1420,18 @@ $("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.start', fun
 });
 // stop a game timer and set timer_running to false
 $("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.stop', function (e) {
+    'use strict';
     if (timer_running === true) {
         timer_running = false;
         let data_id = $(this).attr('data-id');
         let form = $('#' + data_id + '-gameTimerDurationUpdateForm');
-        form.submit()
+        form.submit();
         gameTimerControl.game_timer_funcs.game_timer_start_stop(data_id, 'not_running');
     }
 });
 // reset a game timer back to 0
 $("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.reset', function (e) {
+    'use strict';
     timer_running = false;
     let data_id = $(this).attr('data-id');
     gameTimerControl.game_timer_funcs.reset_game_timer(data_id);
@@ -1437,8 +1450,6 @@ $("#gameTimersViewWrapper").on('submit', '.game-timer-duration-update-form', fun
     game_timer_name_input.val(game_timer_name);
     gameTimerControl.game_timer_funcs.update_game_timer(form, data_id);
 });
-
-
 // --------------- DRAW BAG CONTROL ---------------
 
 let resized_draw_bag_upload_image;
