@@ -3,7 +3,7 @@
 {% load method_override %}
 
 {#Hp Trackers#}
-<div id="HpTrackersViewWrapper" class="tool-body">
+<div id="hpTrackersViewWrapper" class="tool-body no-display">
     {% for hp_tracker in hp_trackers %}
         <div id="{{ hp_tracker.id }}-hpTrackerBox" class="hp-tracker-box">
             <form method="POST" action="{% url 'hp_tracker_update_delete' hp_tracker.id %}"
@@ -20,7 +20,7 @@
                         {{ hp_tracker_form.title|add_class:"tool-title-input"}}
                     </div>
                 </div>
-                <div data-id="{{ hp_tracker.id }}"id="{{ hp_tracker.id }}-controlValuesBox" class="hp-tracker-control-box">
+                <div data-id="{{ hp_tracker.id }}" id="{{ hp_tracker.id }}-controlValuesBox" class="hp-tracker-control-box">
                     <button type="button"
                             id="{{ hp_tracker.id }}-HpValueDecreaseBtn"
                             class="hp-value-change-btn decrease disable-double-tap-to-zoom">-
@@ -48,7 +48,7 @@
                 </div>
             </form>
         <form method="POST"
-              action="{% url 'hp_tracker_update_delete' hp_tracker.id %}?next={{ request.get_full_path }}"
+              action="{% url 'hp_tracker_update_delete' hp_tracker.id %}"
               id="{{ hp_tracker.id }}-deleteToolForm"
               class="delete-tool-form no-display">
         {% csrf_token %}

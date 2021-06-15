@@ -4,7 +4,7 @@
 
 {# scoring groups and scoring categories #}
 <div id="scoringPageSuccessMessageWrapper" class="message-wrapper"></div>
-<div id="scoringGroupsViewWrapper" class="tool-body flex-start">
+<div id="scoringGroupsViewWrapper" class="tool-body flex-start no-display">
     {% for scoring_group in scoring_groups %}
         <div id="{{ scoring_group.id }}-scoringGroupBox" class="scoring-group-box">
             <form method="POST" action="{% url 'scoring_group_update_delete' scoring_group.id %}"

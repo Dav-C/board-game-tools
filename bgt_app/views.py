@@ -1,5 +1,4 @@
 from random import randint, choice, sample
-import rapidjson
 from django.conf import settings
 from django.views.generic import (
     View,
@@ -132,6 +131,16 @@ def create_or_update_obj_and_serialize(request, form, model, obj_uuid, group_mod
                 {'form_instance': serialized_form_instance}, status=200)
         else:
             return JsonResponse({'error': form.errors.as_json()}, status=400)
+
+
+def delete_object(request, model, uuid):
+    object_to_delete = get_object_or_404(model, id=uuid)
+    if object_to_delete.tool_session.session_owner.user.id == request.user.id:
+        object_to_delete.delete()
+        return JsonResponse({'message': "successfully deleted"}, status=200)
+    else:
+        messages.error(request, "Insufficient Permission")
+    return redirect('user_home')
 
 
 def reload_current_url(request):
@@ -393,7 +402,7 @@ class HpTrackerView(LoginRequiredMixin, View):
         )
 
     def delete(self, request, hp_tracker_uuid):
-        return delete_model_object(
+        return delete_object(
             request=self.request, model=HpTracker, uuid=hp_tracker_uuid
         )
 
@@ -422,7 +431,7 @@ class DieGroupView(LoginRequiredMixin, View):
         )
 
     def delete(self, request, die_group_uuid):
-        return delete_model_object(
+        return delete_object(
             request=self.request, model=DieGroup, uuid=die_group_uuid
         )
 
@@ -451,7 +460,7 @@ class DieStandardView(LoginRequiredMixin, View):
         die_to_delete = get_object_or_404(DieStandard, id=die_standard_uuid)
         if die_to_delete.group.tool_session.session_owner.user.id == request.user.id:
             die_to_delete.delete()
-            return reload_current_url(request)
+            return JsonResponse({'message': "die deleted"}, status=200)
         else:
             messages.error(request, "Insufficient Permission")
         return redirect('user_home')
@@ -464,23 +473,7 @@ class RollDieGroup(LoginRequiredMixin, View):
         for die in die_group_dice:
             die.rolled_value = randint(1, int(die.num_sides))
             die.save()
-
-        # this is used to calculate the sum of the die group and is passed in
-        # the response.
-        die_groups = DieGroup.objects\
-            .filter(
-                tool_session_id=self.request.session['active_tool_session_id'],
-                id=die_group_uuid)\
-            .annotate(group_dice_sum=Sum('standard_dice__rolled_value')).values()
-
-        serialized_dice_values = serializers.serialize(
-            'json', list(die_group_dice), fields=('rolled_value', 'id'))
-        serialized_die_group_sum =\
-            rapidjson.dumps(list(die_groups),  uuid_mode=rapidjson.UM_CANONICAL)
-        return JsonResponse({
-            'die_group_dice': serialized_dice_values,
-            'die_group_sum': serialized_die_group_sum,
-                            }, status=200)
+        return JsonResponse({'message': "dice rolled!"}, status=200)
 
 
 class RollDie(LoginRequiredMixin, View):
@@ -489,22 +482,7 @@ class RollDie(LoginRequiredMixin, View):
         die = DieStandard.objects.get(id=die_uuid)
         die.rolled_value = randint(1, int(die.num_sides))
         die.save()
-
-        die_group = DieGroup.objects\
-            .filter(
-                tool_session_id=self.request.session['active_tool_session_id'],
-                id=die.group_id)\
-            .annotate(group_dice_sum=Sum('standard_dice__rolled_value')).values()
-
-        serialized_die_value = serializers.serialize(
-            'json', [die]
-        )
-        serialized_die_group_sum =\
-            rapidjson.dumps(list(die_group),  uuid_mode=rapidjson.UM_CANONICAL)
-        return JsonResponse({
-            'rolled_die_value': serialized_die_value,
-            'die_group_sum': serialized_die_group_sum,
-                            }, status=200)
+        return JsonResponse({'message': "die rolled!"}, status=200)
 
 
 class ResourceGroupView(LoginRequiredMixin, View):
@@ -531,7 +509,7 @@ class ResourceGroupView(LoginRequiredMixin, View):
         )
 
     def delete(self, request, resource_group_uuid):
-        return delete_model_object(
+        return delete_object(
             request=self.request,
             model=ResourceGroup,
             uuid=resource_group_uuid
@@ -571,7 +549,7 @@ class ResourceView(LoginRequiredMixin, View):
         resource_to_delete = get_object_or_404(Resource, id=resource_uuid)
         if resource_to_delete.group.tool_session.session_owner.user.id == request.user.id:
             resource_to_delete.delete()
-            return reload_current_url(request)
+            return JsonResponse({'message': "successfully deleted"}, status=200)
         else:
             messages.error(request, "Insufficient Permission")
         return redirect('user_home')

@@ -3,7 +3,7 @@
 {% load method_override %}
 
 {#game timers#}
-<div id="gameTimersViewWrapper" class="tool-body">
+<div id="gameTimersViewWrapper" class="tool-body no-display">
     {% for game_timer in game_timers %}
         <div class="game-timer-box">
             <div id="{{ game_timer.id }}-gameTimerTileArea"

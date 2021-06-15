@@ -637,7 +637,7 @@ ul {
 
 }
 
-#ToolSessionPageWrapper {
+#toolSessionPageWrapper {
     display: flex;
     min-height: 80vh;
     width: 100vw;
@@ -863,7 +863,7 @@ ul {
 }
 /*Tool Views*/
 
-#ToolSessionPageWrapper {
+#toolSessionPageWrapper {
     background: rgb(0,114,255);
     background: radial-gradient(circle, rgba(0,114,255,1) 0%, rgba(0,0,0,1) 100%);
 }
@@ -885,11 +885,11 @@ ul {
 }
 
 .tool-body {
+    display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     margin-top: 3rem;
     align-items: center;
-    display: none;
     flex-wrap: wrap;
     overflow-x: hidden;
     min-height: 90vh;

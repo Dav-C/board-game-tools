@@ -3,7 +3,7 @@
 {% load method_override %}
 
 {# Die Groups and Dice #}
-<div id="DieGroupsViewWrapper" class="tool-body">
+<div id="dieGroupsViewWrapper" class="tool-body no-display">
     <div id="dieAddedSuccessMessageWrapper" class="message-wrapper"></div>
     {% for die_group in die_groups %}
         <div id="{{ die_group.id }}-dieGroupBox" class="die-group-box">
@@ -14,7 +14,7 @@
                   class="die-group-update-form">
                 <div class="tool-title-box">
                     {% csrf_token %}
-                    <div id="{{ die_group.id }}-dieGroupTitle" class="tool-title die-group-title">
+                    <div id="{{ die_group.id }}-dieGroupTitle" class="tool-title die-group-title" data-id="{{ die_group.id }}">
                         {{ die_group.title }}
                     </div>
                     <div id="{{ die_group.id }}-dieGroupTitleInput" class="tool-title no-display">
@@ -23,9 +23,12 @@
                 </div>
             </form>
 {# die group control box #}
-            <div class="die-group-control-box">
-                <button type="button" id="{{ die_group.id }}-cancelDieGroupTitleChangeBtn" class="cancel-change-btn"></button>
-                <form method="GET" action="{% url 'roll_die_group' die_group.id %}" class="die-group-roll-all-form">
+            <div id="{{ die_group.id }}-controlValuesBox" class="die-group-control-box">
+                <form method="GET"
+                      action="{% url 'roll_die_group' die_group.id %}"
+                      data-id="{{ die_group.id }}"
+                      class="die-group-roll-all-form">
+                    {% csrf_token %}
                     <button type="submit" class="die-group-roll-all-btn">roll all</button>
                 </form>
                 {% if die_group.group_dice_sum %}
@@ -34,6 +37,9 @@
                     <div id="{{ die_group.id }}-dieGroupSum" class="die-group-sum-box"></div>
                 {% endif %}
                 <button data-id="{{ die_group.id }}" class="die-group-add-die-open-form-btn">+ dice</button>
+            </div>
+            <div id="{{ die_group.id }}-editValuesBox" class="die-group-control-box no-display">
+                <button type="button" id="{{ die_group.id }}-cancelDieGroupTitleChangeBtn" class="cancel-change-btn"></button>
                 <button type="submit"
                         form="{{ die_group.id }}-dieGroupUpdateForm"
                         id="{{ die_group.id }}-confirmDieGroupTitleChangeBtn"
@@ -43,7 +49,8 @@
 {# delete die group form #}
             <form method="POST"
                   action="{% url 'die_group_update_delete' die_group.id %}?next={{ request.get_full_path }}"
-                  class="delete-tool-form">
+                  id="{{ die_group.id }}-deleteToolForm"
+                  class="delete-tool-form no-display">
                 {% csrf_token %}
                 {% method_override 'DELETE' %}
                 <button id="{{ die_group.id }}-dieGroupDeleteBtn" class="delete-btn-large"></button>
@@ -88,21 +95,27 @@
             </div>
 {# dice in die group #}
         {% for die in die_group.standard_dice.all %}
-        <div class="die-values-box">
+        <div id="{{ die.id }}-dieValuesBox" class="die-values-box">
             <div class="die-row" data-id="{{ die.id }}">
                 <div class="die-num-sides">D{{ die.num_sides }}</div>
                 <div id="{{ die.id }}-rolledValue" class="die-rolled-value {{ die_group.id }}">{{ die.rolled_value }}</div>
-
 {# delete single die form#}
-                <form method="POST" action="{% url 'die_standard_delete' die.id %}?next={{ request.get_full_path }}">
-                {% csrf_token %}
-                {% method_override 'DELETE' %}
-                    <button class="red-btn small delete-btn-small {{ die_group.id }}" style="display: none;"></button>
+                <form method="POST"
+                      action="{% url 'die_standard_delete' die.id %}"
+                      data-id="{{ die_group.id }}"
+                      class="delete-die-form no-display">
+                    {% csrf_token %}
+                    {% method_override 'DELETE' %}
+                    <button class="red-btn small delete-btn-small"></button>
                 </form>
 {# roll single die #}
-                <a href="{% url 'roll_die' die.id %}">
-                    <button class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
-                </a>
+                <form method="GET"
+                      action="{% url 'roll_die' die.id %}"
+                      data-id="{{ die_group.id }}"
+                      class="die-group-roll-die-form">
+                    {% csrf_token %}
+                    <button type="submit" class="die-roll-btn" data-id="{{ die.id }}">Roll</button>
+                </form>
             </div>
         </div>
         {% empty %}

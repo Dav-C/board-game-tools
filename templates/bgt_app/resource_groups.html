@@ -4,7 +4,7 @@
 
 {# resource groups and resources #}
 <div id="resourceCreatedSuccessMessageWrapper" class="message-wrapper"></div>
-<div id="resourceGroupsViewWrapper" class="tool-body">
+<div id="resourceGroupsViewWrapper" class="tool-body no-display">
     {% for resource_group in resource_groups %}
     <div id="{{ resource_group.id }}-resourceGroupBox"
          class="resource-group-box">
@@ -15,6 +15,7 @@
             <div class="tool-title-box">
                 {% csrf_token %}
                 <div id="{{ resource_group.id }}-resourceGroupTitle"
+                     data-id="{{ resource_group.id }}"
                      class="tool-title resource-group-title">{{ resource_group.title }}
                 </div>
                 <div id="{{ resource_group.id }}-resourceGroupTitleInput"
@@ -23,31 +24,34 @@
             </div>
         </form>
 {# resource group control box #}
-        <div class="resource-group-control-box">
+        <div id="{{ resource_group.id}}-controlValuesBox" class="resource-group-control-box">
+            <button data-id="{{ resource_group.id }}"
+                    class="resource-group-add-resource-open-form-btn open-create-item-form-btn">
+            </button>
+        </div>
+        <div id="{{ resource_group.id }}-editValuesBox" class="resource-group-control-box no-display">
             <button type="button"
                     id="{{ resource_group.id }}-cancelResourceGroupTitleChangeBtn"
                     class="cancel-change-btn">
             </button>
-            <button data-id="{{ resource_group.id }}"
-                    class="resource-group-add-resource-open-form-btn open-create-item-form-btn">
-            </button>
             <button type="submit"
                     form="{{ resource_group.id }}-resourceGroupUpdateForm"
                     id="{{ resource_group.id }}-confirmResourceGroupTitleChangeBtn"
-                    class="confirm-change-btn"></button>
+                    class="confirm-change-btn">
+            </button>
         </div>
 {# delete resource group form #}
-        <form action="{% url 'resource_group_update_delete' resource_group.id %}?next={{ request.get_full_path }}"
+        <form action="{% url 'resource_group_update_delete' resource_group.id %}"
               method="POST"
-              class="delete-tool-form">
+              id="{{ resource_group.id }}-deleteToolForm"
+              class="delete-tool-form no-display">
             {% csrf_token %}
             {% method_override 'DELETE' %}
-            <button id="{{ resource_group.id }}-resourceGroupDeleteBtn"
-                    class="delete-btn-large">
-            </button>
+            <button id="{{ resource_group.id }}-resourceGroupDeleteBtn" class="delete-btn-large"></button>
         </form>
 {# add new resource form #}
-            <div id="{{ resource_group.id }}-resourceGroupCreateResourceFormWrapper" class="create-new-object-form-wrapper no-display">
+            <div id="{{ resource_group.id }}-resourceGroupCreateResourceFormWrapper"
+                 class="create-new-object-form-wrapper no-display">
                 <div class="form-title-box">
                     <span class="form-title-text">custom resource</span>
                 </div>
@@ -72,7 +76,6 @@
                 <div class="form-title-box">
                     <span class="form-title-text">create common resources</span>
                 </div>
-
 {# quick add resource buttons #}
                <div class="common-object-quick-add-btn-box" data-id="{{ resource_group.id }}">
                    <div class="quick-add-item-row">
@@ -115,7 +118,6 @@
                        data-id="{{ resource_group.id }}">done
                </button>
             </div>
-
 {# user's resources #}
         {% for resource in resource_group.resources.all %}
             <div id="{{ resource.id }}-resourceBox" class="resource-box">
@@ -139,12 +141,12 @@
                         </div>
                         <button data-id="{{ resource.id }}"
                                 id="{{ resource.id }}-confirmChangeBtn"
-                                class="confirm-change-btn resource-name-change-confirm-btn">
+                                class="confirm-change-btn resource-name-change-confirm-btn no-display">
                         </button>
                         <button type="button"
                                 data-id="{{ resource.id }}"
                                 id="{{ resource.id }}-cancelChangeBtn"
-                                class="cancel-change-btn resource-name-change-cancel-btn">
+                                class="cancel-change-btn resource-name-change-cancel-btn no-display">
                         </button>
                     </div>
 {# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
@@ -160,7 +162,7 @@
                         </div>
                     {% endif %}
                 </form>
-{#display and update resource quanity #}
+{# display and update resource quanity #}
                 <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
@@ -258,13 +260,16 @@
                 </form>
                 {% endif %}
                 <div class="resource-box-row">
-                    <button form="{{ resource.id }}-deleteSingleResourceForm"
+                    <button form="{{ resource.id }}-deleteResourceForm"
                             id="{{ resource.id }}-resourceDeleteButton"
-                            class="delete-btn-large resource-delete-button {{ resource.id }}">
+                            class="delete-btn-large resource-delete-button no-display">
                     </button>
 {# delete single resource #}
-                    <form action="{% url 'resource_update_delete' resource.id %}?next={{ request.get_full_path }}"
-                          method="POST" id="{{ resource.id }}-deleteSingleResourceForm">
+                    <form method="POST"
+                          action="{% url 'resource_update_delete' resource.id %}"
+                          data-id="{{ resource_group.id }}"
+                          id="{{ resource.id }}-deleteResourceForm"
+                          class="delete-resource-form">
                         {% csrf_token %}
                         {% method_override 'DELETE' %}
                     </form>

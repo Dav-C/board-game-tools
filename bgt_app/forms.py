@@ -133,7 +133,9 @@ class DieStandardForm(forms.ModelForm):
         required=True,
         widget=forms.NumberInput(
             attrs={
-                'placeholder': 'sides'
+                'placeholder': 'sides',
+                'min': '2',
+                'max': '100',
             },
         ),
     )

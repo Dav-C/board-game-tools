@@ -1,11 +1,31 @@
+// reload the contents of an element
+function load_element(element_id, callback) {
+    'use strict';
+    let element = $(element_id);
+    element.load(' ' + element_id + ' > *', function() {
+        closeToolPageCover();
+        if (callback !== null) {
+          callback();
+        }
+    });
+}
+// display the active tool
+function display_active_tool(){
+    'use strict';
+    if (localStorage.getItem('activeTool')) {
+        let active_tool = localStorage.getItem('activeTool');
+        load_element(active_tool, null);
+        $('.tool-body').addClass('no-display');
+        $(active_tool).removeClass('no-display');
+    }
+};
 //  on page load - check for an active tool menu and set it to visible
 if (localStorage.getItem('activeTool')) {
-    let activeTool= localStorage.getItem('activeTool');
-    $(activeTool).css({'display': 'flex'});
+    display_active_tool();
 }
 
 /* Utility function to convert a canvas to a BLOB */
-let dataURLToBlob = function(dataURL) {
+function dataURLToBlob(dataURL) {
     'use strict';
     let BASE64_MARKER = ';base64,';
     if (dataURL.indexOf(BASE64_MARKER) === -1) {
@@ -30,6 +50,67 @@ let dataURLToBlob = function(dataURL) {
     return new Blob([uInt8Array], {type: contentType});
 };
 /* End Utility function to convert a canvas to a BLOB      */
+
+// hide an element and reveal a replacement element
+function hide_reveal_element(hide_element, reveal_element) {
+    'use strict';
+    if (hide_element !== null) {
+        hide_element.addClass('no-display');
+    }
+    if (reveal_element !== null) {
+        reveal_element.removeClass('no-display');
+    }
+}
+
+// submit form and reload element
+function submit_form_and_load_element(form, element_id, method, message_wrapper, message){
+    'use strict';
+    let data_id = form.attr("data-id");
+    let serializedData = form.serialize();
+    $.ajax({
+        headers: {"X-HTTP-Method-Override": method},
+        type: 'POST',
+        url: form.attr('action'),
+        data: serializedData,
+        success: function () {
+            if (element_id !== null) {
+                load_element(element_id, null);
+                console.log('ajaxSuccess, element loaded');
+            } else {
+                console.log('ajax success');
+            }
+            if (message_wrapper !== null) {
+                messageControl.display_success_message(message_wrapper, message);
+            }
+        },
+        error: function (response) {
+            console.log(response["responseJSON"]["error"]);
+            messageControl.display_error_message(
+                '#errorMessageWrapper', 'Uh oh, status ' + response.status
+            );
+        }
+    });
+}
+// reveal the dark cover over the tool page when various forms are opened
+function openToolPageCover() {
+    'use strict';
+    $('#toolPageDarkCover').css({
+    'display': 'inline',
+    'position': 'absolute',
+    'opacity': '70%'
+    });
+    $('body, html').addClass('no_scroll');
+}
+// close the dark cover over the tool page
+function closeToolPageCover() {
+    'use strict';
+    $('#toolPageDarkCover').css({
+    'display': 'none',
+    'position': 'absolute',
+    'opacity': '0'
+    });
+    $('body, html').removeClass('no_scroll');
+}
 
 // control messages that popup after certain actions (such as creating a tool)
 let messageControl = {
@@ -73,20 +154,15 @@ $('#CreateToolSessionFormCancelBtn').click(function() {
 $('#OpenToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '0', 'visibility': 'visible'});
-    $('#ToolSessionPageHeader').css({'display': 'none'});
-    $('body, html').addClass('no_scroll');
     openToolPageCover();
 });
-
 $('#CloseToolSelectionMenuBtn').click(function() {
     'use strict';
     $('#ToolSelectionMenu').css({'top': '-80vh', 'visibility': 'hidden'});
     setTimeout(function(){
-    $('#ToolSessionPageHeader').css({'display': 'flex'});
-    window.location.reload(true);
+        display_active_tool();
     }, 275);
 });
-
 // reveal the dark cover over the menu when add tool forms are opened
 function openMenuCover() {
     'use strict';
@@ -185,60 +261,51 @@ $('#createScoringGroupFormCancelBtn').click(function() {
     closeMenuCover();
 });
 
-// Set active tool windows to visible and reloads the page so newly added tools
-// are loaded from the database
-function setActiveTool(activeToolWrapperClass) {
+// set the selected tool to active, close the menu and display the selected tool
+function setActiveTool(active_tool_wrapper_id) {
     'use strict';
-    // Hide the menu and set local storage to carry through the reload
-    $('.tool-body').css({'display': 'none'});
-    $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
-    localStorage.setItem('activeTool', activeToolWrapperClass);
-    // Wait for the menu to close then reload the page
     setTimeout(function(){
-        window.location.reload(true);
-        }, 500);
+        $('#ToolSelectionMenu').css({'top': '-90vh', 'visibility': 'hidden'});
+        localStorage.setItem('activeTool', active_tool_wrapper_id);
+        display_active_tool();
+    }, 275);
 }
 
 // Set the Hp Trackers to the active tool
 $("#OpenPlayersBtn").click(function () {
     'use strict';
-    setActiveTool('#playersViewWrapper.tool-body');
+    setActiveTool('#playersViewWrapper');
 });
 // Set the Hp Trackers to the active tool
 $("#OpenHpTrackersBtn").click(function () {
     'use strict';
-    setActiveTool('#HpTrackersViewWrapper.tool-body');
+    setActiveTool('#hpTrackersViewWrapper');
 });
 // Set the Die Groups to the active tool
 $("#OpenDieGroupsBtn").click(function () {
     'use strict';
-    setActiveTool('#DieGroupsViewWrapper.tool-body');
+    setActiveTool('#dieGroupsViewWrapper');
 });
-
 // Set the Resource Groups to the active tool
 $("#openResourceGroupsBtn").click(function () {
     'use strict';
-    setActiveTool('#resourceGroupsViewWrapper.tool-body');
+    setActiveTool('#resourceGroupsViewWrapper');
 });
-
 // Set Game Times to the active tool
 $("#openGameTimersBtn").click(function () {
     'use strict';
-    setActiveTool('#gameTimersViewWrapper.tool-body');
+    setActiveTool('#gameTimersViewWrapper');
 });
-
 // Set the Draw Bags to the active tool
 $("#openDrawBagsBtn").click(function () {
     'use strict';
-    setActiveTool('#drawBagsViewWrapper.tool-body');
+    setActiveTool('#drawBagsViewWrapper');
 });
-
 // Set the Scoring Groups to the active tool
 $("#openScoringGroupsBtn").click(function () {
     'use strict';
-    setActiveTool('#scoringGroupsViewWrapper.tool-body');
+    setActiveTool('#scoringGroupsViewWrapper');
 });
-
 // controls ajax requests when submitting forms that create new tools
 function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
     'use strict';
@@ -313,67 +380,6 @@ $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#openScoringGroupsBtn'
 ));
 
-// hide an element and reveal a replacement element
-function hide_reveal_element(hide_element, reveal_element) {
-    'use strict';
-    if (hide_element !== null) {
-        hide_element.addClass('no-display');
-    }
-    if (reveal_element !== null) {
-        reveal_element.removeClass('no-display');
-    }
-}
-
-// reload the contents of an element
-function load_element(element_id) {
-    'use strict';
-    let element = $(element_id);
-    element.load(' ' + element_id + ' > *', function() {
-        closeToolPageCover();
-    });
-}
-// submit form and reload element
-function submit_form_and_load_element(form, element_id){
-    'use strict';
-    let data_id = form.attr("data-id");
-    let serializedData = form.serialize();
-    $.ajax({
-        headers: {"X-HTTP-Method-Override": "PUT"},
-        type: 'POST',
-        url: form.attr('action'),
-        data: serializedData,
-        success: function () {
-            load_element(element_id);
-            console.log('ajaxSuccess, element loaded');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message(
-                '#errorMessageWrapper', 'Uh oh, status ' + response.status
-            );
-        }
-    });
-}
-// reveal the dark cover over the tool page when various forms are opened
-function openToolPageCover() {
-    'use strict';
-    $('#toolPageDarkCover').css({
-    'display': 'inline',
-    'position': 'absolute',
-    'opacity': '70%'
-    });
-}
-// close the dark cover over the tool page
-function closeToolPageCover() {
-    'use strict';
-    $('#toolPageDarkCover').css({
-    'display': 'none',
-    'position': 'absolute',
-    'opacity': '0'
-    });
-}
-
-
 // --------------- HP TRACKER CONTROL ---------------
 
 // control timeout before hp_value increase or decrease is submitted
@@ -405,7 +411,7 @@ function timeoutControl(element) {
 
 // decrease the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
-$("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', function (e) {
+$("#hpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', function (e) {
     'use strict';
     let selector = $(this).closest('.hp-tracker-control-box');
     let data_id = selector.attr('data-id');
@@ -423,7 +429,7 @@ $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.decrease', functio
 
 // increase the hp value with each button click - value is not submitted until
 // after a 2 second delay via timeoutControl()
-$("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.increase', function (e) {
+$("#hpTrackersViewWrapper").on('click', '.hp-value-change-btn.increase', function (e) {
     'use strict';
     let selector = $(this).closest('.hp-tracker-control-box');
     let data_id = selector.attr('data-id');
@@ -440,7 +446,7 @@ $("#HpTrackersViewWrapper").on('click', '.hp-value-change-btn.increase', functio
 
 });
 // reveal editing options for an hp tracker - change title/delete
-$("#HpTrackersViewWrapper").on('click', '.tool-title', function (e) {
+$("#hpTrackersViewWrapper").on('click', '.tool-title', function (e) {
     'use strict';
     let data_id = $(this).attr('data-id');
     let tool_box = $('#' + data_id + '-hpTrackerBox');
@@ -455,7 +461,7 @@ $("#HpTrackersViewWrapper").on('click', '.tool-title', function (e) {
     hide_reveal_element(control_values_box, edit_values_box);
     hide_reveal_element(title, title_input);
     hide_reveal_element(null, delete_tool_form);
-    $("#HpTrackersViewWrapper").on('click', '.cancel-change-btn', function (e) {
+    $("#hpTrackersViewWrapper").on('click', '.cancel-change-btn', function (e) {
         hide_reveal_element(edit_values_box, control_values_box);
         hide_reveal_element(title_input, title);
         hide_reveal_element(delete_tool_form, null);
@@ -464,7 +470,7 @@ $("#HpTrackersViewWrapper").on('click', '.tool-title', function (e) {
     });
 });
 // submit the change value form and fill in empty inputs if needed
-$("#HpTrackersViewWrapper").on('submit', '.hp-change-value-form', function (e) {
+$("#hpTrackersViewWrapper").on('submit', '.hp-change-value-form', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
@@ -478,8 +484,17 @@ $("#HpTrackersViewWrapper").on('submit', '.hp-change-value-form', function (e) {
         let hp_initial_value = parseInt($('#' + data_id + "-hpValue").text());
         $('#' + data_id + '-hpValueInput input').val(hp_initial_value);
     }
-    submit_form_and_load_element(form, element_id);
+    submit_form_and_load_element(form, element_id, 'PUT');
 });
+// delete an hp tracker
+$("#hpTrackersViewWrapper").on('submit', '.delete-tool-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    submit_form_and_load_element(form, '#hpTrackersViewWrapper', 'DELETE');
+});
+
 
 // --------------- DICE CONTROL ---------------
 
@@ -489,176 +504,101 @@ diceControl = {
             let data_id = "#" + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-dieGroupAddNewDieFormWrapper');
             form_wrapper.removeClass('no-display');
-            $('body, html').removeClass('no_scroll');
             openToolPageCover();
         },
         close_add_die_form: function(this_value) {
             let data_id = $(this_value).attr('data-id');
             let form_wrapper = $("#" + data_id + '-dieGroupAddNewDieFormWrapper');
             form_wrapper.addClass('no-display');
-            load_element("#" + data_id + '-dieGroupBox');
+            load_element("#" + data_id + '-dieGroupBox', null);
         }
     }
 };
-
-// reveal editing options for a die group - change title/delete
-$('.die-group-title').click(function() {
+// reveal editing options for a diegroup - change title/delete
+$("#dieGroupsViewWrapper").on('click', '.tool-title', function (e) {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let die_group_title_box = $("#" + data_id + "-dieGroupTitle");
-    let die_group_title_input = $('#' + data_id + '-dieGroupTitleInput');
-    let confirm_die_group_title_change_btn = $('#' + data_id + '-confirmDieGroupTitleChangeBtn');
-    let cancel_die_group_title_change_btn = $('#' + data_id + '-cancelDieGroupTitleChangeBtn');
-    let die_group_add_die_open_form_btn = $('.die-group-add-die-open-form-btn');
-    let die_group_delete_btn = $('#' + data_id + '-dieGroupDeleteBtn');
-    let rolled_die_value = $('.die-rolled-value.' + data_id);
-    let die_delete_btn = $('.delete-btn-small.' + data_id);
-    let die_group_roll_all_form = $('.die-group-roll-all-form');
-
-    function revealDieGroupTitleChangeBtns() {
-        die_group_title_box.css({'display': 'none'});
-        die_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        die_group_add_die_open_form_btn.css({'display': 'none'});
-        confirm_die_group_title_change_btn.css({'display': 'inline'});
-        cancel_die_group_title_change_btn.css({'display': 'inline'});
-        die_group_delete_btn.css({'display': 'inline'});
-        rolled_die_value.css({'display': 'none'});
-        die_delete_btn.css({'display': 'inline'});
-        die_group_roll_all_form.css({'display': 'none'});
-    }
-
-    function hideDieGroupTitleChangeBtns() {
-        die_group_title_box.css({'display': 'inline'});
-        die_group_title_input.css({'display': 'none'});
-        die_group_roll_all_form.css({'display': 'inline'});
-        die_group_add_die_open_form_btn.css({'display': 'inline'});
-        confirm_die_group_title_change_btn.css({'display': 'none'});
-        cancel_die_group_title_change_btn.css({'display': 'none'});
-        die_group_delete_btn.css({'display': 'none'});
-        rolled_die_value.css({'display': 'flex'});
-        die_delete_btn.css({'display': 'none'})
-        die_group_roll_all_form.css({'display': 'inline'});
-    }
-
-    revealDieGroupTitleChangeBtns();
-    die_group_title_input.children('input').val(die_group_title_box.text().trim());
-    die_group_title_input.children('input').focus();
-
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_die_group_title_change_btn.click(function() {
-        hideDieGroupTitleChangeBtns();
-        });
-});
-
-// ajax for changing die group title
-$('.die-group-update-form').submit(function(e) {
-    'use strict';
-    e.preventDefault();
-    let data_id = $(this).attr("data-id");
-    let serializedData = $(this).serialize();
-    $.ajax({
-        headers: { "X-HTTP-Method-Override": "PUT" },
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // reset the title box and display the value
-            $("#" + data_id + "-dieGroupTitle").css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $('#' + data_id + '-dieGroupTitleInput').css({'display': 'none'});
-            $('.die-group-roll-all-form').css({'display': 'inline'});
-            $('.die-group-add-die-open-form-btn').css({'display': 'inline'});
-            $('#' + data_id + '-confirmDieGroupTitleChangeBtn').css({'display': 'none'});
-            $('#' + data_id + '-cancelDieGroupTitleChangeBtn').css({'display': 'none'});
-            $('#' + data_id + '-dieGroupDeleteBtn').css({'display': 'none'});
-            $('.delete-btn-small.' + data_id).css({'display': 'none'});
-            $('.die-rolled-value.' + data_id).css({'display': 'flex'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
+    let data_id = $(this).attr('data-id');
+    let tool_box = $('#' + data_id + '-dieGroupBox');
+    let control_values_box = $('#' + data_id + '-controlValuesBox');
+    let edit_values_box = $('#' + data_id + '-editValuesBox');
+    let title = $('#' + data_id + '-dieGroupTitle');
+    let title_input = $('#' + data_id + '-dieGroupTitleInput');
+    let delete_tool_form = $('#' + data_id + '-deleteToolForm');
+    title_input.children('input').val(title.text().trim());
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
+    hide_reveal_element(control_values_box, edit_values_box);
+    hide_reveal_element(title, title_input);
+    hide_reveal_element($('.die-rolled-value'), $('.delete-die-form'));
+    hide_reveal_element(null, delete_tool_form);
+    $("#dieGroupsViewWrapper").on('click', '.cancel-change-btn', function (e) {
+        hide_reveal_element(edit_values_box, control_values_box);
+        hide_reveal_element(title_input, title);
+        hide_reveal_element(delete_tool_form, null);
+        hide_reveal_element($('.delete-die-form'), $('.die-rolled-value'));
+        closeToolPageCover();
+        tool_box.removeClass('raise-over-cover');
     });
 });
-
+// delete a die group
+$("#dieGroupsViewWrapper").on('submit', '.delete-tool-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    submit_form_and_load_element(form, '#dieGroupsViewWrapper', 'DELETE');
+});
+// delete a single die
+$("#dieGroupsViewWrapper").on('submit', '.delete-die-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let die_group_box_id = '#' + data_id + '-dieGroupBox';
+    submit_form_and_load_element(form, die_group_box_id, 'DELETE');
+});
+// change a die group title
+$("#dieGroupsViewWrapper").on('submit', '.die-group-update-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let tool_box = $('#' + data_id + '-dieGroupBox');
+    tool_box.removeClass('raise-over-cover');
+    let element_id = '#' + data_id + '-dieGroupBox';
+    submit_form_and_load_element(form, element_id, 'PUT');
+});
 // roll an entire dice group
-$('.die-group-roll-all-form').submit(function(e) {
+$("#dieGroupsViewWrapper").on('submit', '.die-group-roll-all-form', function (e) {
     'use strict';
     e.preventDefault();
-    $.ajax({
-        type: 'GET',
-        url: $(this).attr('action'),
-        success: function (response) {
-            let die_values = JSON.parse(response.die_group_dice);
-            let die_group_sum = JSON.parse(response.die_group_sum);
-            $.each(die_values, function(index){
-                let target_div_id = die_values[index].pk.toString() + '-rolledValue';
-                let die_rolled_value = die_values[index].fields.rolled_value;
-                $('#' + target_div_id ).text(die_rolled_value);
-            });
-            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
-            let group_dice_sum = die_group_sum[0].group_dice_sum;
-            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
-                $('#' + group_sum_target_div_id).text('0');
-            } else {
-                $('#' + group_sum_target_div_id).text(group_dice_sum);
-            }
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#' + data_id + '-dieGroupBox';
+    submit_form_and_load_element(form, element_id, 'GET');
 });
-
 // roll a single die
-$('.die-roll-btn').click(function(e) {
+$("#dieGroupsViewWrapper").on('submit', '.die-group-roll-die-form', function (e) {
     'use strict';
     e.preventDefault();
-    $.ajax({
-        type: 'GET',
-        url: $(this).parent().attr('href'),
-        success: function (response) {
-            let new_die_value = JSON.parse(response.rolled_die_value);
-            let die_group_sum = JSON.parse(response.die_group_sum);
-            let target_div_id = new_die_value[0].pk.toString() + '-rolledValue';
-            let die_rolled_value = new_die_value[0].fields.rolled_value;
-            $('#' + target_div_id ).text(die_rolled_value);
-            let group_sum_target_div_id = die_group_sum[0].id + '-dieGroupSum';
-            let group_dice_sum = die_group_sum[0].group_dice_sum;
-            if (group_dice_sum === 'null' || group_dice_sum === 'None') {
-                $('#' + group_sum_target_div_id).text('0');
-            } else {
-                $('#' + group_sum_target_div_id).text(group_dice_sum);
-            }
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#' + data_id + '-dieGroupBox';
+    submit_form_and_load_element(form, element_id, 'GET');
 });
-
 // open the add die form
-$('.die-group-add-die-open-form-btn').click(function() {
+$("#dieGroupsViewWrapper").on('click', '.die-group-add-die-open-form-btn', function (e) {
     'use strict';
     diceControl.dice_funcs.open_add_die_form(this);
 });
 // close the add die form and reload the die groups
-$('.create-custom-object-form-done-btn.die').click(function() {
+$("#dieGroupsViewWrapper").on('click', '.create-custom-object-form-done-btn.die', function (e) {
     'use strict';
     diceControl.dice_funcs.close_add_die_form(this);
 });
 
-// ajax for adding a custom die via the #dieGroupAddDieStandardForm
-$('.create-custom-object-form.die').submit(function(e) {
+// add a die with n sides via the #dieGroupAddDieStandardForm
+$("#dieGroupsViewWrapper").on('submit', '.create-custom-object-form.die', function (e) {
     'use strict';
     e.preventDefault();
     let serialized_data = $(this).serialize();
@@ -677,9 +617,8 @@ $('.create-custom-object-form.die').submit(function(e) {
         }
     });
 });
-
-// ajax for quickly adding a common die via the #dieGroupAddDieStandardForm
-$('.quick-die-create-btn').click(function(e) {
+// quickly add a common die via the #dieGroupAddDieStandardForm
+$("#dieGroupsViewWrapper").on('click', '.quick-die-create-btn', function (e) {
     'use strict';
     e.preventDefault();
     let data_id = $(this).parent().parent('div').attr('data-id');
@@ -718,7 +657,6 @@ resourceControl = {
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-resourceGroupCreateResourceFormWrapper');
             form_wrapper.removeClass('no-display');
-            $('body, html').addClass('no_scroll');
             openToolPageCover();
         },
         close_create_resource_form: function(this_value) {
@@ -726,45 +664,7 @@ resourceControl = {
             let data_id = $(this_value).attr('data-id');
             let form_wrapper = $('#' + data_id + '-resourceGroupCreateResourceFormWrapper');
             form_wrapper.addClass('no-display');
-            load_element('#' + data_id + '-resourceGroupBox');
-        },
-        create_resource: function(form) {
-            'use strict';
-            let serialized_data = form.serialize();
-            $.ajax({
-                type: 'POST',
-                url: form.attr('action'),
-                data: serialized_data,
-                success: function (response) {
-                    messageControl.display_success_message('#resourceCreatedSuccessMessageWrapper', 'resource added!');
-                    console.log('ajaxSuccess');
-                },
-                error: function(response) {
-                    let error_text = response.responseText
-                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-                    messageControl.display_error_message('#errorMessageWrapper', error_text);
-                }
-            });
-        },
-        update_resource: function(form, data_id) {
-            'use strict';
-            let resource_box_div = $('#' + data_id + '-resourceBox');
-            let serialized_data = form.serialize();
-            $.ajax({
-                headers: { "X-HTTP-Method-Override": "PUT" },
-                type: 'POST',
-                url: form.attr('action'),
-                data: serialized_data,
-                success: function (response) {
-                    console.log('ajaxSuccess');
-                    resource_box_div.load(' ' + '#' + data_id + '-resourceBox' + ' > *', function () {});
-                },
-                error: function(response) {
-                    let error_text = response.responseText
-                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-                    messageControl.display_error_message('#errorMessageWrapper', error_text);
-                }
-            });
+            load_element('#' + data_id + '-resourceGroupBox', null);
         },
         reveal_resource_title_change_and_delete_btn: function(data_id_value) {
             let data_id = '#' + data_id_value;
@@ -790,6 +690,7 @@ resourceControl = {
             clearTimeout(resourceTimeoutHandler);
             let form = $(element).closest(form_class);
             let data_id = form.attr("data-id");
+            let element_id = '#' + data_id + '-resourceBox';
             let initial_qty = parseInt($('#' + data_id + object_quantity_box_id).text());
             let add_subtract_value = initial_qty + resource_change_value;
             resourceTimeoutHandler = setTimeout(function () {
@@ -805,7 +706,7 @@ resourceControl = {
                     prod_available_input.attr('checked', 'checked');
                     prod_modifier_input.val(prod_modifier);
                 }
-                resourceControl.resource_funcs.update_resource(form, data_id);
+                submit_form_and_load_element(form, element_id, 'PUT');
                 resource_change_value = 0;
             }, 2000);
         },
@@ -829,6 +730,7 @@ resourceControl = {
             clearTimeout(productionModifierTimeoutHandler);
             let form = $(element).closest(form_class);
             let data_id = form.attr("data-id");
+            let element_id = '#' + data_id + '-resourceBox';
             let initial_qty = parseInt($('#' + data_id + object_quantity_box_id).text());
             let add_subtract_value = initial_qty + production_modifier_change_value;
             productionModifierTimeoutHandler = setTimeout(function () {
@@ -842,7 +744,7 @@ resourceControl = {
                 resource_qty_input.val(resource_qty);
                 let prod_available_input = $('#' + data_id + '-prodChangeResourceProdAvailableInputWrapper').children('input');
                 prod_available_input.attr('checked', 'checked');
-                resourceControl.resource_funcs.update_resource(form, data_id);
+                submit_form_and_load_element(form, element_id, 'PUT');
                 production_modifier_change_value = 0;
             }, 2000);
         },
@@ -870,86 +772,58 @@ resourceControl = {
     },
 };
 
-// reveal editing options for a resource group box
-$('.resource-group-title').click(function() {
+// reveal editing options for a resource group - change title/delete
+$("#resourceGroupsViewWrapper").on('click', '.tool-title', function (e) {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let resource_group_title_box = $("#" + data_id + "-resourceGroupTitle");
-    let resource_group_title_input = $("#" + data_id + '-resourceGroupTitleInput');
-    let confirm_resource_group_title_change_btn = $("#" + data_id + '-confirmResourceGroupTitleChangeBtn');
-    let cancel_resource_group_title_change_btn = $("#" + data_id + '-cancelResourceGroupTitleChangeBtn');
-    let resource_group_add_resource_open_form_btn = $('.resource-group-add-resource-open-form-btn');
-    let resource_group_delete_btn = $("#" + data_id + '-resourceGroupDeleteBtn');
-    let resource_delete_btn = $('.delete-btn-small.' + data_id);
-    let resource_group_produce_all_form = $('.resource-group-produce-all-form');
-
-
-    function revealResourceGroupTitleChangeBtns() {
-        resource_group_title_box.css({'display': 'none'});
-        resource_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        resource_group_produce_all_form.css({'display': 'none'});
-        resource_group_add_resource_open_form_btn.css({'display': 'none'});
-        confirm_resource_group_title_change_btn.css({'display': 'inline'});
-        cancel_resource_group_title_change_btn.css({'display': 'inline'});
-        resource_group_delete_btn.css({'display': 'inline'});
-        resource_delete_btn.css({'display': 'inline'});
-    }
-
-    function hideResourceGroupTitleChangeBtns() {
-        resource_group_title_box.css({'display': 'inline'});
-        resource_group_title_input.css({'display': 'none'});
-        resource_group_produce_all_form.css({'display': 'inline'});
-        resource_group_add_resource_open_form_btn.css({'display': 'inline'});
-        confirm_resource_group_title_change_btn.css({'display': 'none'});
-        cancel_resource_group_title_change_btn.css({'display': 'none'});
-        resource_group_delete_btn.css({'display': 'none'});
-        resource_delete_btn.css({'display': 'none'});
-    }
-
-    revealResourceGroupTitleChangeBtns();
-    resource_group_title_input.children('input').val(resource_group_title_box.text().trim());
-    resource_group_title_input.children('input').focus();
-
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_resource_group_title_change_btn.click(function() {
-    hideResourceGroupTitleChangeBtns();
+    let data_id = $(this).attr('data-id');
+    let tool_box = $('#' + data_id + '-resourceGroupBox');
+    let control_values_box = $('#' + data_id + '-controlValuesBox');
+    let edit_values_box = $('#' + data_id + '-editValuesBox');
+    let title = $('#' + data_id + '-resourceGroupTitle');
+    let title_input = $('#' + data_id + '-resourceGroupTitleInput');
+    let delete_tool_form = $('#' + data_id + '-deleteToolForm');
+    title_input.children('input').val(title.text().trim());
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
+    hide_reveal_element(control_values_box, edit_values_box);
+    hide_reveal_element(title, title_input);
+    hide_reveal_element(null, delete_tool_form);
+    $("#resourceGroupsViewWrapper").on('click', '.cancel-change-btn', function (e) {
+        hide_reveal_element(edit_values_box, control_values_box);
+        hide_reveal_element(title_input, title);
+        hide_reveal_element(delete_tool_form, null);
+        closeToolPageCover();
+        tool_box.removeClass('raise-over-cover');
     });
 });
-
-// update a resource group title and hide editing controls
-$('.resource-group-update-form').submit(function(e) {
+// delete an resource group
+$("#resourceGroupsViewWrapper").on('submit', '.delete-tool-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = '#' + $(this).attr("data-id");
-    let serializedData = $(this).serialize();
-    $.ajax({
-        headers: { "X-HTTP-Method-Override": "PUT" },
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // reset the title box and display the value
-            $(data_id + '-resourceGroupTitle').css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $(data_id + '-resourceGroupTitleInput').css({'display': 'none'});
-            $('.resource-group-produce-all-form').css({'display': 'inline'});
-            $('.resource-group-add-resource-open-form-btn').css({'display': 'inline'});
-            $(data_id + '-confirmResourceGroupTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-cancelResourceGroupTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-resourceGroupDeleteBtn').css({'display': 'none'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        }
-    });
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    submit_form_and_load_element(form, '#resourceGroupsViewWrapper', 'DELETE');
 });
-
+// delete a single resource
+$("#resourceGroupsViewWrapper").on('submit', '.delete-resource-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#' + data_id + '-resourceGroupBox'
+    submit_form_and_load_element(form, element_id, 'DELETE', null, null);
+});
+// change a resource group title
+$("#resourceGroupsViewWrapper").on('submit', '.resource-group-update-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let tool_box = $('#' + data_id + '-resourceGroupBox');
+    tool_box.removeClass('raise-over-cover');
+    let element_id = '#' + data_id + '-resourceGroupBox';
+    submit_form_and_load_element(form, element_id, 'PUT');
+});
 // open the create resource form
 $("#resourceGroupsViewWrapper").on('click', '.resource-group-add-resource-open-form-btn', function (e) {
     'use strict';
@@ -961,27 +835,24 @@ $("#resourceGroupsViewWrapper").on('click', '.create-custom-object-form-done-btn
     'use strict';
     resourceControl.resource_funcs.close_create_resource_form(this);
 });
-
 // quickly add a common resource type with the quick-add buttons in the create
 // resource form
 $("#resourceGroupsViewWrapper").on('click', '.common-object-quick-create-btn.resource-create', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = "#" + $(this).parent('div').attr('data-id');
-    let form = $(data_id + '-resourceGroupCreateResourceForm');
+    let data_id = $(this).parent().parent().attr('data-id');
+    let form = $('#' + data_id + '-resourceGroupCreateResourceForm');
     let resource_name = $(this).attr('data-name').toString();
-    $(data_id + '-createResourceNameField input').val(resource_name);
-    resourceControl.resource_funcs.create_resource(form);
+    $('#' + data_id + '-createResourceNameField input').val(resource_name);
+    submit_form_and_load_element(form, null, 'POST', '#resourceCreatedSuccessMessageWrapper', 'resource added!');
 });
-
 // create a new resource with a custom name
 $("#resourceGroupsViewWrapper").on('submit', '.create-custom-object-form.resource', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
-    resourceControl.resource_funcs.create_resource(form);
+    submit_form_and_load_element(form, null, 'POST', '#resourceCreatedSuccessMessageWrapper', 'resource added!');
 });
-
 // open the resource name change form and reveal the individual resource
 // delete buttons
 $("#resourceGroupsViewWrapper").on('click', '.resource-name-box', function (e) {
@@ -1000,6 +871,7 @@ $("#resourceGroupsViewWrapper").on('submit', '.resource-name-change-form', funct
     e.preventDefault();
     let form = $(this);
     let data_id = $(this).attr('data-id');
+    let element_id = '#' + data_id + '-resourceBox';
 // forms.py - ResourceForm must have all fields completed to prevent data loss
     let resource_qty = parseInt($('#' + data_id + '-resourceQtyBox').text().trim());
     let resource_qty_input = $('#' + data_id + '-nameChangeResourceQtyInputWrapper').children('input');
@@ -1011,7 +883,7 @@ $("#resourceGroupsViewWrapper").on('submit', '.resource-name-change-form', funct
         prod_available_input.attr('checked', 'checked');
         prod_modifier_input.val(prod_modifier);
     }
-    resourceControl.resource_funcs.update_resource(form, data_id);
+    submit_form_and_load_element(form, element_id, 'PUT');
 });
 
 // change the resource quantity with each button click - value is not submitted until
@@ -1024,11 +896,11 @@ $("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.resource-i
         '-resourceQtyBox'
     );
     resourceControl.resource_funcs.resourceValueChangeTimeoutControl(
-    this,
-    '.resource-qty-change-form',
-    '-resourceQtyInput input',
-    '-resourceValueChange',
-    '-resourceQtyBox'
+        this,
+        '.resource-qty-change-form',
+        '-resourceQtyInput input',
+        '-resourceValueChange',
+        '-resourceQtyBox'
     );
 });
 $("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.resource-decrease', function (e) {
@@ -1039,11 +911,11 @@ $("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.resource-d
         '-resourceQtyBox'
     );
     resourceControl.resource_funcs.resourceValueChangeTimeoutControl(
-    this,
-    '.resource-qty-change-form',
-    '-resourceQtyInput input',
-    '-resourceValueChange',
-    '-resourceQtyBox'
+        this,
+        '.resource-qty-change-form',
+        '-resourceQtyInput input',
+        '-resourceValueChange',
+        '-resourceQtyBox'
     );
 });
 
@@ -1057,12 +929,12 @@ $("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.modifier-i
         '-productionModifierQtyBox'
     );
     resourceControl.resource_funcs.productionModifierValueChangeTimeoutControl(
-    this,
-    '.resource-production-modifier-change-form',
-    '-productionModifierQtyInput input',
-    '-productionModifierValueChange',
-    '-productionModifierQtyBox'
-    );
+        this,
+        '.resource-production-modifier-change-form',
+        '-productionModifierQtyInput input',
+        '-productionModifierValueChange',
+        '-productionModifierQtyBox'
+        );
 });
 $("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.modifier-decrease', function (e) {
     'use strict';
@@ -1072,18 +944,19 @@ $("#resourceGroupsViewWrapper").on('click', '.resource-change-amt-btn.modifier-d
         '-productionModifierQtyBox'
     );
     resourceControl.resource_funcs.productionModifierValueChangeTimeoutControl(
-    this,
-    '.resource-production-modifier-change-form',
-    '-productionModifierQtyInput input',
-    '-productionModifierValueChange',
-    '-productionModifierQtyBox'
-    );
+        this,
+        '.resource-production-modifier-change-form',
+        '-productionModifierQtyInput input',
+        '-productionModifierValueChange',
+        '-productionModifierQtyBox'
+        );
 });
 
 // produce resource
 $("#resourceGroupsViewWrapper").on('click', '.produce-single-resource-btn', function (e) {
     let data_id = $(this).closest('form').attr('data-id');
     let form = $('#' + data_id + '-produceResourceForm');
+    element_id = '#' + data_id + '-resourceBox';
     let new_resource_qty = resourceControl.resource_funcs.calculate_resource_production_value(data_id);
     $("#" + data_id + '-newResourceQtyInput input').val(new_resource_qty);
     // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
@@ -1092,7 +965,7 @@ $("#resourceGroupsViewWrapper").on('click', '.produce-single-resource-btn', func
     resource_name_input.val(resource_name);
     let prod_available_input = $('#' + data_id + '-produceResourceProdAvailableInputWrapper').children('input');
     prod_available_input.attr('checked', 'checked');
-    resourceControl.resource_funcs.update_resource(form, data_id);
+    submit_form_and_load_element(form, element_id, 'PUT');
 });
 
 // --------------- SCORING CONTROL ---------------
@@ -1124,16 +997,16 @@ scoringControl = {
             'use strict';
             let data_id = '#' + $(this_value).attr('data-id');
             let form_wrapper = $(data_id + '-scoringCategoryCreateFormWrapper');
-            form_wrapper.css({'visibility': 'visible', 'opacity': '100%'});
-            $('body, html').addClass('no_scroll');
+            form_wrapper.removeClass('no-display');
             openToolPageCover();
         },
         close_create_scoring_category_forms_box: function(this_value) {
-            let data_id = '#' + $(this_value).attr('data-id');
-            let form_wrapper = $(data_id + '-scoringCategoryCreateFormWrapper');
-            form_wrapper.css({'visibility': 'hidden', 'opacity': '0'});
-            window.location.reload(true);
-            closeToolPageCover();
+            'use strict';
+            let data_id = $(this_value).attr('data-id');
+            let element_id = '#' + data_id + '-resourceGroupBox'
+            let form_wrapper = $('#' + data_id + '-scoringCategoryCreateFormWrapper');
+            form_wrapper.addClass('no-display');
+            load_element(element_id, null);
         },
         open_player_score_input_area: function(this_value) {
             'use strict';
