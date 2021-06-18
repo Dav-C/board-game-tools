@@ -15,7 +15,10 @@
 <div id=UserHomeWrapper>
 <div class="user-home-header">
     <button id="OpenCreateToolSessionModalBtn" class="open-create-tool-session-modal-btn">+</button>
-    <a href="{% url 'logout' %}" class="logout-link">logout</a>
+    <div class="home-header-button-row">
+        <a href="{% url 'logout' %}" class="logout-link"></a>
+        <a href="{% url 'user_account' %}" class="account-link"></a>
+    </div>
 </div>
 <div class="user-home-body">
 {#Form for adding new tool sessions#}

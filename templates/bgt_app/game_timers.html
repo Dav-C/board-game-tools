@@ -24,7 +24,7 @@
                         <div id="{{ game_timer.id }}-gameTimerTitleInput"
                              class="tool-title no-display">
                             {{ game_timer_form.title|add_class:"tool-title-input"}}
-                            {{ game_timer_form.saved_duration|add_class:"absolute-hidden" }}
+                            {{ game_timer_form.saved_duration|add_class:"fixed-hidden" }}
                         </div>
                     </div>
                 </form>
@@ -76,7 +76,7 @@
             <form action="{% url 'game_timer_update_delete' game_timer.id %}"
                   data-id="{{ game_timer.id }}"
                   id="{{ game_timer.id }}-gameTimerDurationUpdateForm"
-                  class="game-timer-duration-update-form absolute-hidden">
+                  class="game-timer-duration-update-form fixed-hidden">
                 {% csrf_token %}
                 <div id="{{ game_timer.id }}-savedDurationInputWrapper"
                      class="saved-duration-input-wrapper">

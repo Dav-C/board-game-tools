@@ -67,7 +67,7 @@
                     <div id={{ die_group.id }}-addDieStandardNumSidesInput>
                         {{ die_standard_form.num_sides|add_class:"add-die-standard-input" }}
                     </div>
-                    <button type="submit" class="blue-btn smaller">add die</button>
+                    <button type="submit" class="blue-btn small">add die</button>
                 </div>
                 </form>
                 <div class="form-title-box">
@@ -91,7 +91,7 @@
                </div>
                <br />
                <br />
-               <button class="blue-btn smaller create-custom-object-form-done-btn die" data-id="{{ die_group.id }}">done</button>
+               <button class="blue-btn small create-custom-object-form-done-btn die" data-id="{{ die_group.id }}">done</button>
             </div>
 {# dice in die group #}
         {% for die in die_group.standard_dice.all %}

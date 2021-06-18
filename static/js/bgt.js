@@ -4,6 +4,7 @@ function load_element(element_id, callback) {
     let element = $(element_id);
     element.load(' ' + element_id + ' > *', function() {
         closeToolPageCover();
+        $(element_id).removeClass('raise-over-cover');
         if (callback !== null) {
           callback();
         }
@@ -63,7 +64,7 @@ function hide_reveal_element(hide_element, reveal_element) {
 }
 
 // submit form and reload element
-function submit_form_and_load_element(form, element_id, method, message_wrapper, message){
+function submit_form_and_load_element(form, element_id, method, callback, message_wrapper, message){
     'use strict';
     let data_id = form.attr("data-id");
     let serializedData = form.serialize();
@@ -74,7 +75,7 @@ function submit_form_and_load_element(form, element_id, method, message_wrapper,
         data: serializedData,
         success: function () {
             if (element_id !== null) {
-                load_element(element_id, null);
+                load_element(element_id, callback);
                 console.log('ajaxSuccess, element loaded');
             } else {
                 console.log('ajax success');
@@ -331,10 +332,11 @@ function newToolsFormSubmit(form, form_wrapper, tool_view_btn) {
                 $(tool_view_btn).addClass('button-visible');
                 console.log('ajaxSuccess');
             },
-            error: function(response) {
-                let error_text = response.responseText
-                    .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-                messageControl.display_error_message('#errorMessageWrapper', error_text);
+            error: function (response) {
+                console.log(response["responseJSON"]["error"]);
+                messageControl.display_error_message(
+                    '#errorMessageWrapper', 'Uh oh, status ' + response.status
+                );
             }
         });
     });
@@ -388,14 +390,16 @@ $("#playersViewWrapper").on('submit', '.delete-player-form', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
-    submit_form_and_load_element(form, '#playersViewWrapper', 'DELETE', null, null);
+    let element_id = '#playersViewWrapper';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 // randomize player order
 $("#playersViewWrapper").on('submit', '.randomize-player-order-form', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
-    submit_form_and_load_element(form, '#playersViewWrapper', 'GET', null, null);
+    let element_id = '#playersViewWrapper';
+    submit_form_and_load_element(form, element_id, 'GET', null);
 });
 
 
@@ -503,14 +507,15 @@ $("#hpTrackersViewWrapper").on('submit', '.hp-change-value-form', function (e) {
         let hp_initial_value = parseInt($('#' + data_id + "-hpValue").text());
         $('#' + data_id + '-hpValueInput input').val(hp_initial_value);
     }
-    submit_form_and_load_element(form, element_id, 'PUT');
+    submit_form_and_load_element(form, element_id, 'PUT', null);
 });
 // delete an hp tracker
 $("#hpTrackersViewWrapper").on('submit', '.delete-tool-form', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
-    submit_form_and_load_element(form, '#hpTrackersViewWrapper', 'DELETE');
+    let element_id = '#hpTrackersViewWrapper';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 
 
@@ -564,7 +569,8 @@ $("#dieGroupsViewWrapper").on('submit', '.delete-tool-form', function (e) {
     e.preventDefault();
     let form = $(this);
     let data_id = form.attr('data-id');
-    submit_form_and_load_element(form, '#dieGroupsViewWrapper', 'DELETE');
+    let element_id = '#dieGroupsViewWrapper';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 // delete a single die
 $("#dieGroupsViewWrapper").on('submit', '.delete-die-form', function (e) {
@@ -572,8 +578,8 @@ $("#dieGroupsViewWrapper").on('submit', '.delete-die-form', function (e) {
     e.preventDefault();
     let form = $(this);
     let data_id = form.attr('data-id');
-    let die_group_box_id = '#' + data_id + '-dieGroupBox';
-    submit_form_and_load_element(form, die_group_box_id, 'DELETE');
+    let element_id = '#' + data_id + '-dieGroupBox';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 // change a die group title
 $("#dieGroupsViewWrapper").on('submit', '.die-group-update-form', function (e) {
@@ -584,7 +590,7 @@ $("#dieGroupsViewWrapper").on('submit', '.die-group-update-form', function (e) {
     let tool_box = $('#' + data_id + '-dieGroupBox');
     tool_box.removeClass('raise-over-cover');
     let element_id = '#' + data_id + '-dieGroupBox';
-    submit_form_and_load_element(form, element_id, 'PUT');
+    submit_form_and_load_element(form, element_id, 'PUT', null);
 });
 // roll an entire dice group
 $("#dieGroupsViewWrapper").on('submit', '.die-group-roll-all-form', function (e) {
@@ -593,7 +599,7 @@ $("#dieGroupsViewWrapper").on('submit', '.die-group-roll-all-form', function (e)
     let form = $(this);
     let data_id = form.attr('data-id');
     let element_id = '#' + data_id + '-dieGroupBox';
-    submit_form_and_load_element(form, element_id, 'GET');
+    submit_form_and_load_element(form, element_id, 'GET', null);
 });
 // roll a single die
 $("#dieGroupsViewWrapper").on('submit', '.die-group-roll-die-form', function (e) {
@@ -602,7 +608,7 @@ $("#dieGroupsViewWrapper").on('submit', '.die-group-roll-die-form', function (e)
     let form = $(this);
     let data_id = form.attr('data-id');
     let element_id = '#' + data_id + '-dieGroupBox';
-    submit_form_and_load_element(form, element_id, 'GET');
+    submit_form_and_load_element(form, element_id, 'GET', null);
 });
 // open the add die form
 $("#dieGroupsViewWrapper").on('click', '.die-group-add-die-open-form-btn', function (e) {
@@ -687,7 +693,7 @@ resourceControl = {
         reveal_resource_title_change_and_delete_btn: function(data_id_value) {
             let data_id = '#' + data_id_value;
             $(data_id + '-resourceName').css({'display':'none'});
-            $(data_id + '-resourceNameInputWrapper').removeClass('absolute-hidden').children('input').focus();
+            $(data_id + '-resourceNameInputWrapper').removeClass('fixed-hidden').children('input').focus();
             $(data_id + '-resourceDeleteButton').css({'display':'inline'});
             $(data_id + '-resourceImageBox').css({'display':'none'});
             $(data_id + '-confirmChangeBtn').css({'display':'inline'});
@@ -696,7 +702,7 @@ resourceControl = {
         hide_resource_title_change_and_delete_btn: function(data_id_value) {
             let data_id = '#' + data_id_value;
             $(data_id + '-resourceName').css({'display':'inline'});
-            $(data_id + '-resourceNameInputWrapper').addClass('absolute-hidden');
+            $(data_id + '-resourceNameInputWrapper').addClass('fixed-hidden');
             $(data_id + '-resourceDeleteButton').css({'display':'none'});
             $(data_id + '-resourceImageBox').css({'display':'inline'});
             $(data_id + '-confirmChangeBtn').css({'display':'none'});
@@ -724,7 +730,7 @@ resourceControl = {
                     prod_available_input.attr('checked', 'checked');
                     prod_modifier_input.val(prod_modifier);
                 }
-                submit_form_and_load_element(form, element_id, 'PUT');
+                submit_form_and_load_element(form, element_id, 'PUT', null);
                 resource_change_value = 0;
             }, 2000);
         },
@@ -762,7 +768,7 @@ resourceControl = {
                 resource_qty_input.val(resource_qty);
                 let prod_available_input = $('#' + data_id + '-prodChangeResourceProdAvailableInputWrapper').children('input');
                 prod_available_input.attr('checked', 'checked');
-                submit_form_and_load_element(form, element_id, 'PUT');
+                submit_form_and_load_element(form, element_id, 'PUT', null);
                 production_modifier_change_value = 0;
             }, 2000);
         },
@@ -820,7 +826,7 @@ $("#resourceGroupsViewWrapper").on('submit', '.delete-tool-form', function (e) {
     e.preventDefault();
     let form = $(this);
     let data_id = form.attr('data-id');
-    submit_form_and_load_element(form, '#resourceGroupsViewWrapper', 'DELETE');
+    submit_form_and_load_element(form, '#resourceGroupsViewWrapper', 'DELETE', null);
 });
 // delete a single resource
 $("#resourceGroupsViewWrapper").on('submit', '.delete-resource-form', function (e) {
@@ -828,8 +834,8 @@ $("#resourceGroupsViewWrapper").on('submit', '.delete-resource-form', function (
     e.preventDefault();
     let form = $(this);
     let data_id = form.attr('data-id');
-    let element_id = '#' + data_id + '-resourceGroupBox'
-    submit_form_and_load_element(form, element_id, 'DELETE', null, null);
+    let element_id = '#' + data_id + '-resourceGroupBox';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 // change a resource group title
 $("#resourceGroupsViewWrapper").on('submit', '.resource-group-update-form', function (e) {
@@ -840,7 +846,7 @@ $("#resourceGroupsViewWrapper").on('submit', '.resource-group-update-form', func
     let tool_box = $('#' + data_id + '-resourceGroupBox');
     tool_box.removeClass('raise-over-cover');
     let element_id = '#' + data_id + '-resourceGroupBox';
-    submit_form_and_load_element(form, element_id, 'PUT');
+    submit_form_and_load_element(form, element_id, 'PUT', null);
 });
 // open the create resource form
 $("#resourceGroupsViewWrapper").on('click', '.resource-group-add-resource-open-form-btn', function (e) {
@@ -861,15 +867,17 @@ $("#resourceGroupsViewWrapper").on('click', '.common-object-quick-create-btn.res
     let data_id = $(this).parent().parent().attr('data-id');
     let form = $('#' + data_id + '-resourceGroupCreateResourceForm');
     let resource_name = $(this).attr('data-name').toString();
+    let message_wrapper = '#resourceCreatedSuccessMessageWrapper';
     $('#' + data_id + '-createResourceNameField input').val(resource_name);
-    submit_form_and_load_element(form, null, 'POST', '#resourceCreatedSuccessMessageWrapper', 'resource added!');
+    submit_form_and_load_element(form, null, 'POST', null, message_wrapper, 'resource added!');
 });
 // create a new resource with a custom name
 $("#resourceGroupsViewWrapper").on('submit', '.create-custom-object-form.resource', function (e) {
     'use strict';
     e.preventDefault();
     let form = $(this);
-    submit_form_and_load_element(form, null, 'POST', '#resourceCreatedSuccessMessageWrapper', 'resource added!');
+    let message_wrapper = '#resourceCreatedSuccessMessageWrapper';
+    submit_form_and_load_element(form, null, 'POST', null, message_wrapper, 'resource added!');
 });
 // open the resource name change form and reveal the individual resource
 // delete buttons
@@ -983,7 +991,7 @@ $("#resourceGroupsViewWrapper").on('click', '.produce-single-resource-btn', func
     resource_name_input.val(resource_name);
     let prod_available_input = $('#' + data_id + '-produceResourceProdAvailableInputWrapper').children('input');
     prod_available_input.attr('checked', 'checked');
-    submit_form_and_load_element(form, element_id, 'PUT');
+    submit_form_and_load_element(form, element_id, 'PUT', null);
 });
 
 // --------------- SCORING CONTROL ---------------
@@ -993,22 +1001,27 @@ scoringControl = {
         change_open_sub_group: function(sub_group_wrapper, this_value) {
             'use strict';
             let data_id = $(this_value).parent().attr('data-id');
-            $('#' + data_id + '-scoringGroupPlayersWrapper').addClass('absolute-hidden');
-            $('#' + data_id + '-scoringGroupCategoriesWrapper').addClass('absolute-hidden');
-            $('#' + data_id + '-scoringGroupScoresWrapper').addClass('absolute-hidden');
-            $(sub_group_wrapper).removeClass('absolute-hidden');
+            $('#' + data_id + '-scoringGroupPlayersWrapper').addClass('no-display');
+            $('#' + data_id + '-scoringGroupCategoriesWrapper').addClass('no-display');
+            $('#' + data_id + '-scoringGroupScoresWrapper').addClass('no-display');
+            $('.scoring-group-control-box-btn').removeClass('selected-btn-background');
+            $(sub_group_wrapper).removeClass('no-display');
+            $(this_value).addClass('selected-btn-background');
             localStorage.setItem('active-scoring-group-data-id', data_id.toString());
             localStorage.setItem('active-scoring-view-wrapper-id', sub_group_wrapper.toString());
+            localStorage.setItem('active-scoring-view-btn-id', $(this_value).attr('id').toString());
         },
         set_active_view_wrapper: function() {
             'use strict';
             if (localStorage.getItem('active-scoring-group-data-id')) {
                 let active_scoring_group_data_id = localStorage.getItem('active-scoring-group-data-id');
                 let active_scoring_view_wrapper_id = localStorage.getItem('active-scoring-view-wrapper-id');
-                $('#' + active_scoring_group_data_id  + '-scoringGroupPlayersWrapper').addClass('absolute-hidden');
-                $('#' + active_scoring_group_data_id  + '-scoringGroupCategoriesWrapper').addClass('absolute-hidden');
-                $('#' + active_scoring_group_data_id  + '-scoringGroupScoresWrapper').addClass('absolute-hidden');
-                $(active_scoring_view_wrapper_id).removeClass('absolute-hidden');
+                let active_scoring_view_btn_id = localStorage.getItem('active-draw-bag-view-btn-id');
+                $('#' + active_scoring_view_btn_id).addClass('selected-btn-background');
+                $('#' + active_scoring_group_data_id  + '-scoringGroupPlayersWrapper').addClass('no-display');
+                $('#' + active_scoring_group_data_id  + '-scoringGroupCategoriesWrapper').addClass('no-display');
+                $('#' + active_scoring_group_data_id  + '-scoringGroupScoresWrapper').addClass('no-display');
+                $(active_scoring_view_wrapper_id).removeClass('no-display');
             }
         },
         open_create_scoring_category_forms_box: function(this_value) {
@@ -1021,7 +1034,7 @@ scoringControl = {
         close_create_scoring_category_forms_box: function(this_value) {
             'use strict';
             let data_id = $(this_value).attr('data-id');
-            let element_id = '#' + data_id + '-resourceGroupBox'
+            let element_id = '#' + data_id + '-scoringGroupBox';
             let form_wrapper = $('#' + data_id + '-scoringCategoryCreateFormWrapper');
             form_wrapper.addClass('no-display');
             load_element(element_id, null);
@@ -1034,12 +1047,12 @@ scoringControl = {
             let all_open_buttons = $('.score-calc-input-area-open-btn');
             let all_close_buttons = $('.score-calc-input-area-close-btn');
             let close_btn = $(this_value).parent().find('.score-calc-input-area-close-btn');
-            all_close_buttons.addClass('absolute-hidden');
-            all_open_buttons.removeClass('absolute-hidden');
-            all_input_areas.addClass('absolute-hidden')
-            input_area_wrapper.removeClass('absolute-hidden');
-            $(this_value).addClass('absolute-hidden');
-            close_btn.removeClass('absolute-hidden');
+            all_close_buttons.addClass('no-display');
+            all_open_buttons.removeClass('no-display');
+            all_input_areas.addClass('no-display');
+            input_area_wrapper.removeClass('no-display');
+            $(this_value).addClass('no-display');
+            close_btn.removeClass('no-display');
         },
         close_player_score_input_area: function(this_value) {
             'use strict';
@@ -1047,90 +1060,71 @@ scoringControl = {
             let all_input_areas = $('.score-calc-input-area-wrapper');
             let all_open_buttons = $('.score-calc-input-area-open-btn');
             let all_close_buttons = $('.score-calc-input-area-close-btn');
-            all_close_buttons.addClass('absolute-hidden');
-            all_open_buttons.removeClass('absolute-hidden');
-            all_input_areas.addClass('absolute-hidden');
-        },
-        update_scoring_group: function(form, data_id) {
-            'use strict';
-            let scoring_group_box = $('#' + data_id + '-scoringGroupBox');
-            let serialized_data = form.serialize();
-            $.ajax({
-                headers: { "X-HTTP-Method-Override": "PUT" },
-                type: 'POST',
-                url: form.attr('action'),
-                data: serialized_data,
-                success: function (response) {
-                    scoring_group_box.load(' ' + '#' + data_id + '-scoringGroupBox' + ' > *', function () {
-                        scoringControl.scoring_funcs.set_active_view_wrapper();
-                    console.log('ajaxSuccess');
-                    });
-                },
-                error: function(response) {
-                    let error_text = response.responseText
-                        .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-                    messageControl.display_error_message('#errorMessageWrapper', error_text);
-                }
-            });
+            all_close_buttons.addClass('no-display');
+            all_open_buttons.removeClass('no-display');
+            all_input_areas.addClass('no-display');
         },
     }
 };
-
-// reveal editing options for a scoring group box
-$("#scoringGroupsViewWrapper").on('click', '.scoring-group-title', function (e) {
+// reveal editing options for a scoring group - change title/delete
+$("#scoringGroupsViewWrapper").on('click', '.tool-title', function (e) {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let scoring_group_title_box = $("#" + data_id + "-scoringGroupTitle");
-    let scoring_group_title_input = $("#" + data_id + '-scoringGroupTitleInput');
-    let confirm_scoring_group_title_change_btn = $("#" + data_id + '-confirmScoringGroupTitleChangeBtn');
-    let cancel_scoring_group_title_change_btn = $("#" + data_id + '-cancelScoringGroupTitleChangeBtn');
-    let scoring_group_control_box_btn = $('.scoring-group-control-box-btn');
-    let scoring_group_delete_btn = $("#" + data_id + '-scoringGroupDeleteBtn');
-
-
-    function revealScoringGroupTitleChangeBtns() {
-        scoring_group_title_box.css({'display': 'none'});
-        scoring_group_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        scoring_group_control_box_btn.css({'display': 'none'});
-        confirm_scoring_group_title_change_btn.css({'display': 'inline'});
-        cancel_scoring_group_title_change_btn.css({'display': 'inline'});
-        scoring_group_delete_btn.css({'display': 'inline'});
-    }
-
-    function hideScoringGroupTitleChangeBtns() {
-        scoring_group_title_box.css({'display': 'inline'});
-        scoring_group_title_input.css({'display': 'none'});
-        scoring_group_control_box_btn.css({'display': 'inline'});
-        confirm_scoring_group_title_change_btn.css({'display': 'none'});
-        cancel_scoring_group_title_change_btn.css({'display': 'none'});
-        scoring_group_delete_btn.css({'display': 'none'});
-    }
-
-        revealScoringGroupTitleChangeBtns();
-        scoring_group_title_input.children('input').val(scoring_group_title_box.text().trim());
-        scoring_group_title_input.children('input').focus();
-
-        // reveal title, hide input and re-enable buttons if user clicks cancel
-        cancel_scoring_group_title_change_btn.click(function() {
-        hideScoringGroupTitleChangeBtns();
-        });
+    let data_id = $(this).attr('data-id');
+    let tool_box = $('#' + data_id + '-scoringGroupBox');
+    let control_values_box = $('#' + data_id + '-controlValuesBox');
+    let edit_values_box = $('#' + data_id + '-editValuesBox');
+    let title = $('#' + data_id + '-scoringGroupTitle');
+    let title_input = $('#' + data_id + '-scoringGroupTitleInput');
+    let delete_tool_form = $('#' + data_id + '-deleteToolForm');
+    title_input.children('input').val(title.text().trim());
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
+    hide_reveal_element(control_values_box, edit_values_box);
+    hide_reveal_element(title, title_input);
+    hide_reveal_element($('.die-rolled-value'), $('.delete-die-form'));
+    hide_reveal_element(null, delete_tool_form);
+    $("#scoringGroupsViewWrapper").on('click', '.cancel-change-btn', function (e) {
+        hide_reveal_element(edit_values_box, control_values_box);
+        hide_reveal_element(title_input, title);
+        hide_reveal_element(delete_tool_form, null);
+        hide_reveal_element($('.delete-die-form'), $('.die-rolled-value'));
+        closeToolPageCover();
+        tool_box.removeClass('raise-over-cover');
+    });
 });
-
 // update a scoring group title
 $("#scoringGroupsViewWrapper").on('submit', '.scoring-group-title-form', function (e) {
     'use strict';
     e.preventDefault();
     let data_id = $(this).attr("data-id");
-    let form = $('#' + data_id + '-scoringGroupTitleForm');
-    scoringControl.scoring_funcs.update_scoring_group(form, data_id);
+    let form = $(this);
+    let element_id = '#' + data_id + '-scoringGroupBox';
+    submit_form_and_load_element(form, element_id, 'PUT', null);
+});
+// delete a scoring group
+$("#scoringGroupsViewWrapper").on('submit', '.delete-tool-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let element_id = '#scoringGroupsViewWrapper';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 $("#scoringGroupsViewWrapper").on('click', '.scoring-group-control-box-btn', function (e) {
     'use strict';
     let sub_group_wrapper = $(this).attr('data-id');
     scoringControl.scoring_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
-// add a scoring category
+// delete a single scoring category
+$("#scoringGroupsViewWrapper").on('submit', '.delete-single-scoring-category-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#' + data_id + '-scoringGroupBox';
+    submit_form_and_load_element(
+        form, element_id, 'DELETE', scoringControl.scoring_funcs.set_active_view_wrapper);
+});
+// open the create new scoring categories form
 $("#scoringGroupsViewWrapper").on('click', '.scoring-group-add-category-open-form-btn', function (e) {
     'use strict';
     scoringControl.scoring_funcs.open_create_scoring_category_forms_box(this);
@@ -1144,22 +1138,9 @@ $("#scoringGroupsViewWrapper").on('click', '.create-custom-object-form-done-btn.
 $("#scoringGroupsViewWrapper").on('submit', '.create-custom-object-form.scoring-category', function (e) {
     'use strict';
     e.preventDefault();
-    let serialized_data = $(this).serialize();
-    $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serialized_data,
-        success: function (response) {
-            messageControl.display_success_message('#scoringPageSuccessMessageWrapper', 'category added!');
-            scoringControl.scoring_funcs.set_active_view_wrapper();
-            console.log('ajaxSuccess');
-        },
-        error: function(response) {
-            let error_text = response.responseText
-                .replace('{','').replace('}','').replace(':','').replace('error','').replaceAll('"','');
-            messageControl.display_error_message('#errorMessageWrapper', error_text);
-        }
-    });
+    let form = $(this);
+    let message_wrapper = '#scoringPageSuccessMessageWrapper';
+    submit_form_and_load_element(form, null, 'POST', null, message_wrapper, 'cateogry added!' );
 });
 // open a player's scoring input area, this will also close any other open
 // scoring input areas
@@ -1172,7 +1153,6 @@ $("#scoringGroupsViewWrapper").on('click', '.score-calc-input-area-close-btn', f
     'use strict';
     scoringControl.scoring_funcs.close_player_score_input_area($(this));
 });
-
 // calculate a player's score
 $("#scoringGroupsViewWrapper").on('submit', '.score-calc-form', function (e) {
     'use strict';
@@ -1210,13 +1190,28 @@ $("#scoringGroupsViewWrapper").on('submit', '.score-calc-form', function (e) {
     $(player_score_form).children().children('input').closest('#id_name').val(player_name);
     player_score_form.submit();
 });
-
 $("#scoringGroupsViewWrapper").on('submit', '.score-calc-player-score-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = $(this).parent().parent().attr('data-id');
+    let data_id = $(this).attr('data-id');
     let form = $(this);
-    scoringControl.scoring_funcs.update_scoring_group(form, data_id);
+    let element_id = '#' + data_id + '-scoreCalcPlayerScoreForm';
+    let message_wrapper = '#scoringPageSuccessMessageWrapper';
+    submit_form_and_load_element(form, element_id, 'PUT', null, message_wrapper, 'scored!');
+});
+// add players to a scoring group
+$("#scoringGroupsViewWrapper").on('submit', '.scoring-group-add-players-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let data_id = $(this).attr('data-id');
+    let form = $(this);
+    let element_id = $('#' + data_id + '-scoringGroupPlayersWrapper');
+    let message_wrapper = '#scoringPageSuccessMessageWrapper';
+    submit_form_and_load_element(
+        form, element_id, 'POST',
+        scoringControl.scoring_funcs.set_active_view_wrapper,
+        message_wrapper, 'saved'
+    );
 });
 
 // --------------- GAME TIMER CONTROL ---------------
@@ -1407,7 +1402,8 @@ $("#gameTimersViewWrapper").on('submit', '.delete-tool-form', function (e) {
     e.preventDefault();
     let form = $(this);
     let data_id = form.attr('data-id');
-    submit_form_and_load_element(form, '#gameTimersViewWrapper', 'DELETE');
+    let element_id = '#gameTimersViewWrapper';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 // start a game timer and set timer_running to true
 $("#gameTimersViewWrapper").on('click', '.game-timer-control-box-btn.start', function (e) {
@@ -1462,16 +1458,21 @@ drawBagControl = {
             $('#' + data_id + '-drawBagItemsWrapper').addClass('no-display');
             $('#' + data_id + '-drawBagDrawnItemsWrapper').addClass('no-display');
             $('#' + data_id + '-drawBagItemsInBagWrapper').addClass('no-display');
+            $('.draw-bag-control-box-btn').removeClass('selected-btn-background');
             $(sub_group_wrapper).removeClass('no-display');
+            $(this_value).addClass('selected-btn-background');
             localStorage.setItem('active-draw-bag-group-data-id', data_id.toString());
             localStorage.setItem('active-draw-bag-view-wrapper-id', sub_group_wrapper.toString());
-
+            localStorage.setItem('active-draw-bag-view-btn-id', $(this_value).attr('id').toString());
         },
         set_active_view_wrapper: function() {
             'use strict';
             if (localStorage.getItem('active-draw-bag-group-data-id')) {
                 let active_draw_bag_group_data_id = localStorage.getItem('active-draw-bag-group-data-id');
                 let active_draw_bag_view_wrapper_id = localStorage.getItem('active-draw-bag-view-wrapper-id');
+                let active_draw_bag_view_btn_id = localStorage.getItem('active-draw-bag-view-btn-id');
+                $('.draw-bag-control-box-btn').removeClass('selected-btn-background');
+                $('#' + active_draw_bag_view_btn_id).addClass('selected-btn-background');
                 $('#' + active_draw_bag_group_data_id  + '-drawBagItemsWrapper').addClass('no-display');
                 $('#' + active_draw_bag_group_data_id  + '-drawBagDrawnItemsWrapper').addClass('no-display');
                 $('#' + active_draw_bag_group_data_id  + '-drawBagItemsInBagWrapper').addClass('no-display');
@@ -1485,7 +1486,12 @@ drawBagControl = {
             let draw_bag_image = draw_bag_item_modal_wrapper.find('img:first');
             let return_to_bag_btn = draw_bag_item_modal_wrapper.find('.draw-bag-item-modal-return-to-bag-btn');
             draw_bag_item_name.text(item_name);
-            draw_bag_image.attr('src', image_path);
+            if (image_path === '/') {
+                draw_bag_image.addClass('no-display');
+            } else {
+                draw_bag_image.removeClass('no-display');
+                draw_bag_image.attr('src', image_path);
+            }
         },
         open_draw_bag_item_modal: function(group_id) {
             'use strict';
@@ -1515,13 +1521,13 @@ drawBagControl = {
                         let drawn_item_image_path = '/' + drawn_item[0]['fields']['image'];
                         $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
                         drawBagControl.draw_bag_funcs.update_draw_bag_item_modal(
-                            drawn_item_group_id, drawn_item_name, drawn_item_image_path)
+                            drawn_item_group_id, drawn_item_name, drawn_item_image_path);
                         drawBagControl.draw_bag_funcs.open_draw_bag_item_modal(data_id);
                         drawBagControl.draw_bag_funcs.set_active_view_wrapper();
                         });
                     }
                     catch(error) {
-                        console.log(error.name)
+                        console.log(error.name);
                         if(error.name === 'SyntaxError') {
                             // this generates messages each time the divs are reloaded.  The volume of messages
                             // was too high so its been disabled.  Keeping it here for future use.
@@ -1529,7 +1535,8 @@ drawBagControl = {
                             // messageControl.display_success_message('#errorMessageWrapper', message);
                             $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
                             drawBagControl.draw_bag_funcs.set_active_view_wrapper();
-                            messageControl.display_success_message('#drawBagPageSuccessMessageWrapper', 'the bag is empty!')
+                            messageControl.display_success_message('#drawBagPageSuccessMessageWrapper', 'the bag is empty!');
+                            closeToolPageCover();
                             });
                         }
                     }
@@ -1556,7 +1563,7 @@ drawBagControl = {
                         });
                     }
                     catch(error) {
-                        console.log(error.name)
+                        console.log(error.name);
                         if(error.name === 'SyntaxError') {
                             // this generates messages each time the divs are reloaded.  The volume of messages
                             // was too high so its been disabled.  Keeping it here for future use.
@@ -1578,13 +1585,12 @@ drawBagControl = {
         },
         create_item_and_update_bag: function(form, form_data_value = false) {
             let form_data = false;
+            let data_id = form.attr('data-id');
             if (form_data_value) {
-                console.log('triggered')
                 form_data = new FormData(form[0]);
                 form_data.append('image', form_data_value, 'uploaded_image.jpg');
-                content_type = false
+                content_type = false;
             }
-            console.log(form_data);
             $.ajax({
                 processData: false,
                 contentType: form_data ? content_type: 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -1594,6 +1600,7 @@ drawBagControl = {
                 success: function (response) {
                     $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
                     drawBagControl.draw_bag_funcs.set_active_view_wrapper();
+                    resized_draw_bag_upload_image = null
                     closeToolPageCover();
                     });
                     console.log('ajaxSuccess');
@@ -1614,8 +1621,10 @@ drawBagControl = {
             openToolPageCover();
         },
         close_draw_bag_item_create_form_wrapper: function(this_value) {
-            let data_id = '#' + $(this_value).attr('data-id');
-            let form_wrapper = $(data_id + '-drawBagItemCreateFormWrapper');
+            let data_id = $(this_value).attr('data-id');
+            let form = $('#' + data_id + '-drawBagItemCreateForm')
+            let form_wrapper = $('#' + data_id + '-drawBagItemCreateFormWrapper');
+            let sub_group_wrapper = "#" + data_id + '-drawBagItemsWrapper';
             form_wrapper.addClass('no-display');
             $('#drawBagsViewWrapper').load(' #drawBagsViewWrapper > *', function() {
                 drawBagControl.draw_bag_funcs.set_active_view_wrapper();
@@ -1626,11 +1635,12 @@ drawBagControl = {
         // image is converted to blob and appended to drawBagItemCreateForm for
         // upload
         handleDrawBagImageUpload: function(this_value) {
+            'use strict';
             let data_id = $(this_value).attr('data-id');
-            form = $('#' + data_id + '-drawBagItemCreateForm');
+            let form = $('#' + data_id + '-drawBagItemCreateForm');
             let canvas = document.getElementById(data_id + '-imageCanvas');
             let context = canvas.getContext('2d');
-            let image_input_field = $('#' + data_id + '-id_image')
+            let image_input_field = $('#' + data_id + '-id_image');
             let image_upload = image_input_field[0].files[0];
             let file_reader = new FileReader();
             // let file_types =
@@ -1653,94 +1663,85 @@ drawBagControl = {
                         }
                     }
                     canvas.width = width;
-                    canvas.height = height
-                    context.drawImage(image, 0, 0, width, height)
+                    canvas.height = height;
+                    context.drawImage(image, 0, 0, width, height);
                 let canvas_data = canvas.toDataURL("image/png");
                 resized_draw_bag_upload_image = dataURLToBlob(canvas_data);
-                }
+                };
                 image.src = event.target.result;
-            }
+            };
             file_reader.readAsDataURL(image_upload);
-            form.reset();
         },
     }
-}
-
-// reveal editing options for a draw bag box
-$("#drawBagsViewWrapper").on('click', '.draw-bag-title', function() {
+};
+// reveal editing options for a drawbag - change title/delete
+$("#drawBagsViewWrapper").on('click', '.tool-title', function (e) {
     'use strict';
-    let selector = $(this).closest('form');
-    let data_id = selector.attr("data-id");
-    let draw_bag_title_box = $("#" + data_id + "-drawBagTitle");
-    let draw_bag_title_input = $("#" + data_id + '-drawBagTitleInput');
-    let confirm_draw_bag_title_change_btn = $("#" + data_id + '-confirmDrawBagTitleChangeBtn ');
-    let cancel_draw_bag_title_change_btn = $("#" + data_id + '-cancelDrawBagTitleChangeBtn');
-    let draw_bag_control_box_btn = $('.draw-bag-control-box-btn');
-    let draw_bag_delete_btn = $("#" + data_id + '-drawBagDeleteBtn');
-
-    function revealDrawBagTitleChangeBtns() {
-        draw_bag_title_box.css({'display': 'none'});
-        draw_bag_title_input.css({'display': 'inline', 'background-color': '#555555'});
-        draw_bag_control_box_btn.css({'display': 'none'});
-        confirm_draw_bag_title_change_btn.css({'display': 'inline'});
-        cancel_draw_bag_title_change_btn.css({'display': 'inline'});
-        draw_bag_delete_btn.css({'display': 'inline'});
-    }
-    function hideDrawBagTitleChangeBtns() {
-        draw_bag_title_box.css({'display': 'inline'});
-        draw_bag_title_input.css({'display': 'none'});
-        draw_bag_control_box_btn.css({'display': 'inline'});
-        confirm_draw_bag_title_change_btn.css({'display': 'none'});
-        cancel_draw_bag_title_change_btn.css({'display': 'none'});
-        draw_bag_delete_btn.css({'display': 'none'});
-    }
-    revealDrawBagTitleChangeBtns();
-    draw_bag_title_input.children('input').val(draw_bag_title_box.text().trim());
-    draw_bag_title_input.children('input').focus();
-
-    // reveal title, hide input and re-enable buttons if user clicks cancel
-    cancel_draw_bag_title_change_btn.click(function() {
-    hideDrawBagTitleChangeBtns();
+    let data_id = $(this).attr('data-id');
+    let tool_box = $('#' + data_id + '-drawBagBox');
+    let control_values_box = $('#' + data_id + '-controlValuesBox');
+    let edit_values_box = $('#' + data_id + '-editValuesBox');
+    let title = $('#' + data_id + '-drawBagTitle');
+    let title_input = $('#' + data_id + '-drawBagTitleInput');
+    let delete_tool_form = $('#' + data_id + '-deleteToolForm');
+    title_input.children('input').val(title.text().trim());
+    tool_box.addClass('raise-over-cover');
+    openToolPageCover();
+    hide_reveal_element(control_values_box, edit_values_box);
+    hide_reveal_element(title, title_input);
+    hide_reveal_element($('.die-rolled-value'), $('.delete-die-form'));
+    hide_reveal_element(null, delete_tool_form);
+    $("#drawBagsViewWrapper").on('click', '.cancel-change-btn', function (e) {
+        hide_reveal_element(edit_values_box, control_values_box);
+        hide_reveal_element(title_input, title);
+        hide_reveal_element(delete_tool_form, null);
+        hide_reveal_element($('.delete-die-form'), $('.die-rolled-value'));
+        closeToolPageCover();
+        tool_box.removeClass('raise-over-cover');
     });
 });
-// update a draw bag title and hide editing controls
-$("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function(e) {
+// change a draw bag title
+$("#drawBagsViewWrapper").on('submit', '.draw-bag-form', function (e) {
     'use strict';
     e.preventDefault();
-    let data_id = '#' + $(this).attr("data-id");
-    let serializedData = $(this).serialize();
-    $.ajax({
-        headers: { "X-HTTP-Method-Override": "PUT" },
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: serializedData,
-        success: function (response) {
-            let form_instance = JSON.parse(response['form_instance']);
-            let fields = form_instance[0]['fields'];
-            // reset the title box and display the value
-            $(data_id + '-drawBagTitle').css({'display': 'inline'})
-                                                .empty()
-                                                .prepend(fields.title);
-            $(data_id + '-drawBagTitleInput').css({'display': 'none'});
-            $('.draw-bag-control-box-btn').css({'display': 'inline'});
-            $(data_id + '-confirmDrawBagTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-cancelDrawBagTitleChangeBtn').css({'display': 'none'});
-            $(data_id + '-drawBagDeleteBtn').css({'display': 'none'});
-            console.log('ajaxSuccess');
-        },
-        error: function (response) {
-            console.log(response["responseJSON"]["error"]);
-            messageControl.display_error_message('#errorMessageWrapper', 'Uh oh, status ' + response.status);
-        },
-    })
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let tool_box = $('#' + data_id + '-drawBagBox');
+    tool_box.removeClass('raise-over-cover');
+    let element_id = '#' + data_id + '-drawBagBox';
+    submit_form_and_load_element(
+        form, element_id, 'PUT', drawBagControl.draw_bag_funcs.set_active_view_wrapper
+    );
+});
+// delete a single item
+$("#drawBagsViewWrapper").on('submit', '.delete-single-draw-bag-item-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#' + data_id + '-drawBagBox';
+    submit_form_and_load_element(
+        form, element_id, 'DELETE', drawBagControl.draw_bag_funcs.set_active_view_wrapper
+    );
+});
+// delete a draw bag
+$("#drawBagsViewWrapper").on('submit', '.delete-tool-form', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $(this);
+    let data_id = form.attr('data-id');
+    let element_id = '#drawBagsViewWrapper';
+    submit_form_and_load_element(form, element_id, 'DELETE', null);
 });
 // change the active view window
 $("#drawBagsViewWrapper").on('click', '.draw-bag-control-box-btn', function() {
+    'use strict';
     let sub_group_wrapper = $(this).attr('data-id');
     drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
 });
 // draw a random item from a draw bag and update the page with the results
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-draw-item-form', function (e) {
+    'use strict';
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagDrawItemForm');
@@ -1748,13 +1749,15 @@ $("#drawBagsViewWrapper").on('submit', '.draw-bag-draw-item-form', function (e) 
 });
 // return a specific item to the bag and update the page with the results
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-item-return-form', function (e) {
+    'use strict';
     e.preventDefault();
-    let data_id = $(this).attr('data-id')
+    let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagItemReturnForm');
     drawBagControl.draw_bag_funcs.update_bag(form);
 });
 // draw a specific item from the bag and update the page with the results
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-item-draw-form', function (e) {
+    'use strict';
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagItemDrawForm');
@@ -1762,6 +1765,7 @@ $("#drawBagsViewWrapper").on('submit', '.draw-bag-item-draw-form', function (e) 
 });
 // reset a draw bag by setting the drawn field on all items to False
 $("#drawBagsViewWrapper").on('submit', '.draw-bag-reset-form', function (e) {
+    'use strict';
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagResetForm');
@@ -1769,17 +1773,19 @@ $("#drawBagsViewWrapper").on('submit', '.draw-bag-reset-form', function (e) {
 });
 // open the create new draw bag item form wrapper
 $("#drawBagsViewWrapper").on('click', '.draw-bag-add-item-open-form-btn', function() {
+    'use strict';
     drawBagControl.draw_bag_funcs.open_draw_bag_item_create_form_wrapper($(this));
-})
+});
 // close the create new draw bag item form wrapper
 $("#drawBagsViewWrapper").on('click', '.create-custom-object-form-done-btn.draw_bag_item', function() {
+    'use strict';
     let data_id = $(this).attr('data-id');
-    let sub_group_wrapper = "#" + data_id + '-drawBagItemsWrapper'
+    let sub_group_wrapper = "#" + data_id + '-drawBagItemsWrapper';
     drawBagControl.draw_bag_funcs.close_draw_bag_item_create_form_wrapper($(this));
-    drawBagControl.draw_bag_funcs.change_open_sub_group(sub_group_wrapper, $(this));
-})
+});
 // create a new draw bag item
 $("#drawBagsViewWrapper").on('submit', '.create-custom-object-form.draw-bag-item', function (e) {
+    'use strict';
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     let form = $('#' + data_id + '-drawBagItemCreateForm');
@@ -1787,21 +1793,14 @@ $("#drawBagsViewWrapper").on('submit', '.create-custom-object-form.draw-bag-item
 });
 // close the draw bag item modal when the close button is pressed
 $("#drawBagsViewWrapper").on('click', '.draw-bag-item-modal-close-btn', function (e) {
+    'use strict';
     e.preventDefault();
     let data_id = $(this).attr('data-id');
     drawBagControl.draw_bag_funcs.close_draw_bag_item_modal(data_id);
 });
-
-// when the "return to bag" button is pressed in the image modal, the item is returned
-// to a non-drawn state and the modal is closed
-$("#drawBagsViewWrapper").on('click', '.draw-bag-item-modal-return-to-bag-btn', function (e) {
-    e.preventDefault();
-    let data_id = $(this).attr('data-id');
-    drawBagControl.draw_bag_funcs.close_draw_bag_item_modal(data_id);
-});
-
 // open the draw bag item modal when an image thumbnail is clicked
 $("#drawBagsViewWrapper").on('click', '.draw-bag-item-img-small', function (e) {
+    'use strict';
     e.preventDefault();
     let item_group_id = $(this).attr('data-id');
     let item_name = $(this).closest('.draw-bag-item-box')

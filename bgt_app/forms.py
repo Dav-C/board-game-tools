@@ -22,22 +22,23 @@ from .models import (
 class CreateUserForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ["username", "email", "password1", "password2"]
 
     username = forms.CharField(max_length=20)
 
 
 class ToolSessionForm(forms.ModelForm):
     """create new tool session objects"""
+
     class Meta:
         model = ToolSession
-        fields = ['session_name']
+        fields = ["session_name"]
 
     session_name = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'session name',
-                'autocomplete': 'off',
+                "placeholder": "session name",
+                "autocomplete": "off",
             },
         ),
     )
@@ -45,17 +46,18 @@ class ToolSessionForm(forms.ModelForm):
 
 class PlayerForm(forms.ModelForm):
     """Create and update Player objects"""
+
     class Meta:
         model = Player
-        fields = ['name', 'color', 'score']
+        fields = ["name", "color", "score"]
 
     name = forms.CharField(
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'player name',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "player name",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -64,31 +66,32 @@ class PlayerForm(forms.ModelForm):
         choices=Player.player_color_choices,
         widget=forms.Select(
             attrs={
-                'autocomplete': 'off',
+                "autocomplete": "off",
             },
         ),
     )
-    score = forms.FloatField(
-        required=False,
-        widget=forms.NumberInput(
-            attrs={}
+    score = (
+        forms.FloatField(
+            required=False,
+            widget=forms.NumberInput(attrs={}),
         ),
-    ),
+    )
 
 
 class HpTrackerForm(forms.ModelForm):
     """create and update HpTracker objects"""
+
     class Meta:
         model = HpTracker
-        fields = ['title', 'hp_value']
+        fields = ["title", "hp_value"]
 
     title = forms.CharField(
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'HP Tracker Title',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "HP Tracker Title",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -97,27 +100,25 @@ class HpTrackerForm(forms.ModelForm):
         required=False,
         initial=0,
         widget=forms.NumberInput(
-            attrs={
-                'placeholder': 'Initial HP Value',
-                'maxlength': '40'
-            },
+            attrs={"placeholder": "Initial HP Value", "maxlength": "40"},
         ),
     )
 
 
 class DieGroupForm(forms.ModelForm):
     """create and update DieGroup objects"""
+
     class Meta:
         model = DieGroup
-        fields = ['title']
+        fields = ["title"]
 
     title = forms.CharField(
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'die collection name',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "die collection name",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -125,17 +126,18 @@ class DieGroupForm(forms.ModelForm):
 
 class DieStandardForm(forms.ModelForm):
     """create and update DieStandard objects"""
+
     class Meta:
         model = DieStandard
-        fields = ['num_sides']
+        fields = ["num_sides"]
 
     num_sides = forms.IntegerField(
         required=True,
         widget=forms.NumberInput(
             attrs={
-                'placeholder': 'sides',
-                'min': '2',
-                'max': '100',
+                "placeholder": "sides",
+                "min": "2",
+                "max": "100",
             },
         ),
     )
@@ -143,17 +145,18 @@ class DieStandardForm(forms.ModelForm):
 
 class ResourceGroupForm(forms.ModelForm):
     """create and update ResourceGroup objects"""
+
     class Meta:
         model = ResourceGroup
-        fields = ['title']
+        fields = ["title"]
 
     title = forms.CharField(
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "Name",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -165,17 +168,15 @@ class ResourceForm(forms.ModelForm):
 
     class Meta:
         model = Resource
-        fields = ['name', 'quantity',
-                  'production_available',
-                  'production_modifier']
+        fields = ["name", "quantity", "production_available", "production_modifier"]
 
     name = forms.CharField(
         required=True,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Name',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "Name",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -184,9 +185,9 @@ class ResourceForm(forms.ModelForm):
         initial=0,
         widget=forms.NumberInput(
             attrs={
-                'placeholder': 'amount',
-                'maxlength': '4',
-                'autocomplete': 'off',
+                "placeholder": "amount",
+                "maxlength": "4",
+                "autocomplete": "off",
             },
         ),
     )
@@ -194,8 +195,7 @@ class ResourceForm(forms.ModelForm):
         required=False,
         initial=False,
         widget=forms.CheckboxInput(
-            attrs={
-            },
+            attrs={},
         ),
     )
     production_modifier = forms.IntegerField(
@@ -203,8 +203,8 @@ class ResourceForm(forms.ModelForm):
         initial=0,
         widget=forms.NumberInput(
             attrs={
-                'maxlength': '4',
-                'autocomplete': 'off',
+                "maxlength": "4",
+                "autocomplete": "off",
             },
         ),
     )
@@ -212,17 +212,18 @@ class ResourceForm(forms.ModelForm):
 
 class GameTimerForm(forms.ModelForm):
     """Create and update GameTimer Objects"""
+
     class Meta:
         model = GameTimer
-        fields = ['title', 'saved_duration']
+        fields = ["title", "saved_duration"]
 
     title = forms.CharField(
         required=True,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'timer title',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "timer title",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -231,23 +232,24 @@ class GameTimerForm(forms.ModelForm):
         initial=0,
         widget=forms.TextInput(
             attrs={},
-        )
+        ),
     )
 
 
 class ScoringGroupForm(forms.ModelForm):
     """Create and modify ScoringGroup objects"""
+
     class Meta:
         model = ScoringGroup
-        fields = ['title']
+        fields = ["title"]
 
     title = forms.CharField(
         required=False,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'name of game',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "name of game",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -256,8 +258,9 @@ class ScoringGroupForm(forms.ModelForm):
 class CustomMMCFAddPlayers(forms.ModelMultipleChoiceField):
     """customize the label for the ScoringGroupAddPlayersForm
     This is not strictly necessary but is here for future customization"""
+
     def label_from_instance(self, obj):
-        return f'{obj.name}'
+        return f"{obj.name}"
 
 
 class ScoringGroupAddPlayersForm(forms.ModelForm):
@@ -265,37 +268,32 @@ class ScoringGroupAddPlayersForm(forms.ModelForm):
 
     class Meta:
         model = ScoringGroup
-        fields = ['players']
+        fields = ["players"]
 
     def __init__(self, *args, **kwargs):
         self.active_tool_session_id = kwargs.pop("active_tool_session_id")
         super(ScoringGroupAddPlayersForm, self).__init__(*args, **kwargs)
-        self.fields['players'] = \
-            CustomMMCFAddPlayers(
-                required=False,
-                widget=forms.CheckboxSelectMultiple(),
-                queryset=Player.objects.filter(
-                    tool_session_id=self.active_tool_session_id
-                )
-            )
+        self.fields["players"] = CustomMMCFAddPlayers(
+            required=False,
+            widget=forms.CheckboxSelectMultiple(),
+            queryset=Player.objects.filter(tool_session_id=self.active_tool_session_id),
+        )
 
 
 class ScoringCategoryForm(forms.ModelForm):
-    """Create a ScoringCategory object """
+    """Create a ScoringCategory object"""
+
     class Meta:
         model = ScoringCategory
-        fields = ['name',
-                  'points_gained_or_lost',
-                  'items_per_group',
-                  'rounding']
+        fields = ["name", "points_gained_or_lost", "items_per_group", "rounding"]
 
     name = forms.CharField(
         required=True,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'cards, coins, etc.',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "cards, coins, etc.",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -303,9 +301,9 @@ class ScoringCategoryForm(forms.ModelForm):
         required=True,
         widget=forms.NumberInput(
             attrs={
-                'placeholder': 'number',
-                'maxlength': '4',
-                'autocomplete': 'off',
+                "placeholder": "number",
+                "maxlength": "4",
+                "autocomplete": "off",
             },
         ),
     )
@@ -313,9 +311,9 @@ class ScoringCategoryForm(forms.ModelForm):
         required=True,
         widget=forms.NumberInput(
             attrs={
-                'placeholder': 'number',
-                'maxlength': '4',
-                'autocomplete': 'off',
+                "placeholder": "number",
+                "maxlength": "4",
+                "autocomplete": "off",
             },
         ),
     )
@@ -324,7 +322,7 @@ class ScoringCategoryForm(forms.ModelForm):
         choices=ScoringCategory.rounding_choices,
         widget=forms.Select(
             attrs={
-                'autocomplete': 'off',
+                "autocomplete": "off",
             },
         ),
     )
@@ -332,17 +330,18 @@ class ScoringCategoryForm(forms.ModelForm):
 
 class DrawBagForm(forms.ModelForm):
     """Create GameTimer Objects"""
+
     class Meta:
         model = DrawBag
-        fields = ['title']
+        fields = ["title"]
 
     title = forms.CharField(
         required=True,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'draw bag title',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "draw bag title",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -350,17 +349,18 @@ class DrawBagForm(forms.ModelForm):
 
 class DrawBagItemForm(forms.ModelForm):
     """Create DrawBagItem Objects"""
+
     class Meta:
         model = DrawBagItem
-        fields = ['name', 'image']
+        fields = ["name", "image"]
 
     name = forms.CharField(
         required=True,
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'draw bag title',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "draw bag title",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
@@ -368,10 +368,9 @@ class DrawBagItemForm(forms.ModelForm):
         required=False,
         widget=forms.FileInput(
             attrs={
-                'placeholder': 'draw bag image',
-                'maxlength': '40',
-                'autocomplete': 'off',
+                "placeholder": "draw bag image",
+                "maxlength": "40",
+                "autocomplete": "off",
             },
         ),
     )
-

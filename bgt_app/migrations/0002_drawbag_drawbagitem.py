@@ -8,34 +8,66 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bgt_app', '0001_initial'),
+        ("bgt_app", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DrawBag',
+            name="DrawBag",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=40)),
-                ('tool_session', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='draw_bag', to='bgt_app.toolsession')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("title", models.CharField(max_length=40)),
+                (
+                    "tool_session",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="draw_bag",
+                        to="bgt_app.toolsession",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Draw Bag',
-                'verbose_name_plural': 'Draw Bags',
+                "verbose_name": "Draw Bag",
+                "verbose_name_plural": "Draw Bags",
             },
         ),
         migrations.CreateModel(
-            name='DrawBagItem',
+            name="DrawBagItem",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=40)),
-                ('drawn', models.BooleanField(default=False)),
-                ('image', models.ImageField(upload_to='user_media/')),
-                ('group', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='draw_bag_item', to='bgt_app.drawbag')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("name", models.CharField(max_length=40)),
+                ("drawn", models.BooleanField(default=False)),
+                ("image", models.ImageField(upload_to="user_media/")),
+                (
+                    "group",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="draw_bag_item",
+                        to="bgt_app.drawbag",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Draw Bag Item',
-                'verbose_name_plural': 'Draw Bag Items',
+                "verbose_name": "Draw Bag Item",
+                "verbose_name_plural": "Draw Bag Items",
             },
         ),
     ]

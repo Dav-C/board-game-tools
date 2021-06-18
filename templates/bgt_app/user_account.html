@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block body_class %}user_home{% endblock body_class %}
+
+{% block page_content %}
+{% for message in messages %}
+    {% if message.tag == error %}
+        <div class="message-box error fade_out">{{ message }}</div>
+    {% else %}
+        <div class="message-box info fade_out">{{ message }}</div>
+    {% endif %}
+{% endfor %}
+<div id=UserHomeWrapper>
+<div class="user-account-header">
+    <a href="{% url 'user_home' %}" class="account-back-btn"></a>
+</div>
+<div class="user-account-body">
+    <div class="account-info-box">
+        <button type="button" class="red-btn">DELETE ACCOUNT</button>
+        <br>
+        <br>
+        <button type="button" class="blue-btn">RESET PASSWORD</button>
+    </div>
+</div>
+
+{% endblock %}

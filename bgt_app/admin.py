@@ -28,4 +28,3 @@ admin.site.register(Player)
 admin.site.register(GameTimer)
 admin.site.register(DrawBag)
 admin.site.register(DrawBagItem)
-

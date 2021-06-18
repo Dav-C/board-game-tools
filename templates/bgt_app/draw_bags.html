@@ -9,15 +9,17 @@
         <div id="{{ draw_bag.id }}-drawBagItemModalWrapper"
              class="draw-bag-item-modal-wrapper">
             <span class="draw-bag-item-modal-name-text"></span>
+            <hr style="width: 90%;">
+            <br />
             {# the src is generated in bgt.js #}
-            <img src="" class="draw-bag-item-modal-img">
+            <img src="" alt="" class="draw-bag-item-modal-img">
             <div>
                 <button data-id="{{ draw_bag.id }}"
                         class="draw-bag-item-modal-close-btn blue-btn small">close
                 </button>
             </div>
         </div>
-        <div class="draw-bag-box">
+        <div id="{{ draw_bag.id }}-drawBagBox" class="draw-bag-box">
             <form method="POST" action="{% url 'draw_bag_update_delete' draw_bag.id %}"
                   id="{{ draw_bag.id }}-drawBagForm"
                   data-id="{{ draw_bag.id }}"
@@ -25,7 +27,8 @@
                 {% csrf_token %}
                 <div class="tool-title-box">
                     <div id="{{ draw_bag.id }}-drawBagTitle"
-                         class="tool-title draw-bag-title">
+                         class="tool-title draw-bag-title"
+                         data-id="{{ draw_bag.id }}">
                         {{ draw_bag.title }}
                     </div>
                     <div id="{{ draw_bag.id }}-drawBagTitleInput"
@@ -35,16 +38,18 @@
                 </div>
             </form>
 {# draw bag control box #}
-            <div class="draw-bag-control-box" data-id="{{ draw_bag.id }}">
-                <button class="draw-bag-control-box-btn"
+            <div id="{{ draw_bag.id }}-controlValuesBox "class="draw-bag-control-box" data-id="{{ draw_bag.id }}">
+                <button id="{{ draw_bag.id }}-allItemsBtn" class="draw-bag-control-box-btn"
                         data-id="#{{ draw_bag.id }}-drawBagItemsWrapper">all items
                 </button>
-                <button class="draw-bag-control-box-btn"
+                <button id="{{ draw_bag.id }}-drawnItemsBtn" class="draw-bag-control-box-btn selected-btn-background"
                         data-id="#{{ draw_bag.id }}-drawBagDrawnItemsWrapper">drawn
                 </button>
-                <button class="draw-bag-control-box-btn"
+                <button id="{{ draw_bag.id }}-inBagItemsBtn" class="draw-bag-control-box-btn"
                         data-id="#{{ draw_bag.id }}-drawBagItemsInBagWrapper">in bag
                 </button>
+            </div>
+            <div id="{{ draw_bag.id }}-editValuesBox" class="draw-bag-control-box no-display" data-id="{{ draw_bag.id }}">
                 <button type="button"
                         id="{{ draw_bag.id }}-cancelDrawBagTitleChangeBtn"
                         class="cancel-change-btn">
@@ -56,8 +61,8 @@
             </div>
 {# delete draw bag form #}
             <form id="{{ draw_bag.id }}-deleteToolForm"
-                  class="delete-tool-form"
-                  action="{% url 'draw_bag_update_delete' draw_bag.id %}?next={{ request.get_full_path }}"
+                  class="delete-tool-form no-display"
+                  action="{% url 'draw_bag_update_delete' draw_bag.id %}"
                   method="POST">
                 {% csrf_token %}
                 {% method_override 'DELETE' %}
@@ -73,6 +78,7 @@
                 <span class="form-title-text">create draw bag item</span>
             </div>
             <br />
+            <form id="{{ draw_bag.id }}-drawBagImageUploadInput">
             <label class="blue-btn small">
                 upload image (optional)
                 <input type="file" name="image" placeholder="draw bag image" maxlength="40"
@@ -81,6 +87,8 @@
                        onchange="drawBagControl.draw_bag_funcs.handleDrawBagImageUpload(this);"
                        hidden>
             </label>
+            </form>
+            <br />
             <form method="POST"
                   id="{{ draw_bag.id }}-drawBagItemCreateForm"
                   action="{% url 'draw_bag_item_create' draw_bag.id %}"
@@ -98,17 +106,16 @@
                     <div id={{ draw_bag.id }}-drawBagItemCreateFormImageField>
                         <input type="file" name="image" placeholder="draw bag image" maxlength="40"
                                autocomplete="off" accept="image/*" id="{{ draw_bag.id }}-id_image"
-                               data-id="{{ draw_bag.id }}" onchange="handleDrawBagImage(this);" hidden>
-{#                        <canvas id="{{ draw_bag.id }}-previewCanvas" class="draw-bag-upload-preview-canvas"></canvas>#}
+                               data-id="{{ draw_bag.id }}" hidden>
                         <canvas id="{{ draw_bag.id }}-imageCanvas" class="draw-bag-upload-preview-canvas"></canvas>
                     </div>
                 </div>
                 <div class="create-object-form-row">
-                    <button class="blue-btn smaller create-custom-object-form-done-btn draw_bag_item"
+                    <button class="red-btn small create-custom-object-form-done-btn draw_bag_item"
                             type="button"
-                            data-id="{{ draw_bag.id }}">done
+                            data-id="{{ draw_bag.id }}">cancel
                     </button>
-                    <button type="submit" class="blue-btn smaller">create</button>
+                    <button type="submit" class="blue-btn small create-custom-object-form-done-btn">create</button>
                 </div>
             </form>
         </div>
@@ -124,8 +131,10 @@
                         <div class="draw-bag-item-box-row">
                             <span class="draw-bag-item-box-title">{{ draw_bag_item.name }}</span>
                             <form method="POST"
-                                  action="{% url 'draw_bag_item_delete' draw_bag_item.id %}?next={{ request.get_full_path }}"
-                                  id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm">
+                                  action="{% url 'draw_bag_item_delete' draw_bag_item.id %}}"
+                                  data-id="{{ draw_bag.id }}"
+                                  id="{{ draw_bag_item.id }}-deleteSingleDrawBagItemForm"
+                                  class="delete-single-draw-bag-item-form">
                                 {% csrf_token %}
                                 {% method_override 'DELETE' %}
                                 <button class="red-btn small delete-btn-small"></button>
@@ -190,7 +199,6 @@
                     <button class="blue-btn">reset</button>
                 </form>
             </div>
-            <hr style="width: 90%;">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
                 {% if draw_bag_item.drawn == True %}
                     <div class="draw-bag-item-box">
@@ -238,7 +246,6 @@
                     <button class="blue-btn">reset</button>
                 </form>
             </div>
-            <hr style="width: 90%;">
             {% for draw_bag_item in draw_bag.draw_bag_items.all %}
                 {% if draw_bag_item.drawn == False %}
                     <div class="draw-bag-item-box">

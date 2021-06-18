@@ -7,18 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bgt_app', '0004_auto_20210506_1118'),
+        ("bgt_app", "0004_auto_20210506_1118"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='drawbagitem',
-            name='drawn_datetime',
+            model_name="drawbagitem",
+            name="drawn_datetime",
             field=models.DateTimeField(null=True),
         ),
         migrations.AlterField(
-            model_name='drawbagitem',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to=bgt_app.models.user_directory_path),
+            model_name="drawbagitem",
+            name="image",
+            field=models.ImageField(
+                blank=True, null=True, upload_to=bgt_app.models.user_directory_path
+            ),
         ),
     ]

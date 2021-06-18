@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bgt_app', '0002_drawbag_drawbagitem'),
+        ("bgt_app", "0002_drawbag_drawbagitem"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='drawbagitem',
-            name='image',
+            model_name="drawbagitem",
+            name="image",
             field=models.ImageField(upload_to=bgt_app.models.user_directory_path),
         ),
     ]

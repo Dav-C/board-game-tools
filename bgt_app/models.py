@@ -38,14 +38,10 @@ class ToolSession(models.Model):
         verbose_name_plural = "Tool Sessions"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    slug = AutoSlugField(populate_from='session_name', unique=True)
+    slug = AutoSlugField(populate_from="session_name", unique=True)
     session_name = models.CharField(max_length=50)
     creation_date = models.DateField(auto_now_add=True)
-    session_owner = models.ForeignKey(
-        UserProfile,
-        on_delete=models.CASCADE,
-        null=True
-    )
+    session_owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
 
     def get_absolute_url(self):
         return reverse("tool_session_detail", kwargs={"slug": self.slug})
@@ -60,39 +56,37 @@ class Player(models.Model):
         verbose_name_plural = "Players"
 
     player_color_choices = [
-        ('black', 'black'),
-        ('white', 'white'),
-        ('green', 'green'),
-        ('blue', 'blue'),
-        ('yellow', 'yellow'),
-        ('purple', 'purple'),
-        ('orange', 'orange'),
-        ('red', 'red'),
-        ('brown', 'brown'),
+        ("black", "black"),
+        ("white", "white"),
+        ("green", "green"),
+        ("blue", "blue"),
+        ("yellow", "yellow"),
+        ("purple", "purple"),
+        ("orange", "orange"),
+        ("red", "red"),
+        ("brown", "brown"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
-    color = models.CharField(max_length=10,
-                             choices=player_color_choices,
-                             default='black'
-                             )
+    color = models.CharField(
+        max_length=10, choices=player_color_choices, default="black"
+    )
     player_order = models.SmallIntegerField(default=0)
-    tool_session = models.ForeignKey(ToolSession,
-                                     related_name='players',
-                                     on_delete=models.CASCADE,
-                                     null=True
-                                     )
+    tool_session = models.ForeignKey(
+        ToolSession, related_name="players", on_delete=models.CASCADE, null=True
+    )
     score = models.FloatField(
         null=True,
         blank=True,
         validators=[
             MinValueValidator(limit_value=-1000),
-            MaxValueValidator(limit_value=1000)],
+            MaxValueValidator(limit_value=1000),
+        ],
     )
 
     def __str__(self):
-        return f'player-{self.name}'
+        return f"player-{self.name}"
 
 
 class HpTracker(models.Model):
@@ -103,15 +97,15 @@ class HpTracker(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=40)
     hp_value = models.SmallIntegerField(
-        validators=[MinValueValidator(limit_value=-1000),
-                    MaxValueValidator(limit_value=1000)],
+        validators=[
+            MinValueValidator(limit_value=-1000),
+            MaxValueValidator(limit_value=1000),
+        ],
         default=0,
     )
-    tool_session = models.ForeignKey(ToolSession,
-                                     related_name='hp_tracker',
-                                     on_delete=models.CASCADE,
-                                     null=True
-                                     )
+    tool_session = models.ForeignKey(
+        ToolSession, related_name="hp_tracker", on_delete=models.CASCADE, null=True
+    )
 
     def __str__(self):
         return f"Title: {self.title} HP: {self.hp_value}"
@@ -125,10 +119,7 @@ class DieGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=40)
     tool_session = models.ForeignKey(
-        ToolSession,
-        related_name='die_group',
-        on_delete=models.CASCADE,
-        null=True
+        ToolSession, related_name="die_group", on_delete=models.CASCADE, null=True
     )
 
     def __str__(self):
@@ -139,19 +130,19 @@ class DieStandard(models.Model):
     class Meta:
         verbose_name = "Standard Die"
         verbose_name_plural = "Standard Dice"
-        ordering = ['num_sides']
+        ordering = ["num_sides"]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     num_sides = models.SmallIntegerField(
         default=6,
-        validators=[MinValueValidator(limit_value=2),
-                    MaxValueValidator(limit_value=100)],
+        validators=[
+            MinValueValidator(limit_value=2),
+            MaxValueValidator(limit_value=100),
+        ],
     )
     rolled_value = models.SmallIntegerField(default=0)
     group = models.ForeignKey(
-        DieGroup,
-        related_name='standard_dice',
-        on_delete=models.CASCADE,
-        null=True
+        DieGroup, related_name="standard_dice", on_delete=models.CASCADE, null=True
     )
 
     def __str__(self):
@@ -166,10 +157,7 @@ class ResourceGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=40)
     tool_session = models.ForeignKey(
-        ToolSession,
-        related_name='resource_groups',
-        on_delete=models.CASCADE,
-        null=True
+        ToolSession, related_name="resource_groups", on_delete=models.CASCADE, null=True
     )
 
     def __str__(self):
@@ -180,20 +168,18 @@ class Resource(models.Model):
     class Meta:
         verbose_name = "Resource"
         verbose_name_plural = "Resources"
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
     quantity = models.SmallIntegerField(default=0)
     production_available = models.BooleanField(default=False)
     production_modifier = models.SmallIntegerField(default=0)
     group = models.ForeignKey(
-        ResourceGroup,
-        related_name='resources',
-        on_delete=models.CASCADE,
-        null=True
+        ResourceGroup, related_name="resources", on_delete=models.CASCADE, null=True
     )
 
     def __str__(self):
-        return f'Resource: {self.name}'
+        return f"Resource: {self.name}"
 
 
 class GameTimer(models.Model):
@@ -205,14 +191,11 @@ class GameTimer(models.Model):
     title = models.CharField(max_length=40)
     saved_duration = models.DurationField(default=datetime.timedelta(seconds=0))
     tool_session = models.ForeignKey(
-        ToolSession,
-        related_name='game_timers',
-        on_delete=models.CASCADE,
-        null=True
+        ToolSession, related_name="game_timers", on_delete=models.CASCADE, null=True
     )
 
     def __str__(self):
-        return f'{self.title} - {self.saved_duration}'
+        return f"{self.title} - {self.saved_duration}"
 
 
 class ScoringGroup(models.Model):
@@ -223,14 +206,11 @@ class ScoringGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=40)
     tool_session = models.ForeignKey(
-        ToolSession,
-        related_name='scoring_groups',
-        on_delete=models.CASCADE,
-        null=True
+        ToolSession, related_name="scoring_groups", on_delete=models.CASCADE, null=True
     )
     players = models.ManyToManyField(
         Player,
-        related_name='scoring_groups',
+        related_name="scoring_groups",
         blank=True,
         default=None,
     )
@@ -245,9 +225,9 @@ class ScoringCategory(models.Model):
         verbose_name_plural = "Scoring Categories"
 
     rounding_choices = [
-        ('up', 'round up'),
-        ('down', 'round down'),
-        ('none', 'no rounding'),
+        ("up", "round up"),
+        ("down", "round down"),
+        ("none", "no rounding"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -256,36 +236,34 @@ class ScoringCategory(models.Model):
         default=0,
         validators=[
             MinValueValidator(limit_value=-1000),
-            MaxValueValidator(limit_value=1000)
+            MaxValueValidator(limit_value=1000),
         ],
     )
     items_per_group = models.SmallIntegerField(
         default=0,
         validators=[
             MinValueValidator(limit_value=-1000),
-            MaxValueValidator(limit_value=1000)
+            MaxValueValidator(limit_value=1000),
         ],
     )
-    rounding = models.CharField(
-        max_length=5, choices=rounding_choices, default='none'
-    )
+    rounding = models.CharField(max_length=5, choices=rounding_choices, default="none")
     group = models.ForeignKey(
         ScoringGroup,
-        related_name='scoring_categories',
+        related_name="scoring_categories",
         on_delete=models.CASCADE,
-        null=True
+        null=True,
     )
 
     def __str__(self):
-        return f'{self.name}'
+        return f"{self.name}"
 
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'userid_{0}_{1}/{2}'.format(
+    return "userid_{0}_{1}/{2}".format(
         instance.group.tool_session.session_owner.user.id,
         instance.group.tool_session.session_owner.user.username,
-        filename
+        filename,
     )
 
 
@@ -297,10 +275,7 @@ class DrawBag(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=40)
     tool_session = models.ForeignKey(
-        ToolSession,
-        related_name='draw_bag',
-        on_delete=models.CASCADE,
-        null=True
+        ToolSession, related_name="draw_bag", on_delete=models.CASCADE, null=True
     )
 
     def __str__(self):
@@ -324,18 +299,16 @@ class DrawBagItem(models.Model):
     name = models.CharField(max_length=40)
     drawn = models.BooleanField(default=False)
     drawn_datetime = models.DateTimeField(null=True, blank=True)
-    image = models.ImageField(upload_to=user_directory_path,
-                              validators=[validate_image_file_extension,
-                                          validate_image_file_size],
-                              height_field=None,
-                              width_field=None,
-                              null=True,
-                              blank=True)
+    image = models.ImageField(
+        upload_to=user_directory_path,
+        validators=[validate_image_file_extension, validate_image_file_size],
+        height_field=None,
+        width_field=None,
+        null=True,
+        blank=True,
+    )
     group = models.ForeignKey(
-        DrawBag,
-        related_name='draw_bag_items',
-        on_delete=models.CASCADE,
-        null=True
+        DrawBag, related_name="draw_bag_items", on_delete=models.CASCADE, null=True
     )
 
     def save(self, *args, **kwargs):

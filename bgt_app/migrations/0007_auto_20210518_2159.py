@@ -8,13 +8,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bgt_app', '0006_auto_20210512_2149'),
+        ("bgt_app", "0006_auto_20210512_2149"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='drawbagitem',
-            name='image',
-            field=models.ImageField(blank=True, null=True, upload_to=bgt_app.models.user_directory_path, validators=[django.core.validators.validate_image_file_extension, bgt_app.models.validate_image_file_size]),
+            model_name="drawbagitem",
+            name="image",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to=bgt_app.models.user_directory_path,
+                validators=[
+                    django.core.validators.validate_image_file_extension,
+                    bgt_app.models.validate_image_file_size,
+                ],
+            ),
         ),
     ]

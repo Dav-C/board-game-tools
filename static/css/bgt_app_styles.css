@@ -42,7 +42,7 @@ ul {
     display: block;
     margin: auto;
     padding: .75rem;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     border-radius: 3px;
     border: 2px solid #5f88a0;
     border-bottom: 1px solid #DDD;
@@ -109,7 +109,7 @@ ul {
 }
 
 .small {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
 }
 .create-form-btn {
     margin: .5rem;
@@ -518,6 +518,47 @@ ul {
     padding: .5rem;
     border-radius: .25rem;
 }
+/*User Account Page*/
+.user-account-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+.user-account-header {
+    display: flex;
+    background-color: #0072ff;
+    padding: .25rem;
+}
+.account-back-btn {
+    font-size: 3rem;
+    color: transparent;
+    margin: auto;
+    height: 90%;
+    min-width: 20%;
+    background-color: transparent;
+    background-image: url('/static/images/arrow-left.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.account-info-box {
+    background-color: mintcream;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem 0 1rem 0;
+    min-width: 30rem;
+    max-width: 45rem;
+    min-height: 50%;
+    width: 95%;
+    border-radius: .25rem;
+    box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px,
+                rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
+                rgba(255, 255, 255, 0.08) 0 1px 0 inset;
+}
 
 /*User Home Page*/
 
@@ -529,7 +570,6 @@ ul {
                 rgba(0,114,255,1) 0%,
                 rgba(0,0,0,1) 100%);
 }
-
 .user-home-header {
     display: flex;
     flex-direction: row-reverse;
@@ -538,14 +578,36 @@ ul {
     align-items: center;
     padding: .25rem;
 }
-
-.logout-link {
-    font-size: 2rem;
-    margin: 0 0 0 2rem;
-    color: mintcream;
-
+.home-header-button-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    height: 80%;
+    width: 40%;
+    max-width: 30rem;
 }
-
+.logout-link {
+    margin: auto;
+    height: 90%;
+    min-width: 35%;
+    background-color: transparent;
+    background-image: url('/static/images/logout.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+.account-link {
+    color: transparent;
+    margin: auto;
+    height: 90%;
+    min-width: 35%;
+    background-color: transparent;
+    background-image: url('/static/images/account.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
 .user-home-body {
     display:flex;
     flex-direction: column;
@@ -2136,26 +2198,28 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/*various display options*/
 input[type=number] {
   -moz-appearance: textfield;
 }
 
+/*various display options*/
 .flex-end {
     justify-content: flex-end;
 }
-
 .no-display {
     display: none;
 }
 .display-inline {
     display: inline;
 }
-.absolute-hidden {
-    position: absolute;
+.fixed-hidden {
+    position: fixed;
     visibility: hidden;
+    margin: 0;
 }
 .raise-over-cover {
     z-index: 2;
+}
+.selected-btn-background {
+    background-color: #555555
 }

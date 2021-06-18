@@ -8,18 +8,25 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bgt_app', '0003_auto_20210506_1014'),
+        ("bgt_app", "0003_auto_20210506_1014"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='drawbagitem',
-            name='group',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='draw_bag_items', to='bgt_app.drawbag'),
+            model_name="drawbagitem",
+            name="group",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="draw_bag_items",
+                to="bgt_app.drawbag",
+            ),
         ),
         migrations.AlterField(
-            model_name='drawbagitem',
-            name='image',
-            field=models.ImageField(null=True, upload_to=bgt_app.models.user_directory_path),
+            model_name="drawbagitem",
+            name="image",
+            field=models.ImageField(
+                null=True, upload_to=bgt_app.models.user_directory_path
+            ),
         ),
     ]
