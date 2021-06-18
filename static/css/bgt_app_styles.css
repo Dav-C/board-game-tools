@@ -519,6 +519,15 @@ ul {
     border-radius: .25rem;
 }
 /*User Account Page*/
+
+.user-account-wrapper {
+    display: grid;
+    grid-template-rows: 10vh 90vh;
+    background: rgb(0,114,255);
+    background: radial-gradient(circle,
+                rgba(0,114,255,1) 0%,
+                rgba(0,0,0,1) 100%);
+}
 .user-account-body {
     display: flex;
     flex-direction: column;
@@ -562,7 +571,7 @@ ul {
 
 /*User Home Page*/
 
-#UserHomeWrapper {
+.user-home-wrapper {
     display: grid;
     grid-template-rows: 10vh 90vh;
     background: rgb(0,114,255);

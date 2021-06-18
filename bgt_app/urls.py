@@ -2,6 +2,7 @@ from django.urls import include, path
 # import debug_toolbar
 from .views import (
     CreateUser,
+    DeleteUser,
     Login,
     Logout,
     UserHome,
@@ -31,6 +32,7 @@ from .views import (
 urlpatterns = [
     # path('__debug__/', include(debug_toolbar.urls)),
     path("create-user", CreateUser.as_view(), name="create_user"),
+    path("delete_user", DeleteUser.as_view(), name="delete_user"),
     path("login", Login.as_view(), name="login"),
     path("logout", Logout.as_view(), name="logout"),
     path("account", UserAccount.as_view(), name='user_account'),

@@ -53,13 +53,13 @@ function dataURLToBlob(dataURL) {
 /* End Utility function to convert a canvas to a BLOB      */
 
 // hide an element and reveal a replacement element
-function hide_reveal_element(hide_element, reveal_element) {
+function hide_reveal_element(hide_element_id, reveal_element_id) {
     'use strict';
-    if (hide_element !== null) {
-        hide_element.addClass('no-display');
+    if (hide_element_id !== null) {
+        $(hide_element_id).addClass('no-display');
     }
-    if (reveal_element !== null) {
-        reveal_element.removeClass('no-display');
+    if (reveal_element_id !== null) {
+        $(reveal_element_id).removeClass('no-display');
     }
 }
 
@@ -382,6 +382,20 @@ $("#createScoringGroupForm").submit(newToolsFormSubmit(
     '#openScoringGroupsBtn'
 ));
 
+
+// --------------- USER ACCOUNT PAGE ---------------
+
+// open the account delete confirmation box
+$('#UserAccountWrapper').on('click', '.account-delete-btn', function() {
+    'use strict';
+    hide_reveal_element($('#accountInfoBox'), $('#accountDeleteConfirmBox'));
+    openMenuCover();
+});
+// cancel account delete and close the confirmation box
+$('#UserAccountWrapper').on('click', '#cancelAccountDelete', function() {
+    'use strict';
+    hide_reveal_element($('#accountDeleteConfirmBox'), $('#accountInfoBox'));
+});
 
 // --------------- PLAYER CONTROL ---------------
 

@@ -170,6 +170,18 @@ class CreateUser(View):
             )
 
 
+class DeleteUser(View):
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            user.delete()
+            messages.info(request, 'Your account has been deleted.')
+            return redirect('login')
+        else:
+            messages.error(request, "Insufficient Permission")
+        return redirect("login")
+
+
 class Login(LoginView):
     """log a user into the app"""
 
@@ -202,15 +214,23 @@ class UserHome(LoginRequiredMixin, FormMixin, ListView):
     template_name = "bgt_app/user_home.html"
 
     def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            tool_session = form.save(commit=False)
-            tool_session.session_owner = UserProfile.objects.get(
-                user_id=self.request.user.id
-            )
-            form.save()
-            return redirect("user_home")
+        user = request.user
+        tool_sessions = ToolSession.objects.filter(session_owner_id=user.id)
+        total_sessions = tool_sessions.count()
+        # users are limited to 10 sessions per account
+        if total_sessions <= 9:
+            form = self.get_form()
+            if form.is_valid():
+                tool_session = form.save(commit=False)
+                tool_session.session_owner = UserProfile.objects.get(
+                    user_id=self.request.user.id
+                )
+                form.save()
+                return redirect("user_home")
+            else:
+                return redirect("user_home")
         else:
+            messages.info(request, "10 session maximum has been reached")
             return redirect("user_home")
 
     def get_queryset(self, **kwargs):
