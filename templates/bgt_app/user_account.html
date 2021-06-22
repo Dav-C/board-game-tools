@@ -18,14 +18,18 @@
     </div>
 <div class="user-account-body">
     <div id="accountInfoBox" class="account-info-box">
-        <button type="button" class="red-btn account-delete-btn  create-form-btn">Delete Account</button>
+        <a href="javascript:;" style="width: 50%;">
+            <button type="button" class="red-btn account-delete-btn  create-form-btn" style="width: 100%;">Delete Account</button>
+        </a>
         <br>
         <br>
-        <button type="button" class="blue-btn  create-form-btn">Reset Password</button>
+        <a href="{% url 'password_change' %}" style="width: 50%;">
+            <button type="button" class="blue-btn create-form-btn" style="width: 100%;">Change Password</button>
+        </a>
     </div>
     <div id="accountDeleteConfirmBox" class="account-info-box no-display">
-        <div class="form-title-box">
-            <span style="font-size: 1.75rem" class="form-title-text">Are you sure you want to delete your account?</span>
+        <div class="centered-flex-column">
+            <span style="font-size: 1.75rem; padding: 0 2rem;">Are you sure you want to delete your account?</span>
             <br />
             <span style="font-size: 1.75rem">This cannot be undone.</span>
         </div>

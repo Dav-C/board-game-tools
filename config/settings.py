@@ -144,4 +144,9 @@ LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
 LOGIN_REDIRECT_URL = "user_home"
 
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+
+#this setting is for local testing of the password reset feature
+EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
+
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576  # 1 MB

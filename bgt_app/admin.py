@@ -39,6 +39,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 class ToolSessionAdmin(admin.ModelAdmin):
     list_display = ['session_name', 'session_owner', 'creation_date']
+    list_filter = ['session_owner']
 
 
 admin.site.register(UserProfile, UserProfileAdmin)

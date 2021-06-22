@@ -423,11 +423,20 @@ ul {
 }
 
 .login-form-wrapper {
+    position: fixed;
     margin: auto;
+    display: flex;
+    justify-content: center;
+    max-width: 50rem;
+    width: 100%;
 }
 
 .login-form {
     background-color: #FFFFFF;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 90%;
     opacity: 80%;
     display:flex;
     flex-direction: column;
@@ -435,7 +444,7 @@ ul {
     border-radius: .25rem;
     box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0,
                 rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
-    padding: 0 0 1rem 0;
+    padding: 1rem;
 }
 
 .login-form-input {
@@ -465,7 +474,7 @@ ul {
     border-radius: 10px;
     display: block;
     outline: none;
-    background-image: linear-gradient(to right, #00c6ff 0%, #0072ff  51%, #00c6ff  100%)
+    background-image: linear-gradient(to right, #00c6ff 0%, #0072ff  51%, #00c6ff  100%);
 }
 
 .login-form-btn:hover {
@@ -474,49 +483,42 @@ ul {
     text-decoration: none;
 }
 
-.create-user-link {
+.small-text-link {
     font-size: 1.75rem;
 }
 
 .create-user-form-wrapper {
+    position: fixed;
     margin: auto;
     display: flex;
     justify-content: center;
-    max-width: 50rem;
+    max-width: 40rem;
     width: 100%;
 }
 
-.create-new-user-form-title {
+.login-form-title {
     font-size: 2rem;
     margin: 1.5rem;
 }
-
-.create-user-form {
-    background-color: #FFFFFF;
-    width: 90%;
-    opacity: 80%;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: .25rem;
-    box-shadow: rgba(60, 64, 67, 0.3) 0 1px 2px 0,
-                rgba(60, 64, 67, 0.15) 0 1px 3px 1px;
-    padding: 0 0 1rem 0;
-}
-
 .create-user-form-errors-wrapper {
     display: flex;
     flex-direction: column;
     width: 90%;
 }
 
-.create-user-form-field-error {
+.small-error-text {
+    text-align: center;
     font-size: 1.5rem;
     background-color: #c00000;
     color: #FFFFFF;
     margin: .25rem;
     padding: .5rem;
     border-radius: .25rem;
+}
+.password-reset-text {
+    font-size: 1.75rem;
+    padding: 2rem;
+    text-align: left;
 }
 /*User Account Page*/
 
@@ -2212,6 +2214,13 @@ input[type=number] {
 }
 
 /*various display options*/
+.centered-flex-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .flex-end {
     justify-content: flex-end;
 }

@@ -11,9 +11,9 @@
     <div class="login-body">
         <div id="createUserFormWrapper" class="create-user-form-wrapper">
             <form action="{% url 'create_user' %}"
-                  method="post" id=createUserForm class="create-user-form">
+                  method="post" id=createUserForm class="login-form">
                 {% csrf_token %}
-                <span class="create-new-user-form-title">Create New Account</span>
+                <span class="login-form-title">Create New Account</span>
                 <input type="text" name="username" maxlength="20" autofocus="" autocomplete="username"
                        id="id_username" class="login-form-input create-user-input" required="" placeholder="username">
 
@@ -25,11 +25,10 @@
 
                 <input type="password" name="password2" autocomplete="new-password"
                        id="id_password2" class="login-form-input" required="" placeholder="password confirmation">
-
                 <div class="create-user-form-errors-wrapper create-user-input">
                     {% for field in create_user_form %}
                         {% for error in field.errors %}
-                            <span class="create-user-form-field-error">{{ error }}</span>
+                            <span class="small-error-text">{{ error }}</span>
                         {% endfor %}
                     {% endfor %}
                 </div>
@@ -41,12 +40,5 @@
             </form>
         </div>
     </div>
-
-    <div class="login-footer">
-    </div>
-
 </div>
-
-
-
 {% endblock page_content %}

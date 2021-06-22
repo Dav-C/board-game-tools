@@ -27,6 +27,12 @@ from .views import (
     DrawBagItemReturn,
     DrawBagItemDraw,
     DrawBagReset,
+    PasswordReset,
+    PasswordResetConfirm,
+    PasswordResetDone,
+    PasswordResetComplete,
+    PasswordChange,
+    PasswordChangeDone,
 )
 
 urlpatterns = [
@@ -34,6 +40,19 @@ urlpatterns = [
     path("create-user", CreateUser.as_view(), name="create_user"),
     path("delete_user", DeleteUser.as_view(), name="delete_user"),
     path("login", Login.as_view(), name="login"),
+    path("password-reset", PasswordReset.as_view(), name="password_reset"),
+    path("password-reset-done", PasswordResetDone.as_view(),
+         name="password_reset_done"),
+    path(
+        "password-reset-confirm/<uidb64>/<token>/", PasswordResetConfirm.as_view(),
+        name="password_reset_confirm"
+    ),
+    path(
+        "password-reset-complete", PasswordResetComplete.as_view(),
+        name="password_reset_complete"
+    ),
+    path('password-change', PasswordChange.as_view(), name="password_change"),
+    path('password-change-done', PasswordChangeDone.as_view(), name="password_change_done"),
     path("logout", Logout.as_view(), name="logout"),
     path("account", UserAccount.as_view(), name='user_account'),
     path("home", UserHome.as_view(), name="user_home"),

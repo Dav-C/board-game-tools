@@ -26,15 +26,24 @@
                 </button>
                 <input type="hidden" name="next" value="{{ next }}">
                 <br />
-                <span class="create-user-link">
+                    {% if form.errors %}
+                        <span class="message-box error">
+                            username or password is incorrect
+                        </span>
+                    {% endif %}
+                <span class="small-text-link">
                     <a href="{% url 'create_user' %}">create account</a>
+                </span>
+                <br />
+                <span class="small-text-link">
+                    <a href="{% url 'password_reset' %}">reset password</a>
                 </span>
             </form>
         </div>
     </div>
 
-    <div class="login-footer">
-    </div>
+{#    <div class="login-footer">#}
+{#    </div>#}
 
 </div>
 

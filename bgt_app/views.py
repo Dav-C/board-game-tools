@@ -9,6 +9,14 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
 )
+from django.contrib.auth.views import (
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+    PasswordChangeView,
+    PasswordChangeDoneView,
+)
 from django.shortcuts import (
     render,
     redirect,
@@ -180,6 +188,37 @@ class DeleteUser(View):
         else:
             messages.error(request, "Insufficient Permission")
         return redirect("login")
+
+
+class PasswordReset(PasswordResetView):
+    """reset a user's password"""
+    template_name = "bgt_app/reset_password.html"
+
+
+class PasswordResetDone(PasswordResetDoneView):
+    """confirm a user's email is valid and send a reset link"""
+    template_name = "bgt_app/reset_password_done.html"
+
+
+class PasswordResetConfirm(PasswordResetConfirmView):
+    """allow a user to input new passwords after following
+    the reset link which was emailed"""
+    template_name = "bgt_app/reset_password_confirm.html"
+
+
+class PasswordResetComplete(PasswordResetCompleteView):
+    """shown after a password reset attempt (successful or not)"""
+    template_name = "bgt_app/reset_password_complete.html"
+
+
+class PasswordChange(PasswordChangeView):
+    """allow a user to change their password"""
+    template_name = "bgt_app/password_change.html"
+
+
+class PasswordChangeDone(PasswordChangeDoneView):
+    """displayed after a user changes their password"""
+    template_name = "bgt_app/password_change_complete.html"
 
 
 class Login(LoginView):
