@@ -1,0 +1,44 @@
+{% load static %}
+{% load widget_tweaks %}
+{% load method_override %}
+
+{# tool session settings #}
+<div id="toolSessionSettingsPageSuccessMessageWrapper" class="message-wrapper"></div>
+<span id="toolSessionSettingsViewWrapper" class="tool-body no-display">
+    <div id="toolSessionSettingsBox" class="tool-session-settings-box">
+        <span id="toolSessionSettingsSessionName"class="info-box-title tool-session-name">{{ tool_session.session_name }}</span>
+        <form action="{% url 'tool_session_update_delete' tool_session.id %}"
+              id="toolSessionSettingsSessionNameForm" class="centered-flex-column no-display">
+            {% csrf_token %}
+            {% method_override 'PUT'%}
+            {{ tool_session_form.session_name|add_class:"clean-text-input-large" }}
+            <div style="display: flex; justify-content: space-around; width: 80%;">
+                <button type="button" class="cancel-change-btn"></button>
+                <button type="submit" class="confirm-change-btn"></button>
+            </div>
+            <br />
+        </form>
+        <hr style="width:90%;">
+        <br />
+        <br />
+        <br />
+        <button class="red-btn open-delete-modal">DELETE TOOL SESSION</button>
+        <br />
+    </div>
+    <div id="toolSessionDeleteConfirmBox" class="tool-session-settings-box no-display">
+        <span class="info-box-title" style="width: 85%; margin: 0;">You are about to delete this tool session:</span>
+        <span class="info-box-title" style="width: 85%; margin: 0;"><b>{{ tool_session.session_name }}</b></span>
+        <span class="info-box-title" style="width: 85%; margin: 0;">This cannot be undone.</span>
+        <span class="info-box-title" style="width: 85%; margin: 0;">Are you sure?</span>
+        <form method='POST'
+              action="{% url 'tool_session_update_delete' tool_session.id %}"
+              class="centered-flex-column">
+            {% csrf_token %}
+            {% method_override 'DELETE' %}
+            <button type="submit" class="blue-btn" style="width: 100%;">YES, DELETE</button>
+            <br />
+            <button type="button" class="red-btn cancel-delete" style="width: 100%;">NO, CANCEL</button>
+        </form>
+        <br />
+    </div>
+</div>

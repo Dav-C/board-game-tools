@@ -120,10 +120,7 @@ def create_or_update_obj_and_serialize(request, form, model, obj_uuid, group_mod
         if form.is_valid():
             form_instance = form.save()
             serialized_form_instance = serializers.serialize(
-                "json",
-                [
-                    form_instance,
-                ],
+                "json", [form_instance, ],
             )
             return JsonResponse({"form_instance": serialized_form_instance}, status=200)
         else:
@@ -246,8 +243,8 @@ class UserAccount(LoginRequiredMixin, View):
 
 
 class UserHome(LoginRequiredMixin, FormMixin, ListView):
-    """render a list of existing tool sessions and allow the
-    user to create more"""
+    """render a list of existing tool sessions and allow the user
+    to create more."""
 
     form_class = ToolSessionForm
     template_name = "bgt_app/user_home.html"
@@ -282,6 +279,33 @@ class UserHome(LoginRequiredMixin, FormMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+class ToolSessionUpdateDelete(LoginRequiredMixin, View):
+    """update the title of a tool session or delete it"""
+
+    def put(self, request, tool_session_id):
+        tool_session = ToolSession.objects.get(id=tool_session_id)
+        form = ToolSessionForm(request.PUT, instance=tool_session)
+        if form.is_valid:
+            form_instance = form.save()
+            serialized_form_instance = serializers.serialize(
+                "json", [form_instance, ],
+            )
+            return JsonResponse({"form_instance": serialized_form_instance},
+                                status=200)
+        else:
+            return JsonResponse({"error": form.errors.as_json()}, status=400)
+
+    def delete(self, request, tool_session_id):
+        tool_session = ToolSession.objects.get(id=tool_session_id)
+        if request.user.id == tool_session.session_owner.id:
+            tool_session.delete()
+            messages.success(request, "Session Deleted")
+            return redirect("user_home")
+        else:
+            messages.error(request, "Insufficient Permission")
+            return redirect("user_home")
 
 
 class ToolSessionDetail(LoginRequiredMixin, DetailView):
@@ -329,6 +353,8 @@ class ToolSessionDetail(LoginRequiredMixin, DetailView):
                 if player in group.players.all():
                     scoring_group_initial_player_checks_box_values.append(player)
 
+        context["tool_session"] = ToolSession.objects.get(id=active_tool_session_id)
+        context["tool_session_form"] = ToolSessionForm
         context["players"] = players
         context["player_form"] = PlayerForm
         context["hp_trackers"] = hp_trackers

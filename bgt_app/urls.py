@@ -33,6 +33,7 @@ from .views import (
     PasswordResetComplete,
     PasswordChange,
     PasswordChangeDone,
+    ToolSessionUpdateDelete,
 )
 
 urlpatterns = [
@@ -61,6 +62,10 @@ urlpatterns = [
         ToolSessionDetail.as_view(),
         name="tool_session_detail",
     ),
+    path("tool-session-update-delete/<tool_session_id>",
+         ToolSessionUpdateDelete.as_view(),
+         name="tool_session_update_delete"
+         ),
     path("player-create/", PlayerView.as_view(), name="player_create"),
     path(
         "player-update-or-delete/<player_uuid>",

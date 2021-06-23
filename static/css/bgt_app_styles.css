@@ -23,7 +23,9 @@ ul {
     touch-action: none;
 }
 .large-text {
-    margin-top: 2rem;
+    font-weight: 200;
+    text-align: center;
+    margin: 2rem 5rem;
     font-size: 1.75rem;
     color: #FFFFFF;
     background-color: #000080;
@@ -485,6 +487,8 @@ ul {
 
 .small-text-link {
     font-size: 1.75rem;
+    width: 50%;
+    text-align: center;
 }
 
 .create-user-form-wrapper {
@@ -497,6 +501,8 @@ ul {
 }
 
 .login-form-title {
+    text-align: center;
+    width: 100%;
     font-size: 2rem;
     margin: 1.5rem;
 }
@@ -524,7 +530,7 @@ ul {
 
 .user-account-wrapper {
     display: grid;
-    grid-template-rows: 10vh 90vh;
+    grid-template-rows: 8vh 92vh;
     background: rgb(0,114,255);
     background: radial-gradient(circle,
                 rgba(0,114,255,1) 0%,
@@ -575,7 +581,7 @@ ul {
 
 .user-home-wrapper {
     display: grid;
-    grid-template-rows: 10vh 90vh;
+    grid-template-rows: 8vh 92vh;
     background: rgb(0,114,255);
     background: radial-gradient(circle,
                 rgba(0,114,255,1) 0%,
@@ -600,7 +606,7 @@ ul {
 }
 .logout-link {
     margin: auto;
-    height: 90%;
+    height: 75%;
     min-width: 35%;
     background-color: transparent;
     background-image: url('/static/images/logout.svg');
@@ -611,7 +617,7 @@ ul {
 .account-link {
     color: transparent;
     margin: auto;
-    height: 90%;
+    height: 75%;
     min-width: 35%;
     background-color: transparent;
     background-image: url('/static/images/account.svg');
@@ -665,6 +671,7 @@ ul {
     margin-right: 2rem;
     height: 80%;
     width: 15%;
+    max-width: 10rem;
     padding: 1rem;
     outline: none;
     box-shadow: rgba(0, 0, 0, 0.16) 0 3px 6px,
@@ -700,10 +707,10 @@ ul {
 
 .tool-session-page-header {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     position: fixed;
     background-color: #0072ff;
-    height: 3rem;
+    height: 3.5rem;
     width: 100vw;
     box-shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px,
                 rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
@@ -718,15 +725,17 @@ ul {
 
 .menu-open-close-line {
     border-bottom: .2rem solid white;
+    margin: 0 1rem;
 }
 
 .menu-open-close-box {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    height: 90%;
+    height: 75%;
     width: 25%;
     max-width: 10rem;
+    padding: .5rem;
 }
 
 #ToolSelectionMenu {
@@ -967,10 +976,43 @@ ul {
     overflow-x: hidden;
     min-height: 90vh;
 }
+.info-box-title {
+    padding: 1rem;
+    text-align: center;
+    width: 100%;
+    font-size: 2rem;
+    margin: 1.5rem;
+}
 
-.flex-start {
-    justify-content: flex-start;
-    margin-top: 4rem;
+/*TOOL SESSION SETTINGS*/
+
+.tool-session-settings-box {
+    background-color: mintcream;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem 0 1rem 0;
+    min-width: 30rem;
+    max-width: 45rem;
+    min-height: 50%;
+    width: 95%;
+    border-radius: .25rem;
+    box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px,
+                rgba(6, 24, 44, 0.65) 0 4px 6px -1px,
+                rgba(255, 255, 255, 0.08) 0 1px 0 inset;
+}
+
+.clean-text-input-large {
+    text-align: center;
+    font-size: 2rem;
+    border: 1px solid #555555;
+    background:transparent;
+    width: 80%;
+    margin: 1.5rem;
+    padding: 1rem;
+    border-radius: .2rem;
 }
 
 /*PLAYERS*/
@@ -1953,7 +1995,7 @@ ul {
 }
 
 .score-calc-input-area-open-btn {
-    width: 4rem;
+    min-width: 4rem;
     height: 4rem;
     border: 2px solid mintcream;
     color: mintcream;
@@ -1965,7 +2007,7 @@ ul {
 }
 
 .score-calc-input-area-close-btn {
-    width: 4rem;
+    min-width: 4rem;
     height: 4rem;
     border: 2px solid mintcream;
     color: mintcream;
@@ -2059,6 +2101,14 @@ ul {
                 rgba(0, 0, 0, 0.25) 0 0.125em 0.5em,
                 rgba(255, 255, 255, 0.1) 0 0 0 1px inset;
 }
+.draw-bag-img-wrapper {
+    padding-left: 2rem;
+    width: 40%;
+    height: 100%;
+}
+.draw-bag-image {
+    max-height: 5rem;
+}
 
 .create-custom-object-form {
     display: flex;
@@ -2073,7 +2123,7 @@ ul {
     align-items: center;
     width: 100%;
     margin: 1rem 0;
-    min-height: 20rem;
+    min-height: 15rem;
 }
 .draw-bag-drawn-items-wrapper {
     display: flex;
@@ -2081,7 +2131,7 @@ ul {
     align-items: center;
     width: 100%;
     margin: 1rem 0;
-    min-height: 20rem;
+    min-height: 15rem;
 }
 .draw-bag-draw-control-row {
     display: flex;
@@ -2089,16 +2139,13 @@ ul {
     width: 90%;
     padding: .3rem;
 }
-.draw-bag-img-wrapper {
-    width: 50%
-}
 .draw-bag-items-in-bag-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     margin: 1rem 0;
-    min-height: 20rem;
+    min-height: 15rem;
 }
 .draw-bag-item-box {
     border: ridge .5rem white;
@@ -2220,7 +2267,10 @@ input[type=number] {
     justify-content: center;
     align-items: center;
 }
-
+.flex-start {
+    justify-content: flex-start;
+    margin-top: 4rem;
+}
 .flex-end {
     justify-content: flex-end;
 }

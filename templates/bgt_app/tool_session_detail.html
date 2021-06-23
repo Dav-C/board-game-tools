@@ -210,14 +210,14 @@
         </div>
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
-            <button id="OpenUserSettings" class="select-active-tool-button button-visible settings"></button>
-            <button id="OpenPlayersBtn" class="select-active-tool-button players
+            <button id="openToolSessionSettings" class="select-active-tool-button button-visible settings"></button>
+            <button id="openPlayersBtn" class="select-active-tool-button players
                 {% if players %}button-visible{% endif %}">
             </button>
-            <button id="OpenHpTrackersBtn" class="select-active-tool-button hp-trackers
+            <button id="openHpTrackersBtn" class="select-active-tool-button hp-trackers
                 {% if hp_trackers %}button-visible{% endif %}">
             </button>
-            <button id="OpenDieGroupsBtn" class="select-active-tool-button dice
+            <button id="openDieGroupsBtn" class="select-active-tool-button dice
                 {% if die_groups %}button-visible{% endif %}">
             </button>
         </div>
@@ -260,6 +260,11 @@
 {# This covers the tool page body when various tool forms are open #}
     <div id="toolPageDarkCover"></div>
     <div class="tool-session-page-body">
+        <div class="tool-body">
+            <span class="large-text">open the menu to create and select tools</span>
+        </div>
+
+{% include 'bgt_app/tool_session_settings.html' %}
 
 {% include 'bgt_app/players.html' %}
 

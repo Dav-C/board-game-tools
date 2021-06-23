@@ -175,14 +175,14 @@
                     </div>
                 {% endif %}
             {% empty %}
-                <span class="large-text"><i>add some items to the bag</i></span>
+                <span class="large-text">add some items to the bag</span>
             {% endfor %}
         </div>
 {# display only drawn items #}
         <div id="{{ draw_bag.id }}-drawBagDrawnItemsWrapper" class="draw-bag-drawn-items-wrapper">
             <div class="draw-bag-draw-control-row">
                 <div class="draw-bag-img-wrapper">
-                    <img src="" alt="image of draw bag" class="">
+                    <img src="{% static 'images/draw_bag_image.svg' %}" alt="image of draw bag" class="draw-bag-image">
                 </div>
                 <form method="get"
                       action="{% url 'draw_bag_draw_random_item' draw_bag.id%}"
@@ -229,14 +229,14 @@
                 </div>
                 {% endif %}
             {% empty %}
-                <span class="large-text"><i>add some items to the bag</i></span>
+                <span class="large-text">add some items to the bag</span>
             {% endfor %}
         </div>
 {# display only items still in the bag #}
         <div id="{{ draw_bag.id }}-drawBagItemsInBagWrapper" class="draw-bag-items-in-bag-wrapper no-display">
             <div class="draw-bag-draw-control-row">
                 <div class="draw-bag-img-wrapper">
-                    <img src="" alt="image of draw bag" class="">
+                    <img src="{% static 'images/draw_bag_image.svg' %}" alt="image of draw bag" class="draw-bag-image">
                 </div>
                 <form method="GET"
                       action="{% url 'draw_bag_reset' draw_bag.id %}"
@@ -276,11 +276,11 @@
                     </div>
                 {% endif %}
             {% empty %}
-                <span class="large-text"><i>add some items to the bag</i></span>
+                <span class="large-text">add some items to the bag</span>
             {% endfor %}
         </div>
     </div>
     {% empty %}
-        <span class="large-text"><i>no draw bags yet</i></span>
+        <span class="large-text">no draw bags yet</span>
     {% endfor %}
 </div>

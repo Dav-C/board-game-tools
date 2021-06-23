@@ -18,6 +18,8 @@ function display_active_tool(){
         load_element(active_tool, check_game_timer_status);
         $('.tool-body').addClass('no-display');
         $(active_tool).removeClass('no-display');
+    } else {
+        closeToolPageCover();
     }
 };
 //  on page load - check for an active tool menu and set it to visible
@@ -272,18 +274,22 @@ function setActiveTool(active_tool_wrapper_id) {
     }, 275);
 }
 
+$("#openToolSessionSettings").click(function () {
+    'use strict';
+    setActiveTool('#toolSessionSettingsViewWrapper');
+});
 // Set the Hp Trackers to the active tool
-$("#OpenPlayersBtn").click(function () {
+$("#openPlayersBtn").click(function () {
     'use strict';
     setActiveTool('#playersViewWrapper');
 });
 // Set the Hp Trackers to the active tool
-$("#OpenHpTrackersBtn").click(function () {
+$("#openHpTrackersBtn").click(function () {
     'use strict';
     setActiveTool('#hpTrackersViewWrapper');
 });
 // Set the Die Groups to the active tool
-$("#OpenDieGroupsBtn").click(function () {
+$("#openDieGroupsBtn").click(function () {
     'use strict';
     setActiveTool('#dieGroupsViewWrapper');
 });
@@ -395,6 +401,50 @@ $('#UserAccountWrapper').on('click', '.account-delete-btn', function() {
 $('#UserAccountWrapper').on('click', '#cancelAccountDelete', function() {
     'use strict';
     hide_reveal_element($('#accountDeleteConfirmBox'), $('#accountInfoBox'));
+});
+// --------------- TOOL SESSION SETTINGS CONTROL ---------------
+
+// reveal the tool session form
+$("#toolSessionSettingsViewWrapper").on('click', '.info-box-title.tool-session-name', function (e) {
+    'use strict';
+    e.preventDefault();
+    let hide_element = $('#toolSessionSettingsSessionName');
+    let reveal_element = $('#toolSessionSettingsSessionNameForm');
+    hide_reveal_element(hide_element, reveal_element);
+});
+// close the tool session form
+$("#toolSessionSettingsViewWrapper").on('click', '.cancel-change-btn', function (e) {
+    'use strict';
+    e.preventDefault();
+    let hide_element = $('#toolSessionSettingsSessionNameForm');
+    let reveal_element = $('#toolSessionSettingsSessionName');
+    hide_reveal_element(hide_element, reveal_element);
+});
+// submit the tool session form and reload the wrapper
+$("#toolSessionSettingsViewWrapper").on('submit', '#toolSessionSettingsSessionNameForm', function (e) {
+    'use strict';
+    e.preventDefault();
+    let form = $('#toolSessionSettingsSessionNameForm');
+    let element_id = '#toolSessionSettingsBox';
+    submit_form_and_load_element(form, element_id, 'PUT');
+});
+
+// open the tool session confirmation modal
+$("#toolSessionSettingsViewWrapper").on('click', '.red-btn.open-delete-modal', function (e) {
+    'use strict';
+    e.preventDefault();
+    let hide_element = $('#toolSessionSettingsBox');
+    let reveal_element = $('#toolSessionDeleteConfirmBox');
+    hide_reveal_element(hide_element, reveal_element);
+});
+
+// close the tool session confirmation modal
+$("#toolSessionSettingsViewWrapper").on('click', '.red-btn.cancel-delete', function (e) {
+    'use strict';
+    e.preventDefault();
+    let hide_element = $('#toolSessionDeleteConfirmBox');
+    let reveal_element = $('#toolSessionSettingsBox');
+    hide_reveal_element(hide_element, reveal_element);
 });
 
 // --------------- PLAYER CONTROL ---------------
@@ -1220,12 +1270,14 @@ $("#scoringGroupsViewWrapper").on('submit', '.scoring-group-add-players-form', f
     let data_id = $(this).attr('data-id');
     let form = $(this);
     let element_id = $('#' + data_id + '-scoringGroupPlayersWrapper');
+    let scores_page_id = '#' + data_id + '-scoringGroupScoresWrapper';
     let message_wrapper = '#scoringPageSuccessMessageWrapper';
     submit_form_and_load_element(
         form, element_id, 'POST',
         scoringControl.scoring_funcs.set_active_view_wrapper,
         message_wrapper, 'saved'
     );
+    load_element(scores_page_id, null);
 });
 
 // --------------- GAME TIMER CONTROL ---------------

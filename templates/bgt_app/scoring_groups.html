@@ -84,7 +84,7 @@
                     </form>
                 </div>
             {% else %}
-                <span class="large-text"><i>create players first</i></span>
+                <span class="large-text">create players first</span>
             {% endif %}
             </div>
 {# create new scoring categories #}
@@ -174,7 +174,7 @@
                         </div>
                     </div>
                 {% empty %}
-                    <span class="large-text"><i>add some scoring categories</i></span>
+                    <span class="large-text">add some scoring categories</span>
                 {% endfor %}
             </div>
 {# scores #}
@@ -182,7 +182,7 @@
                  id="{{ scoring_group.id }}-scoringGroupScoresWrapper"
                  class="scoring-group-scores-wrapper no-display">
                 {% for player in scoring_group.players.all %}
-                    <div class="scoring-calc-row player-name-row">
+                    <div data-id="{{ player.id }}" class="scoring-calc-row player-name-row">
                         <button data-id="{{ player.id }}" class="score-calc-input-area-open-btn">&plus;</button>
                         <button class="score-calc-input-area-close-btn no-display">&minus;</button>
                         {% if player.name %}
@@ -229,11 +229,11 @@
                             {% endfor %}
                             {% if scoring_group.scoring_categories.all %}
                                 <div class="scoring-calc-row flex-end">
-                                    <button>score it!</button>
+                                    <button class="blue-btn">score it!</button>
                                 </div>
                             {% else %}
                                 <div class="scoring-calc-row">
-                                    <span class="large-text"><i>add some scoring categories</i></span>
+                                    <span class="large-text">add some scoring categories</span>
                                 </div>
                             {% endif %}
                         </form>
@@ -242,6 +242,6 @@
             </div>
         </div>
     {% empty %}
-        <span class="large-text"><i>nothing to score yet</i></span>
+        <span class="large-text">nothing to score yet</span>
     {% endfor %}
 </div>
