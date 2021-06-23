@@ -7,53 +7,48 @@
 {% block page_content %}
 <div class="message-wrapper login-page-messages">
     {% for message in messages %}
-        {{ message.tag }}
-        {% if message.tag == 'error' %}
+        {% if message.tags == 'error' %}
             <div class="message-box error fade_out">{{ message }}</div>
-        {% else %}
+        {% elif message.tags == 'info' %}
             <div class="message-box info fade_out">{{ message }}</div>
+        {% elif message.tags == 'success' %}
+            <div class="message-box success fade_out">{{ message }}</div>
         {% endif %}
     {% endfor %}
 </div>
 </div>
 <div id=UserHomeWrapper class="user-home-wrapper">
-<div class="user-home-header">
-    <button id="OpenCreateToolSessionModalBtn" class="open-create-tool-session-modal-btn">+</button>
-    <div class="home-header-button-row">
-        <a href="{% url 'logout' %}" class="logout-link"></a>
-        <a href="{% url 'user_account' %}" class="account-link"></a>
+    <div class="user-home-header">
+        <button id="OpenCreateToolSessionModalBtn" class="open-create-tool-session-modal-btn">+</button>
+        <div class="home-header-button-row">
+            <a href="{% url 'logout' %}" class="logout-link"></a>
+            <a href="{% url 'user_account' %}" class="account-link"></a>
+        </div>
     </div>
-</div>
-<div class="user-home-body">
-{#Form for adding new tool sessions#}
-    <div id="CreateToolSessionFormWrapper">
-        <form action=""
-              method="post"
-              id="CreateToolSessionForm">
-            {% csrf_token %}
-            {{ form.session_name|add_class:"text-input-large" }}
-            <br />
-            <button id="CreateToolSessionFormSubmitBtn" type="submit" class="blue-btn create-form-btn">confirm</button>
-            <button id="CreateToolSessionFormCancelBtn" class="red-btn create-form-btn">cancel</button>
-        </form>
+    <div class="user-home-body">
+    {#Form for adding new tool sessions#}
+        <div id="CreateToolSessionFormWrapper">
+            <form action=""
+                  method="post"
+                  id="CreateToolSessionForm">
+                {% csrf_token %}
+                {{ form.session_name|add_class:"text-input-large" }}
+                <br />
+                <button id="CreateToolSessionFormSubmitBtn" type="submit" class="blue-btn create-form-btn">confirm</button>
+                <button id="CreateToolSessionFormCancelBtn" class="red-btn create-form-btn">cancel</button>
+            </form>
+        </div>
+    {% if user.is_authenticated %}
+        {% for toolsession in toolsession_list %}
+            <a href="{{ toolsession.get_absolute_url }}">
+                <div class="tool-session-link-box">
+                    <span>{{ toolsession.session_name }}</span>
+                </div>
+            </a>
+        {% empty %}
+            <span class="large-text">add a game session to get started</span>
+        {% endfor %}
+    {% endif %}
     </div>
-{% if user.is_authenticated %}
-    {% for toolsession in toolsession_list %}
-        <a href="{{ toolsession.get_absolute_url }}">
-            <div class="tool-session-link-box">
-                <span>{{ toolsession.session_name }}</span>
-            </div>
-        </a>
-    {% empty %}
-        <span class="large-text">add a game session to get started</span>
-    {% endfor %}
-{% endif %}
-</div>
-{% for message in messages %}
-    {{ message }}
-{% endfor %}
-<div class="user-home-footer">
-
-</div>
 </div>
 {% endblock %}

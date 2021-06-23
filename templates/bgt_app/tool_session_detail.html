@@ -211,30 +211,16 @@
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
             <button id="openToolSessionSettings" class="select-active-tool-button button-visible settings"></button>
-            <button id="openPlayersBtn" class="select-active-tool-button players
-                {% if players %}button-visible{% endif %}">
-            </button>
-            <button id="openHpTrackersBtn" class="select-active-tool-button hp-trackers
-                {% if hp_trackers %}button-visible{% endif %}">
-            </button>
-            <button id="openDieGroupsBtn" class="select-active-tool-button dice
-                {% if die_groups %}button-visible{% endif %}">
-            </button>
+            <button id="openPlayersBtn" class="select-active-tool-button players"></button>
+            <button id="openHpTrackersBtn" class="select-active-tool-button hp-trackers"></button>
+            <button id="openDieGroupsBtn" class="select-active-tool-button dice"></button>
         </div>
 {# row of buttons for selecting active tools tools #}
         <div class="select-active-tool-btn-row">
-            <button id="openResourceGroupsBtn" class="select-active-tool-button resources
-                {% if resource_groups %}button-visible{% endif %}">
-            </button>
-            <button id="openGameTimersBtn" class="select-active-tool-button timers
-                {% if game_timers %}button-visible{% endif %}">
-            </button>
-            <button id="openDrawBagsBtn" class="select-active-tool-button drawbags
-                {% if draw_bags %}button-visible{% endif %}">
-            </button>
-            <button id="openScoringGroupsBtn" class="select-active-tool-button calculators
-                {% if scoring_groups %}button-visible{% endif %}">
-            </button>
+            <button id="openResourceGroupsBtn" class="select-active-tool-button resources"></button>
+            <button id="openGameTimersBtn" class="select-active-tool-button timers"></button>
+            <button id="openDrawBagsBtn" class="select-active-tool-button drawbags"></button>
+            <button id="openScoringGroupsBtn" class="select-active-tool-button calculators"></button>
         </div>
     </div>
 {# collapse menu button #}
@@ -279,6 +265,7 @@
 {% include 'bgt_app/draw_bags.html' %}
 
 {% include 'bgt_app/scoring_groups.html' %}
+
     </div>
 </div>
 

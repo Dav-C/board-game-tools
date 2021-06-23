@@ -898,8 +898,6 @@ ul {
 }
 
 .select-active-tool-button {
-    word-wrap: break-word;
-    display: none;
     outline: none;
     width: 15%;
     height: 80%;
@@ -924,9 +922,6 @@ ul {
 }
 .hp-trackers {
     background-image: url('/static/images/health.svg');
-}
-.button-visible {
-    display: inline;
 }
 .dice {
     background-image: url('/static/images/dice.svg');

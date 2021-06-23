@@ -171,6 +171,7 @@ class Resource(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=40)
+    image_name = models.CharField(max_length=15, default=None)
     quantity = models.SmallIntegerField(default=0)
     production_available = models.BooleanField(default=False)
     production_modifier = models.SmallIntegerField(default=0)
