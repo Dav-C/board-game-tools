@@ -53,7 +53,7 @@
             <div id="{{ resource_group.id }}-resourceGroupCreateResourceFormWrapper"
                  class="create-new-object-form-wrapper no-display">
                 <div class="form-title-box">
-                    <span class="form-title-text">custom resource</span>
+                    <span class="form-title-text">create resource</span>
                 </div>
                 <form action="{% url 'resource_create' resource_group.id %}"
                       method="POST"
@@ -72,43 +72,67 @@
                         </div>
                         <button type="submit" class="blue-btn small">create</button>
                     </div>
+                    <div id="{{ resource_group.id }}-createResourceImageNameInputWrapper" class="no-display">
+                        {{ resource_form.image_name }}
+                    </div>
                 </form>
-                <div class="form-title-box">
-                    <span class="form-title-text">create common resources</span>
-                </div>
-{# quick add resource buttons #}
+                <hr style="width:90%;">
+                <br />
+{# select resource icon #}
                <div class="common-object-quick-add-btn-box" data-id="{{ resource_group.id }}">
                    <div class="quick-add-item-row">
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="money" class="common-object-quick-create-btn resource-create">mony
+                       <button id="{{ resource_group.id }}-moneyIcon"
+                               data-name="money" class="resource-icon-select-btn money">
                        </button>
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="wood" class="common-object-quick-create-btn resource-create">wood
+                       <button id="{{ resource_group.id }}-woodIcon"
+                               data-name="wood" class="resource-icon-select-btn wood">
                        </button>
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="food" class="common-object-quick-create-btn resource-create">food
-                       </button>
-                   </div>
-                   <div class="quick-add-item-row">
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="brick" class="common-object-quick-create-btn resource-create">brick
-                       </button>
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="cloth" class="common-object-quick-create-btn resource-create">cloth
-                       </button>
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="animals" class="common-object-quick-create-btn resource-create">animl
+                       <button id="{{ resource_group.id }}-moneyIcon"
+                               data-name="food" class="resource-icon-select-btn food">
                        </button>
                    </div>
                    <div class="quick-add-item-row">
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="stone" class="common-object-quick-create-btn resource-create">stone
+                       <button id="{{ resource_group.id }}-foodIcon"
+                               data-name="brick" class="resource-icon-select-btn brick">
                        </button>
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="strength" class="common-object-quick-create-btn resource-create">strength
+                       <button id="{{ resource_group.id }}-clothIcon"
+                               data-name="cloth" class="resource-icon-select-btn cloth">
                        </button>
-                       <button form="{{ resource_group.id }}-resourceGroupCreateResourceForm"
-                               data-name="animals" class="common-object-quick-create-btn resource-create">defence
+                       <button id="{{ resource_group.id }}-animalIcon"
+                               data-name="animal" class="resource-icon-select-btn animal">
+                       </button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button id="{{ resource_group.id }}-stoneIcon"
+                               data-name="stone" class="resource-icon-select-btn stone">
+                       </button>
+                       <button id="{{ resource_group.id }}-strengthIcon"
+                               data-name="strength" class="resource-icon-select-btn strength">
+                       </button>
+                       <button id="{{ resource_group.id }}-defenseIcon"
+                               data-name="animals" class="resource-icon-select-btn defense">
+                       </button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button id="{{ resource_group.id }}-energyIcon"
+                               data-name="energy" class="resource-icon-select-btn energy">
+                       </button>
+                       <button id="{{ resource_group.id }}-scienceIcon"
+                               data-name="science" class="resource-icon-select-btn science">
+                       </button>
+                       <button id="{{ resource_group.id }}-wineIcon"
+                               data-name="wine" class="resource-icon-select-btn wine">
+                       </button>
+                   </div>
+                   <div class="quick-add-item-row">
+                       <button id="{{ resource_group.id }}-populationIcon"
+                               data-name="population" class="resource-icon-select-btn population">
+                       </button>
+                       <button id="{{ resource_group.id }}-wavesIcon"
+                               data-name="waves" class="resource-icon-select-btn waves">
+                       </button>
+                       <button id="{{ resource_group.id }}-spaceIcon"
+                               data-name="space" class="resource-icon-select-btn space">
                        </button>
                    </div>
                </div>
@@ -136,10 +160,11 @@
                              class="resource-name-input-wrapper fixed-hidden">
                             {{ resource_form.name|add_class:"resource-name-input" }}
                         </div>
-                        <div id="{{ resource.id }}-resourceImageBox"
-                             class="resource-image-box">resource image here
-                        </div>
-                        <button data-id="{{ resource.id }}"
+                            <img src="{% static 'images/resources/' %}{{ resource.image_name }}.svg" alt="no image"
+                                 id="{{ resource.id }}-resourceImageBox"
+                                 class="resource-image-box">
+                        <button type="submit"
+                                data-id="{{ resource.id }}"
                                 id="{{ resource.id }}-confirmChangeBtn"
                                 class="confirm-change-btn resource-name-change-confirm-btn no-display">
                         </button>
@@ -150,15 +175,22 @@
                         </button>
                     </div>
 {# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
+{#                    <div id="{{ resource.id }}-nameChangeResourceImageNameInputWrapper"#}
+{#                         data-input="{{ resource.image_name }}"#}
+{#                         class="no-display">#}
+{#                        {{ resource_form.image_name }}#}
+{#                    </div>#}
                     <div id="{{ resource.id }}-nameChangeResourceQtyInputWrapper"
-                         class="fixed-hidden">{{ resource_form.quantity }}
+                         data-input="{{ resource.quantity }}"
+                         class="no-display">{{ resource_form.quantity }}
                     </div>
                     {% if resource.production_available %}
                         <div id="{{ resource.id }}-nameChangeResourceProdAvailableInputWrapper"
-                             class="fixed-hidden">{{ resource_form.production_available }}
+                             class="no-display">{{ resource_form.production_available }}
                         </div>
                         <div id="{{ resource.id }}-nameChangeResourceProdModifierInputWrapper"
-                             class="fixed-hidden">{{ resource_form.production_modifier }}
+                         data-input="{{ resource.production_modifier }}"
+                             class="no-display">{{ resource_form.production_modifier }}
                         </div>
                     {% endif %}
                 </form>
@@ -188,6 +220,7 @@
                     </div>
 {# these form fields are populated in bgt.js so the form is complete when submitting a resource name change#}
                     <div id="{{ resource.id }}-qtyChangeResourceNameInputWrapper"
+                         data-input="{{ resource.name }}"
                          class="fixed-hidden">{{ resource_form.name}}
                     </div>
                     {% if resource.production_available %}
@@ -195,6 +228,7 @@
                              class="fixed-hidden">{{ resource_form.production_available }}
                         </div>
                         <div id="{{ resource.id }}-qtyChangeResourceProdModifierInputWrapper"
+                             data-input="{{ resource.production_modifier }}"
                              class="fixed-hidden">{{ resource_form.production_modifier }}
                         </div>
                     {% endif %}
@@ -232,13 +266,15 @@
                     </div>
 {# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
                     <div id="{{ resource.id }}-prodChangeResourceNameInputWrapper"
-                         class="fixed-hidden">{{ resource_form.name}}
+                         data-input="{{ resource.name }}"
+                         class="no-display">{{ resource_form.name}}
                     </div>
                     <div id="{{ resource.id }}-prodChangeResourceProdAvailableInputWrapper"
-                         class="fixed-hidden">{{ resource_form.production_available }}
+                         class="no-display">{{ resource_form.production_available }}
                     </div>
                     <div id="{{ resource.id }}-prodChangeResourceQtyInputWrapper"
-                         class="fixed-hidden">{{ resource_form.quantity }}
+                         data-input="{{ resource.quantity}}"
+                         class="no-display">{{ resource_form.quantity }}
                     </div>
                 </form>
                 <form action="{% url 'resource_update_delete' resource.id%}"
@@ -252,6 +288,7 @@
                     </div>
 {# these form fields are populated in bgt.js so the form is complete when submitting a resource name change #}
                     <div id="{{ resource.id }}-produceResourceNameInputWrapper"
+                         data-input="{{ resource.name }}"
                          class="fixed-hidden">{{ resource_form.name }}
                     </div>
                     <div id="{{ resource.id }}-produceResourceProdAvailableInputWrapper"

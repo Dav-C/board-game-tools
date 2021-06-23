@@ -163,20 +163,27 @@ class ResourceGroupForm(forms.ModelForm):
 
 
 class ResourceForm(forms.ModelForm):
-    """Create a Resource object and declare if it will be using the
-    production feature or not"""
+    """Create a Resource object"""
 
     class Meta:
         model = Resource
-        fields = ["name", "quantity", "production_available", "production_modifier"]
+        fields = ["name", "quantity", "production_available",
+                  "production_modifier", "image_name"]
 
     name = forms.CharField(
-        required=True,
+        required=False,
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Name",
                 "maxlength": "40",
                 "autocomplete": "off",
+            },
+        ),
+    )
+    image_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
             },
         ),
     )

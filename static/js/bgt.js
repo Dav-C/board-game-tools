@@ -784,15 +784,15 @@ resourceControl = {
             resourceTimeoutHandler = setTimeout(function () {
                 $('#' + data_id + input_field_id).val(add_subtract_value);
                 // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
-                let resource_name = $('#' + data_id + '-resourceName').text().trim();
+                let resource_name = $('#' + data_id + '-qtyChangeResourceNameInputWrapper').attr('data-input');
                 let resource_name_input = $('#' + data_id + '-qtyChangeResourceNameInputWrapper').children('input');
                 resource_name_input.val(resource_name);
                 if ($('#' + data_id + '-qtyChangeResourceProdAvailableInputWrapper')) {
-                    let prod_modifier = parseInt($('#' + data_id + '-productionModifierQtyBox').text().trim());
-                    let prod_available_input = $('#' + data_id + '-qtyChangeResourceProdAvailableInputWrapper').children('input');
+                    let prod_modifier = parseInt($('#' + data_id + '-qtyChangeResourceProdModifierInputWrapper').attr('data-input'));
                     let prod_modifier_input = $('#' + data_id + '-qtyChangeResourceProdModifierInputWrapper').children('input');
-                    prod_available_input.attr('checked', 'checked');
                     prod_modifier_input.val(prod_modifier);
+                    let prod_available_input = $('#' + data_id + '-qtyChangeResourceProdAvailableInputWrapper').children('input');
+                    prod_available_input.attr('checked', 'checked');
                 }
                 submit_form_and_load_element(form, element_id, 'PUT', null);
                 resource_change_value = 0;
@@ -824,10 +824,10 @@ resourceControl = {
             productionModifierTimeoutHandler = setTimeout(function () {
                 $('#' + data_id + input_field_id).val(add_subtract_value);
                 // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
-                let resource_name = $('#' + data_id + '-resourceName').text().trim();
+                let resource_name = $('#' + data_id + '-prodChangeResourceNameInputWrapper').attr('data-input');
                 let resource_name_input = $('#' + data_id + '-prodChangeResourceNameInputWrapper').children('input');
                 resource_name_input.val(resource_name);
-                let resource_qty = parseInt($('#' + data_id + '-resourceQtyBox').text().trim());
+                let resource_qty = $('#' + data_id + '-prodChangeResourceQtyInputWrapper').attr('data-input');
                 let resource_qty_input = $('#' + data_id + '-prodChangeResourceQtyInputWrapper').children('input');
                 resource_qty_input.val(resource_qty);
                 let prod_available_input = $('#' + data_id + '-prodChangeResourceProdAvailableInputWrapper').children('input');
@@ -923,19 +923,18 @@ $("#resourceGroupsViewWrapper").on('click', '.create-custom-object-form-done-btn
     'use strict';
     resourceControl.resource_funcs.close_create_resource_form(this);
 });
-// quickly add a common resource type with the quick-add buttons in the create
-// resource form
-$("#resourceGroupsViewWrapper").on('click', '.common-object-quick-create-btn.resource-create', function (e) {
+// select a resource icon and insert the appropriate name into the ResourceForm
+$("#resourceGroupsViewWrapper").on('click', '.resource-icon-select-btn', function (e) {
     'use strict';
     e.preventDefault();
     let data_id = $(this).parent().parent().attr('data-id');
-    let form = $('#' + data_id + '-resourceGroupCreateResourceForm');
-    let resource_name = $(this).attr('data-name').toString();
-    let message_wrapper = '#resourceCreatedSuccessMessageWrapper';
-    $('#' + data_id + '-createResourceNameField input').val(resource_name);
-    submit_form_and_load_element(form, null, 'POST', null, message_wrapper, 'resource added!');
+    let all_icon_btns = $('.resource-icon-select-btn');
+    let image_name = $(this).attr('data-name').toString();
+    all_icon_btns.removeClass('icon-selected');
+    $(this).addClass('icon-selected');
+    $('#' + data_id + '-createResourceImageNameInputWrapper input').val(image_name);
 });
-// create a new resource with a custom name
+// create a new resource
 $("#resourceGroupsViewWrapper").on('submit', '.create-custom-object-form.resource', function (e) {
     'use strict';
     e.preventDefault();
@@ -963,15 +962,18 @@ $("#resourceGroupsViewWrapper").on('submit', '.resource-name-change-form', funct
     let data_id = $(this).attr('data-id');
     let element_id = '#' + data_id + '-resourceBox';
 // forms.py - ResourceForm must have all fields completed to prevent data loss
-    let resource_qty = parseInt($('#' + data_id + '-resourceQtyBox').text().trim());
+    let image_name = $('#' + data_id + '-nameChangeResourceImageNameInputWrapper').attr('data-input');
+    let image_name_input = $('#' + data_id + '-nameChangeResourceImageNameInputWrapper').children('input');
+    image_name_input.val(image_name);
+    let resource_qty = $('#' + data_id + '-nameChangeResourceQtyInputWrapper').attr('data-input');
     let resource_qty_input = $('#' + data_id + '-nameChangeResourceQtyInputWrapper').children('input');
     resource_qty_input.val(resource_qty);
     if ($('#' + data_id + '-nameChangeResourceProdAvailableInputWrapper')) {
-        let prod_modifier = parseInt($('#' + data_id + '-productionModifierQtyBox').text().trim());
-        let prod_available_input = $('#' + data_id + '-nameChangeResourceProdAvailableInputWrapper').children('input');
+        let prod_modifier = $('#' + data_id + '-nameChangeResourceProdModifierInputWrapper').attr('data-input');
         let prod_modifier_input = $('#' + data_id + '-nameChangeResourceProdModifierInputWrapper').children('input');
-        prod_available_input.attr('checked', 'checked');
         prod_modifier_input.val(prod_modifier);
+        let prod_available_input = $('#' + data_id + '-nameChangeResourceProdAvailableInputWrapper').children('input');
+        prod_available_input.attr('checked', 'checked');
     }
     submit_form_and_load_element(form, element_id, 'PUT');
 });
@@ -1050,7 +1052,7 @@ $("#resourceGroupsViewWrapper").on('click', '.produce-single-resource-btn', func
     let new_resource_qty = resourceControl.resource_funcs.calculate_resource_production_value(data_id);
     $("#" + data_id + '-newResourceQtyInput input').val(new_resource_qty);
     // this section completes the forms.py - ResourceForm so that data is not lost when the form is submitted
-    let resource_name = $('#' + data_id + '-resourceName').text().trim();
+    let resource_name = $('#' + data_id + '-produceResourceNameInputWrapper').attr('data-input')
     let resource_name_input = $('#' + data_id + '-produceResourceNameInputWrapper').children('input');
     resource_name_input.val(resource_name);
     let prod_available_input = $('#' + data_id + '-produceResourceProdAvailableInputWrapper').children('input');
