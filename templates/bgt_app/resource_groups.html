@@ -61,7 +61,7 @@
                       class="create-custom-object-form resource">
                     {% csrf_token %}
                     <div class="create-object-form-row">
-                        <div id={{ resource_group.id }}-createResourceNameField class="create-resource-name-input-wrapper">
+                        <div id="{{ resource_group.id }}-createResourceNameField" class="create-resource-name-input-wrapper">
                             {{ resource_form.name|add_class:"create-resource-name-input" }}
                         </div>
                     </div>
@@ -145,11 +145,12 @@
 {# user's resources #}
         {% for resource in resource_group.resources.all %}
             <div id="{{ resource.id }}-resourceBox" class="resource-box">
+{# display and update the resource name #}
                 <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
-                      id={{ resource.id }}-resourceNameChangeForm"
-                      class="resource-name-change-form">
+                      id="{{ resource.id }}-resourceNameChangeForm"
+                      class="resource-name-change-form mintcream">
                     {% csrf_token %}
                     <div class="resource-box-row">
                         <div data-id="{{ resource.id }}"
@@ -157,12 +158,15 @@
                              class="resource-name-box">{{ resource.name }}
                         </div>
                         <div id="{{ resource.id }}-resourceNameInputWrapper"
+                             data-input="{{ resource.name }}"
                              class="resource-name-input-wrapper fixed-hidden">
                             {{ resource_form.name|add_class:"resource-name-input" }}
                         </div>
+                            {% if resource.image_name %}
                             <img src="{% static 'images/resources/' %}{{ resource.image_name }}.svg" alt="no image"
                                  id="{{ resource.id }}-resourceImageBox"
                                  class="resource-image-box">
+                            {% endif %}
                         <button type="submit"
                                 data-id="{{ resource.id }}"
                                 id="{{ resource.id }}-confirmChangeBtn"
@@ -194,12 +198,25 @@
                         </div>
                     {% endif %}
                 </form>
+{# delete single resource#}
+                <form method="POST"
+                      action="{% url 'resource_update_delete' resource.id %}"
+                      data-id="{{ resource_group.id }}"
+                      id="{{ resource.id }}-deleteResourceForm"
+                      class="delete-resource-form mintcream no-display">
+                    {% csrf_token %}
+                    {% method_override 'DELETE' %}
+                    <button id="{{ resource.id }}-resourceDeleteButton"
+                            class="delete-btn-large resource-delete-button">
+                    </button>
+                </form>
+
 {# display and update resource quanity #}
                 <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST"
                       data-id="{{ resource.id }}"
-                      id={{ resource.id }}-resourceQtyChangeForm"
-                      class="resource-qty-change-form">
+                      id="{{ resource.id }}-resourceQtyChangeForm"
+                      class="resource-qty-change-form mintcream">
                     {% csrf_token %}
                     <div class="resource-box-row">
                         <Button type="button"
@@ -237,8 +254,8 @@
                 {% if resource.production_available %}
                 <form action="{% url "resource_update_delete" resource.id %}"
                       method="POST" data-id="{{ resource.id }}"
-                      id={{ resource.id }}-resourceProductionModifierChangeForm"
-                      class="resource-production-modifier-change-form">
+                      id="{{ resource.id }}-resourceProductionModifierChangeForm"
+                      class="resource-production-modifier-change-form mintcream">
                     {% csrf_token %}
                     <div class="resource-box-row">
                         <Button type="button"
@@ -260,6 +277,7 @@
                                 class="resource-change-amt-btn modifier-increase disable-double-tap-to-zoom">+
                         </Button>
                         <Button type="button"
+                                id="{{ resource.id }}-produceResourceBtn"
                                 form="{{ resource.id }}-produceResourceForm"
                                 class="resource-change-amt-btn produce-single-resource-btn">prod
                         </Button>
@@ -297,19 +315,6 @@
                 </form>
                 {% endif %}
                 <div class="resource-box-row">
-                    <button form="{{ resource.id }}-deleteResourceForm"
-                            id="{{ resource.id }}-resourceDeleteButton"
-                            class="delete-btn-large resource-delete-button no-display">
-                    </button>
-{# delete single resource #}
-                    <form method="POST"
-                          action="{% url 'resource_update_delete' resource.id %}"
-                          data-id="{{ resource_group.id }}"
-                          id="{{ resource.id }}-deleteResourceForm"
-                          class="delete-resource-form">
-                        {% csrf_token %}
-                        {% method_override 'DELETE' %}
-                    </form>
                 </div>
             </div>
         {% empty %}

@@ -99,21 +99,21 @@
                       method="POST">
                     {% csrf_token %}
                     <div class="create-object-form-row">
-                        <div id={{ scoring_group.id }}-createScoringCategoryCategoryNameField
+                        <div id="{{ scoring_group.id }}-createScoringCategoryCategoryNameField"
                              class="create-scoring-category-input-wrapper">
                             {{ scoring_category_form.points_gained_or_lost|add_class:"create-scoring-category-input" }}
                             <span class="create-scoring-category-field-text">points</span>
                         </div>
                     </div>
                     <div class="create-object-form-row">
-                        <div id={{ scoring_group.id }}-createScoringCategoryTypeField
+                        <div id="{{ scoring_group.id }}-createScoringCategoryTypeField"
                              class="create-scoring-category-input-wrapper">
                             <span class="create-scoring-category-field-text">for every</span>
                             {{ scoring_category_form.items_per_group|add_class:"create-scoring-category-input" }}
                         </div>
                     </div>
                     <div class="create-object-form-row">
-                        <div id={{ scoring_group.id }}-createScoringCategoryRoundingField
+                        <div id="{{ scoring_group.id }}-createScoringCategoryRoundingField"
                              class="create-scoring-category-input-wrapper">
                             {{ scoring_category_form.name|add_class:"create-scoring-category-input" }}
                         </div>
