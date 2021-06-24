@@ -365,7 +365,7 @@ class DrawBagItemForm(forms.ModelForm):
         required=True,
         widget=forms.TextInput(
             attrs={
-                "placeholder": "draw bag title",
+                "placeholder": "item name",
                 "maxlength": "40",
                 "autocomplete": "off",
             },
@@ -375,7 +375,7 @@ class DrawBagItemForm(forms.ModelForm):
         required=False,
         widget=forms.FileInput(
             attrs={
-                "placeholder": "draw bag image",
+                "placeholder": "draw item image",
                 "maxlength": "40",
                 "autocomplete": "off",
             },
