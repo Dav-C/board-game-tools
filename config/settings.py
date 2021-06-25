@@ -18,7 +18,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # load environment variables
-load_dotenv(os.path.join(BASE_DIR, "config\.env"))
+load_dotenv(os.path.join(BASE_DIR, "config/.env.development"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,9 +31,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG")
 
 # 192.168.4.33 is for testing only REMOVE BEFORE DEPLOYING
-ALLOWED_HOSTS = ["192.168.4.33", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["192.168.4.1", "192.168.4.51", "127.0.0.1", "localhost"]
 
-# INTERNAL_IPS = ["192.168.4.33", "127.0.0.1", "localhost"]
+# INTERNAL_IPS = ["192.168.4.1", "192.168.4.51", "127.0.0.1", "localhost"]
 
 
 # Application definition

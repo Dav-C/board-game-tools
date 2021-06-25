@@ -110,7 +110,7 @@ def create_or_update_obj_and_serialize(request, form, model, obj_uuid, group_mod
     try:
         object_to_save = model.objects.get(id=obj_uuid)
         form = form(request.PUT, instance=object_to_save)
-        print(request.PUT)
+        # print(request.PUT)
         update_existing_object = True
     except model.DoesNotExist:
         form = form(request.POST)
