@@ -7,8 +7,8 @@ services:
       - postgres_data_dev:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=bgtadmin
-      - POSTGRES_PASSWORD=devpass
-      - POSTGRES_DB=bgt_data_dev
+      - POSTGRES_PASSWORD=devadmin
+      - POSTGRES_DB=bgt_data
   web:
     build: 
       context: .

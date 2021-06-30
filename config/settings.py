@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
 """
 Django settings for bgt project.
@@ -18,12 +18,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# load environment variables
-# load_dotenv(os.path.join(BASE_DIR, "config/.env.development"))
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
+# set this to true if using windows when running the dev server
+WINDOWS_ENVIRONMENT = True
+if WINDOWS_ENVIRONMENT:
+    load_dotenv(os.path.join(BASE_DIR, "./.env.dev"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ["SECRET_KEY"]
@@ -137,10 +135,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
-MEDIA_URL = ""
+MEDIA_ROOT = os.path.join(BASE_DIR, "/media/")
+MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
+STATIC_ROOT = os.path.join(BASE_DIR, "/usr/src/board-game-tools/staticfiles")
 STATICFILES_DIRS = [BASE_DIR / "static"]
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
