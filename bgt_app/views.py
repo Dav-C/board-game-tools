@@ -120,7 +120,10 @@ def create_or_update_obj_and_serialize(request, form, model, obj_uuid, group_mod
         if form.is_valid():
             form_instance = form.save()
             serialized_form_instance = serializers.serialize(
-                "json", [form_instance, ],
+                "json",
+                [
+                    form_instance,
+                ],
             )
             return JsonResponse({"form_instance": serialized_form_instance}, status=200)
         else:
@@ -180,8 +183,8 @@ class DeleteUser(View):
         user = request.user
         if user.is_authenticated:
             user.delete()
-            messages.info(request, 'Your account has been deleted.')
-            return redirect('login')
+            messages.info(request, "Your account has been deleted.")
+            return redirect("login")
         else:
             messages.error(request, "Insufficient Permission")
         return redirect("login")
@@ -189,32 +192,38 @@ class DeleteUser(View):
 
 class PasswordReset(PasswordResetView):
     """reset a user's password"""
+
     template_name = "bgt_app/reset_password.html"
 
 
 class PasswordResetDone(PasswordResetDoneView):
     """confirm a user's email is valid and send a reset link"""
+
     template_name = "bgt_app/reset_password_done.html"
 
 
 class PasswordResetConfirm(PasswordResetConfirmView):
     """allow a user to input new passwords after following
     the reset link which was emailed"""
+
     template_name = "bgt_app/reset_password_confirm.html"
 
 
 class PasswordResetComplete(PasswordResetCompleteView):
     """shown after a password reset attempt (successful or not)"""
+
     template_name = "bgt_app/reset_password_complete.html"
 
 
 class PasswordChange(PasswordChangeView):
     """allow a user to change their password"""
+
     template_name = "bgt_app/password_change.html"
 
 
 class PasswordChangeDone(PasswordChangeDoneView):
     """displayed after a user changes their password"""
+
     template_name = "bgt_app/password_change_complete.html"
 
 
@@ -290,10 +299,12 @@ class ToolSessionUpdateDelete(LoginRequiredMixin, View):
         if form.is_valid:
             form_instance = form.save()
             serialized_form_instance = serializers.serialize(
-                "json", [form_instance, ],
+                "json",
+                [
+                    form_instance,
+                ],
             )
-            return JsonResponse({"form_instance": serialized_form_instance},
-                                status=200)
+            return JsonResponse({"form_instance": serialized_form_instance}, status=200)
         else:
             return JsonResponse({"error": form.errors.as_json()}, status=400)
 
@@ -567,9 +578,7 @@ class ResourceView(LoginRequiredMixin, View):
     def post(self, request, resource_group_uuid, *args, **kwargs):
         if (
             group_nested_object_count(
-                request=self.request,
-                model=Resource,
-                group_uuid=resource_group_uuid,
+                request=self.request, model=Resource, group_uuid=resource_group_uuid
             )
             <= 19
         ):

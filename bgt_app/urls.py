@@ -1,4 +1,5 @@
 from django.urls import include, path
+
 # import debug_toolbar
 from .views import (
     CreateUser,
@@ -42,30 +43,38 @@ urlpatterns = [
     path("delete_user", DeleteUser.as_view(), name="delete_user"),
     path("login", Login.as_view(), name="login"),
     path("password-reset", PasswordReset.as_view(), name="password_reset"),
-    path("password-reset-done", PasswordResetDone.as_view(),
-         name="password_reset_done"),
     path(
-        "password-reset-confirm/<uidb64>/<token>/", PasswordResetConfirm.as_view(),
-        name="password_reset_confirm"
+        "password-reset-done", PasswordResetDone.as_view(), name="password_reset_done"
     ),
     path(
-        "password-reset-complete", PasswordResetComplete.as_view(),
-        name="password_reset_complete"
+        "password-reset-confirm/<uidb64>/<token>/",
+        PasswordResetConfirm.as_view(),
+        name="password_reset_confirm",
     ),
-    path('password-change', PasswordChange.as_view(), name="password_change"),
-    path('password-change-done', PasswordChangeDone.as_view(), name="password_change_done"),
+    path(
+        "password-reset-complete",
+        PasswordResetComplete.as_view(),
+        name="password_reset_complete",
+    ),
+    path("password-change", PasswordChange.as_view(), name="password_change"),
+    path(
+        "password-change-done",
+        PasswordChangeDone.as_view(),
+        name="password_change_done",
+    ),
     path("logout", Logout.as_view(), name="logout"),
-    path("account", UserAccount.as_view(), name='user_account'),
+    path("account", UserAccount.as_view(), name="user_account"),
     path("home", UserHome.as_view(), name="user_home"),
     path(
         "tool-session/<str:slug>/",
         ToolSessionDetail.as_view(),
         name="tool_session_detail",
     ),
-    path("tool-session-update-delete/<tool_session_id>",
-         ToolSessionUpdateDelete.as_view(),
-         name="tool_session_update_delete"
-         ),
+    path(
+        "tool-session-update-delete/<tool_session_id>",
+        ToolSessionUpdateDelete.as_view(),
+        name="tool_session_update_delete",
+    ),
     path("player-create/", PlayerView.as_view(), name="player_create"),
     path(
         "player-update-or-delete/<player_uuid>",

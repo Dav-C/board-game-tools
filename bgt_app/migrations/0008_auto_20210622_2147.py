@@ -8,37 +8,62 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bgt_app', '0007_auto_20210518_2159'),
+        ("bgt_app", "0007_auto_20210518_2159"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='diestandard',
-            options={'ordering': ['num_sides'], 'verbose_name': 'Standard Die', 'verbose_name_plural': 'Standard Dice'},
+            name="diestandard",
+            options={
+                "ordering": ["num_sides"],
+                "verbose_name": "Standard Die",
+                "verbose_name_plural": "Standard Dice",
+            },
         ),
         migrations.AddField(
-            model_name='resource',
-            name='image_name',
+            model_name="resource",
+            name="image_name",
             field=models.CharField(default=None, max_length=15),
         ),
         migrations.AlterField(
-            model_name='gametimer',
-            name='saved_duration',
+            model_name="gametimer",
+            name="saved_duration",
             field=models.DurationField(default=datetime.timedelta(0)),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='color',
-            field=models.CharField(choices=[('black', 'black'), ('white', 'white'), ('green', 'green'), ('blue', 'blue'), ('yellow', 'yellow'), ('purple', 'purple'), ('orange', 'orange'), ('red', 'red'), ('brown', 'brown')], default='black', max_length=10),
+            model_name="player",
+            name="color",
+            field=models.CharField(
+                choices=[
+                    ("black", "black"),
+                    ("white", "white"),
+                    ("green", "green"),
+                    ("blue", "blue"),
+                    ("yellow", "yellow"),
+                    ("purple", "purple"),
+                    ("orange", "orange"),
+                    ("red", "red"),
+                    ("brown", "brown"),
+                ],
+                default="black",
+                max_length=10,
+            ),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='player_order',
+            model_name="player",
+            name="player_order",
             field=models.SmallIntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='score',
-            field=models.FloatField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(limit_value=-1000), django.core.validators.MaxValueValidator(limit_value=1000)]),
+            model_name="player",
+            name="score",
+            field=models.FloatField(
+                blank=True,
+                null=True,
+                validators=[
+                    django.core.validators.MinValueValidator(limit_value=-1000),
+                    django.core.validators.MaxValueValidator(limit_value=1000),
+                ],
+            ),
         ),
     ]

@@ -1,0 +1,7 @@
+.*
+*.md
+test*
+docker-compose.prod.yml
+
+!README.md
+

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+
+# from dotenv import load_dotenv
 
 """
 Django settings for bgt project.
@@ -18,24 +19,22 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # load environment variables
-load_dotenv(os.path.join(BASE_DIR, "config/.env.development"))
+# load_dotenv(os.path.join(BASE_DIR, "config/.env.development"))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG")
+DEBUG = os.environ["DEBUG"]
 
 # 192.168.4.33 is for testing only REMOVE BEFORE DEPLOYING
-ALLOWED_HOSTS = ["192.168.4.1", "192.168.4.51", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-# INTERNAL_IPS = ["192.168.4.1", "192.168.4.51", "127.0.0.1", "localhost"]
-
-
+# INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # Application definition
 
 INSTALLED_APPS = [
@@ -94,12 +93,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "bgt_data",
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": "localhost",
-        "PORT": 5432,
+        "ENGINE": os.environ["DB_ENGINE"],
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASSWORD"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
     }
 }
 
@@ -126,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 LANGUAGE_CODE = "en-us"
 
@@ -140,15 +139,16 @@ USE_TZ = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 MEDIA_URL = ""
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
+STATICFILES_DIRS = [BASE_DIR / "static"]
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
 LOGIN_REDIRECT_URL = "user_home"
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 
-#this setting is for local testing of the password reset feature
-EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
+# this setting is for local testing of the password reset feature
+EMAIL_FILE_PATH = str(BASE_DIR.joinpath("sent_emails"))
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576  # 1 MB

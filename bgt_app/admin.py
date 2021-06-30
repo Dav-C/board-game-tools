@@ -20,11 +20,11 @@ from .models import (
 )
 
 
-admin.site.site_header = 'BoardGameTools Administration'
+admin.site.site_header = "BoardGameTools Administration"
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'view_tool_sessions_link']
+    list_display = ["user", "view_tool_sessions_link"]
 
     def view_tool_sessions_link(self, obj):
         count = ToolSession.objects.filter(session_owner_id=obj.id).count()
@@ -34,12 +34,13 @@ class UserProfileAdmin(admin.ModelAdmin):
             + urlencode({"userprofile__id": f"{obj.id}"})
         )
         return format_html('<a href="{}">{} Tool Session(s)</a>', url, count)
+
     view_tool_sessions_link.short_description = "Tool Sessions"
 
 
 class ToolSessionAdmin(admin.ModelAdmin):
-    list_display = ['session_name', 'session_owner', 'creation_date']
-    list_filter = ['session_owner']
+    list_display = ["session_name", "session_owner", "creation_date"]
+    list_filter = ["session_owner"]
 
 
 admin.site.register(UserProfile, UserProfileAdmin)
@@ -55,7 +56,3 @@ admin.site.register(Player)
 admin.site.register(GameTimer)
 admin.site.register(DrawBag)
 admin.site.register(DrawBagItem)
-
-
-
-

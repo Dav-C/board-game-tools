@@ -167,8 +167,13 @@ class ResourceForm(forms.ModelForm):
 
     class Meta:
         model = Resource
-        fields = ["name", "quantity", "production_available",
-                  "production_modifier", "image_name"]
+        fields = [
+            "name",
+            "quantity",
+            "production_available",
+            "production_modifier",
+            "image_name",
+        ]
 
     name = forms.CharField(
         required=False,
@@ -183,8 +188,7 @@ class ResourceForm(forms.ModelForm):
     image_name = forms.CharField(
         required=False,
         widget=forms.TextInput(
-            attrs={
-            },
+            attrs={},
         ),
     )
     quantity = forms.IntegerField(

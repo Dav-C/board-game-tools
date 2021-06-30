@@ -76,8 +76,16 @@ coverage.xml
 # celery
 celerybeat-schedule.*
 
+# Docker
+Dockerfile.prod
+docker-compose.prod.yml
+entrypoint.prod.sh
+
+# server config
+nginx.conf
+
 # Environments
-.env
+.env.prod
 .venv
 env/
 venv/
