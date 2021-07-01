@@ -1,5 +1,5 @@
 .dbsqlite
-/media/*
+/mediafiles/*
 /sent_emails/*
 !/media/media_info.txt
 

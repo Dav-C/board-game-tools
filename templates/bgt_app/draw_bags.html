@@ -78,16 +78,17 @@
                 <span class="form-title-text">create draw bag item</span>
             </div>
             <br />
-            <form id="{{ draw_bag.id }}-drawBagImageUploadInput">
-            <label class="blue-btn small">
-                upload image (optional)
-                <input type="file" name="image" placeholder="draw bag image" maxlength="40"
-                       autocomplete="off" accept="image/*" id="{{ draw_bag.id }}-id_image"
-                       data-id="{{ draw_bag.id }}"
-                       onchange="drawBagControl.draw_bag_funcs.handleDrawBagImageUpload(this);"
-                       hidden>
-            </label>
-            </form>
+{#TEMPORARILY DISABLED#}
+{#            <form id="{{ draw_bag.id }}-drawBagImageUploadInput">#}
+{#            <label class="blue-btn small">#}
+{#                upload image (optional)#}
+{#                <input type="file" name="image" placeholder="draw bag image" maxlength="40"#}
+{#                       autocomplete="off" accept="image/*" id="{{ draw_bag.id }}-id_image"#}
+{#                       data-id="{{ draw_bag.id }}"#}
+{#                       onchange="drawBagControl.draw_bag_funcs.handleDrawBagImageUpload(this);"#}
+{#                       hidden>#}
+{#            </label>#}
+{#            </form>#}
             <br />
             <form method="POST"
                   id="{{ draw_bag.id }}-drawBagItemCreateForm"
@@ -142,14 +143,15 @@
                         </div>
                         <hr style="width: 100%;">
                         <div class="draw-bag-item-box-row">
-                            {% if draw_bag_item.image %}
-                                <img src="{{ draw_bag_item.image.url }}"
-                                     alt="item-image"
-                                     data-id="{{ draw_bag.id }}"
-                                     class="draw-bag-item-img-small">
-                            {% else %}
-                                <span class="draw-bag-status-text img-placeholder">no image</span>
-                            {% endif %}
+{#TEMPORARILY DISABLED#}
+{#                            {% if draw_bag_item.image %}#}
+{#                                <img src="{{ draw_bag_item.image.url }}"#}
+{#                                     alt="item-image"#}
+{#                                     data-id="{{ draw_bag.id }}"#}
+{#                                     class="draw-bag-item-img-small">#}
+{#                            {% else %}#}
+{#                                <span class="draw-bag-status-text img-placeholder">no image</span>#}
+{#                            {% endif %}#}
                             <div class="draw-bag-item-box-row-btn-wrapper">
                                 {% if draw_bag_item.drawn == True %}
                                     <span class="draw-bag-status-text">drawn</span>
@@ -207,14 +209,15 @@
                         </div>
                     <hr style="width: 100%;">
                     <div class="draw-bag-item-box-row">
-                        {% if draw_bag_item.image %}
-                            <img src="{{ draw_bag_item.image.url }}"
-                                 alt="item-image"
-                                 data-id="{{ draw_bag.id }}"
-                                 class="draw-bag-item-img-small">
-                        {% else %}
-                            <span class="draw-bag-status-text img-placeholder">no image</span>
-                        {% endif %}
+{#TEMPORARILY DISABLED#}
+{#                        {% if draw_bag_item.image %}#}
+{#                            <img src="{{ draw_bag_item.image.url }}"#}
+{#                                 alt="item-image"#}
+{#                                 data-id="{{ draw_bag.id }}"#}
+{#                                 class="draw-bag-item-img-small">#}
+{#                        {% else %}#}
+{#                            <span class="draw-bag-status-text img-placeholder">no image</span>#}
+{#                        {% endif %}#}
                         <div class="draw-bag-item-box-row-btn-wrapper">
                             <span class="draw-bag-status-text">drawn</span>
                             <form method="GET"
@@ -254,14 +257,15 @@
                         </div>
                         <hr style="width: 100%;">
                         <div class="draw-bag-item-box-row">
-                            {% if draw_bag_item.image %}
-                                <img src="{{ draw_bag_item.image.url }}"
-                                     alt="item-image"
-                                     data-id="{{ draw_bag.id }}"
-                                     class="draw-bag-item-img-small">
-                            {% else %}
-                                <span class="draw-bag-status-text img-placeholder">no image</span>
-                            {% endif %}
+{#TEMPORARILY DISABLED#}
+{#                            {% if draw_bag_item.image %}#}
+{#                                <img src="{{ draw_bag_item.image.url }}"#}
+{#                                     alt="item-image"#}
+{#                                     data-id="{{ draw_bag.id }}"#}
+{#                                     class="draw-bag-item-img-small">#}
+{#                            {% else %}#}
+{#                                <span class="draw-bag-status-text img-placeholder">no image</span>#}
+{#                            {% endif %}#}
                             <div class="draw-bag-item-box-row-btn-wrapper">
                                 <span class="draw-bag-status-text">in bag</span>
                                 <form method="GET"

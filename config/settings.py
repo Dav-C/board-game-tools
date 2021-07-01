@@ -31,7 +31,6 @@ DEBUG = os.environ["DEBUG"]
 
 # 192.168.4.33 is for testing only REMOVE BEFORE DEPLOYING
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-
 # INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # Application definition
 
@@ -135,17 +134,25 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "/media/")
+# media files
+if DEBUG:
+    MEDIA_ROOT = "mediafiles"
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, "/home/board-game-tools/web/mediafiles/")
 MEDIA_URL = "/media/"
+
+# static files
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "/usr/src/board-game-tools/staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "/home/board-game-tools/web/staticfiles/")
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# login settings
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
 LOGIN_REDIRECT_URL = "user_home"
 
+# email settings
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-
 # this setting is for local testing of the password reset feature
 EMAIL_FILE_PATH = str(BASE_DIR.joinpath("sent_emails"))
 

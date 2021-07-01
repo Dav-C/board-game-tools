@@ -41,7 +41,7 @@ urlpatterns = [
     # path('__debug__/', include(debug_toolbar.urls)),
     path("create-user", CreateUser.as_view(), name="create_user"),
     path("delete_user", DeleteUser.as_view(), name="delete_user"),
-    path("login", Login.as_view(), name="login"),
+    path("", Login.as_view(), name="login"),
     path("password-reset", PasswordReset.as_view(), name="password_reset"),
     path(
         "password-reset-done", PasswordResetDone.as_view(), name="password_reset_done"
