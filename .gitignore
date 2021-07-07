@@ -1,6 +1,6 @@
 .dbsqlite
-/mediafiles/*
-/sent_emails/*
+mediafiles/*
+sent_emails/*
 !/media/media_info.txt
 
 # Django #
@@ -108,5 +108,3 @@ Control.ca-list
 Control.ca-bundle
 Control.system-ca-bundle
 GitHub.sublime-settings
-
-/media/userid_1_bgtadmin/

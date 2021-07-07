@@ -194,6 +194,8 @@ class PasswordReset(PasswordResetView):
     """reset a user's password"""
 
     template_name = "bgt_app/reset_password.html"
+    html_email_template_name = "bgt_app/password_reset_request.html"
+    subject_template_name = "bgt_app/password_reset_subject_line.txt"
 
 
 class PasswordResetDone(PasswordResetDoneView):

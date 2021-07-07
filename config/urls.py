@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import include, path
-from django.conf import settings
 
 # These 2 imports are for development purposes only
 # and should be removed when deployed
