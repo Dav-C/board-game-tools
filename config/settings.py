@@ -27,9 +27,8 @@ if WINDOWS_ENVIRONMENT:
 SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ["DEBUG"]
+DEBUG = os.environ["DEBUG"] == 'True'
 
-# 192.168.4.33 is for testing only REMOVE BEFORE DEPLOYING
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 # INTERNAL_IPS = ["127.0.0.1", "localhost"]
 # Application definition
@@ -163,7 +162,7 @@ else:
     EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
     EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
     DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
-    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"]
-    EMAIL_USE_SSL = os.environ["EMAIL_USE_SSL"]
+    EMAIL_USE_TLS = os.environ["EMAIL_USE_TLS"] == "True"
+    EMAIL_USE_SSL = os.environ["EMAIL_USE_SSL"] == "True"
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 1048576  # 1 MB
