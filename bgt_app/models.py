@@ -130,7 +130,7 @@ class DieStandard(models.Model):
     class Meta:
         verbose_name = "Standard Die"
         verbose_name_plural = "Standard Dice"
-        ordering = ["num_sides"]
+        ordering = ["id"]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     num_sides = models.SmallIntegerField(
